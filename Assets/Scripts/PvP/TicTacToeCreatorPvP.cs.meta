@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ad9754cfe5812a94396083a5f4d8e00d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - line: {instanceID: 0}
+  - card: {instanceID: 0}
+  - canvas: {instanceID: 0}
+  - xMat: {fileID: 2100000, guid: e2f0f1be16fdaf64f903359762ead678, type: 2}
+  - oMat: {fileID: 2100000, guid: d88af1355d6229844bdfe1d8c41604d3, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

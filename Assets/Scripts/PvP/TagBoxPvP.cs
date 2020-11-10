@@ -2,12 +2,14 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class TagBox : MonoBehaviour, IPointerClickHandler {
+public class TagBoxPvP : MonoBehaviour, IPointerClickHandler {
+    public Image image;
     public Sprite XImg;
     public Sprite OImg;
-    private TicTacToeCreator script;
-    private bool clicked = false;
-    private Image image;
+
+    private TicTacToeCreatorPvP script;
+
+    public bool clicked = false;
     public int boxColNum;
     public int boxRowNum;
 
@@ -15,7 +17,7 @@ public class TagBox : MonoBehaviour, IPointerClickHandler {
         GameObject gameControllerObj = GameObject.FindWithTag ("GameController");
         image = GetComponent<Image> ();
         if (gameControllerObj != null) {
-            script = gameControllerObj.GetComponent<TicTacToeCreator> ();
+            script = gameControllerObj.GetComponent<TicTacToeCreatorPvP> ();
         } else {
             Debug.Log ("Cannot find 'TicTacToeCreator' object");
         }
@@ -26,20 +28,15 @@ public class TagBox : MonoBehaviour, IPointerClickHandler {
         if (!clicked && !script.isGameOver) {
             if (script.P1) {
                 image.sprite = XImg;
-                script.values[boxColNum, boxRowNum] = 1;
+                script.board[boxColNum, boxRowNum] = 1;
             } else {
                 image.sprite = OImg;
-                script.values[boxColNum, boxRowNum] = 2;
+                script.board[boxColNum, boxRowNum] = 2;
             }
 
-            script.ChangePlayer ();
-            script.valuesLen++;
-            script.HasMatched ();
-
-            if (script.valuesLen >= script.grid * 2 - 1) {
-                script.HasMatched ();
-            }
             clicked = true;
+            script.boardLen++;
+            script.ChangePlayer ();
         }
     }
 }

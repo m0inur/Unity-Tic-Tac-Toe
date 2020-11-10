@@ -159,7 +159,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.083704166, g: 0.13319439, b: 0.1792453, a: 0}
+  m_BackGroundColor: {r: 0.14901961, g: 0.14901961, b: 0.14901961, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -334,12 +334,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   line: {fileID: 8584986408912705285, guid: b883ace32b90bfd4d950ff4ca57344cf, type: 3}
-  card: {fileID: 7039697055326309236, guid: 0bd90b33b66160045bea986279c11f5f, type: 3}
-  canvas: {fileID: 0}
+  card: {fileID: 7039697055326309236, guid: 95f888f7d5c6cf74f9081a901c525523, type: 3}
+  xMat: {fileID: 2100000, guid: e2f0f1be16fdaf64f903359762ead678, type: 2}
+  oMat: {fileID: 2100000, guid: d88af1355d6229844bdfe1d8c41604d3, type: 2}
   topOffset: -400
   boxOffset: 10
   grid: 3
-  valuesLen: 0
+  boardLen: 0
   isGameOver: 0
   P1: 1
   drawSpeed: 12
