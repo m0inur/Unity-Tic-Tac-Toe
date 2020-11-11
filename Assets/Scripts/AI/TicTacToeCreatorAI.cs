@@ -1,5 +1,7 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class TicTacToeCreatorAI : MonoBehaviour {
     #region Variables
@@ -9,6 +11,9 @@ public class TicTacToeCreatorAI : MonoBehaviour {
 
     public Material xMat;
     public Material oMat;
+
+    public Button menuBtn;
+    public Text winnerTxt;
 
     private GameObject lineGen;
     private LineRenderer lineRend;
@@ -47,8 +52,6 @@ public class TicTacToeCreatorAI : MonoBehaviour {
     private float gapX;
     public float drawSpeed;
     public float drawDelay;
-    // private float drawSpeed = 20f;
-    // private float drawDelay = 0.02f;
 
     private float boxGridHeight;
     private int rowCount;
@@ -61,17 +64,24 @@ public class TicTacToeCreatorAI : MonoBehaviour {
     #region Initially set variables board
     void Start () {
         board = new int[grid, grid];
+        topOffset = -(Screen.height / 2) + -(-(Screen.height / 2) / 3);
+
         rowCount = 0;
         colCount = 0;
         boardLen = 0;
         n = grid;
+
         lineDrawPos1 = new Vector3 (0, 0, 0);
         origin = new Vector3 (0, 0, 0);
+
+        winnerTxt.text = "";
+        menuBtn.gameObject.SetActive (false);
 
         // Canvas
         canvas = FindObjectOfType<Canvas> ();
         canvasW = canvas.GetComponent<RectTransform> ().rect.width;
         canvasH = canvas.GetComponent<RectTransform> ().rect.height;
+        canvas.GetComponent<CanvasScaler> ().referenceResolution = new Vector2 (Screen.width, Screen.height);
 
         // Booleans
         isGameOver = false;
@@ -329,13 +339,17 @@ public class TicTacToeCreatorAI : MonoBehaviour {
         }
     }
 
+    public void GoToMenu () {
+        SceneManager.LoadScene ("Menu");
+    }
+
     // .. Game Over
     public void GameOver (bool hasTied) {
         // If is already over
         if (isGameOver) {
             return;
         }
-        
+
         if (!hasTied) {
             // Draw lines
             destination = lineDrawPos;
@@ -346,15 +360,17 @@ public class TicTacToeCreatorAI : MonoBehaviour {
             lineRend = lineGen.GetComponent<LineRenderer> ();
 
             if (!P1) {
-                lineRend.material = xMat;
-                Debug.Log ("Player 1 won");
-            } else {
+                winnerTxt.text = "Winner: X";
                 lineRend.material = oMat;
-                Debug.Log ("Player 2 won");
+            } else {
+                winnerTxt.text = "Winner: O";
+                lineRend.material = xMat;
             }
         } else {
-            Debug.Log ("Tied");
+            winnerTxt.text = "Tie";
         }
+
+        menuBtn.gameObject.SetActive (true);
         isGameOver = true;
         animateLine = true;
     }

@@ -1,20 +1,29 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class TicTacToeCreatorPvP : MonoBehaviour {
     #region Variables
     public GameObject line;
     public GameObject card;
-    private Canvas canvas;
 
     public Material xMat;
     public Material oMat;
 
+    public Button menuBtn;
+    public Text winnerTxt;
+
+    public float drawSpeed;
+    public float drawDelay;
+
     private GameObject lineGen;
     private LineRenderer lineRend;
+    private Canvas canvas;
 
-    public float topOffset;
     public float boxOffset;
+    
+    private float topBoxOffset;
 
     public int[, ] board;
     public int grid;
@@ -43,8 +52,6 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
     private float canvasW;
     private float canvasH;
     private float gapX;
-    public float drawSpeed;
-    public float drawDelay;
 
     private float boxGridHeight;
     private int rowCount;
@@ -57,17 +64,26 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
     #region Initially set variables board
     void Start () {
         board = new int[grid, grid];
+        topBoxOffset = -(Screen.height / 2) + -(-(Screen.height / 2) / 3);
+
+        // Integers
         rowCount = 0;
         colCount = 0;
         boardLen = 0;
         n = grid;
+
         lineDrawPos1 = new Vector3 (0, 0, 0);
         origin = new Vector3 (0, 0, 0);
+
+        // Ui
+        winnerTxt.text = "";
+        menuBtn.gameObject.SetActive (false);
 
         // Canvas
         canvas = FindObjectOfType<Canvas> ();
         canvasW = canvas.GetComponent<RectTransform> ().rect.width;
         canvasH = canvas.GetComponent<RectTransform> ().rect.height;
+        canvas.GetComponent<CanvasScaler> ().referenceResolution = new Vector2 (Screen.width, Screen.height);
 
         // Booleans
         isGameOver = false;
@@ -93,7 +109,7 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             gapX = size / 2 + boxOffset;
 
             for (int j = 0; j < grid; j++) {
-                box = Instantiate (card, new Vector3 (gapX, topOffset - boxGridHeight, 0), Quaternion.identity) as GameObject;
+                box = Instantiate (card, new Vector3 (gapX, topBoxOffset - boxGridHeight, 0), Quaternion.identity) as GameObject;
                 box.transform.SetParent (canvas.transform.transform, false);
                 box.name = colCount + "" + rowCount;
 
@@ -131,7 +147,7 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
     }
 
     // Winner Checker
-    public int HasMatched () {
+    private int HasMatched () {
         int n = grid;
         int rowWinner = 0;
         int colWinner = 0;
@@ -179,14 +195,15 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             }
 
             if (rowWinner > -1) {
-                lineSpawnPos = new Vector3 (0, topOffset - (size * i) - (boxOffset * i), -1);
-                lineDrawPos = new Vector3 (canvasW, 0, 0);
+                // lineSpawnPos = new Vector3 (0, topBoxOffset - (size * i) - (boxOffset * i), -1);
+                lineSpawnPos = new Vector3 (0, topBoxOffset - (size * i) - (boxOffset * i), -1);
+                lineDrawPos = new Vector3 (Screen.width, 0, 0);
 
                 return rowWinner;
             }
 
             if (colWinner > -1) {
-                lineSpawnPos = new Vector3 (((size + boxOffset) * (i + 1)) - size / 2, topOffset - boxGridHeight + size / 2 + boxOffset, -1);
+                lineSpawnPos = new Vector3 (((size + boxOffset) * (i + 1)) - size / 2, topBoxOffset - boxGridHeight + size / 2 + boxOffset, -1);
                 lineDrawPos = new Vector3 (0, boxGridHeight - boxOffset, 0);
 
                 return colWinner;
@@ -197,14 +214,14 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         }
 
         if (diagWinner > -1) {
-            lineSpawnPos = new Vector3 (11, topOffset + size / 2, -1);
+            lineSpawnPos = new Vector3 (11, topBoxOffset + size / 2, -1);
             lineDrawPos = new Vector3 (boxGridHeight - boxOffset, -(boxGridHeight - boxOffset), 0);
 
             return diagWinner;
         }
 
         if (antiDiagWinner > -1) {
-            lineSpawnPos = new Vector3 (11, topOffset - boxGridHeight + size / 2 + boxOffset, -1);
+            lineSpawnPos = new Vector3 (11, topBoxOffset - boxGridHeight + size / 2 + boxOffset, -1);
             lineDrawPos = new Vector3 (boxGridHeight - boxOffset, boxGridHeight - boxOffset, 0);
 
             return antiDiagWinner;
@@ -238,6 +255,10 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         }
     }
 
+    public void GoToMenu () {
+        SceneManager.LoadScene ("Menu");
+    }
+
     // .. Game Over
     public void GameOver (bool hasTied) {
         // If is already over
@@ -255,15 +276,17 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             lineRend = lineGen.GetComponent<LineRenderer> ();
 
             if (!P1) {
-                lineRend.material = xMat;
-                Debug.Log ("Player 1 won");
-            } else {
+                winnerTxt.text = "Winner: X";
                 lineRend.material = oMat;
-                Debug.Log ("Player 2 won");
+            } else {
+                winnerTxt.text = "Winner: O";
+                lineRend.material = xMat;
             }
         } else {
-            Debug.Log ("Tied");
+            winnerTxt.text = "Tie";
         }
+
+        menuBtn.gameObject.SetActive (true);
         isGameOver = true;
         animateLine = true;
     }
