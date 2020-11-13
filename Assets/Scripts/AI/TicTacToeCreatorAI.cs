@@ -5,13 +5,18 @@ using UnityEngine.UI;
 
 public class TicTacToeCreatorAI : MonoBehaviour {
     #region Variables
+    public GameObject confettiWindow;
     public GameObject line;
     public GameObject card;
     private Canvas canvas;
 
-    public Material xMat;
-    public Material oMat;
+    public Button menuButton;
+    public Button playAgainButton;
 
+    public Material oMat;
+    public Transform oConfetti;
+
+    public Button playAgainBtn;
     public Button menuBtn;
     public Text winnerTxt;
 
@@ -75,7 +80,6 @@ public class TicTacToeCreatorAI : MonoBehaviour {
         origin = new Vector3 (0, 0, 0);
 
         winnerTxt.text = "";
-        menuBtn.gameObject.SetActive (false);
 
         // Canvas
         canvas = FindObjectOfType<Canvas> ();
@@ -288,7 +292,7 @@ public class TicTacToeCreatorAI : MonoBehaviour {
     }
 
     // Make ai move
-    public void MoveAi () {
+    public int MoveAi () {
         double bestScore = Double.PositiveInfinity;
         int[] bestMove = new int[2];
 
@@ -307,6 +311,12 @@ public class TicTacToeCreatorAI : MonoBehaviour {
                 }
             }
         }
+
+        // If the spot is the first value and it is not empty
+        if (bestMove[0] == 0 && bestMove[1] == 0 && board[0, 0] != 0) {
+            return -1;
+        }
+
         // Get game object and script
         GameObject box = GameObject.Find (bestMove[0] + "" + bestMove[1]);
         TagBoxAI boxScript = box.GetComponent<TagBoxAI> ();
@@ -314,8 +324,10 @@ public class TicTacToeCreatorAI : MonoBehaviour {
         boxScript.image.sprite = boxScript.OImg;
         boxScript.clicked = true;
         board[bestMove[0], bestMove[1]] = ai;
+
         boardLen++;
         ChangePlayer ();
+        return 1;
     }
 
     // Change player and check winner
@@ -333,6 +345,8 @@ public class TicTacToeCreatorAI : MonoBehaviour {
                 if (result == 3) {
                     GameOver (true);
                 } else {
+                    if (result == 2) { }
+
                     GameOver (false);
                 }
             }
@@ -351,26 +365,36 @@ public class TicTacToeCreatorAI : MonoBehaviour {
         }
 
         if (!hasTied) {
-            // Draw lines
+            // Measure line properties
             destination = lineDrawPos;
             dist = Vector3.Distance (origin, destination);
 
+            // Draw lines
             lineGen = Instantiate (line, lineSpawnPos, Quaternion.identity) as GameObject;
             lineGen.transform.SetParent (canvas.transform, false);
             lineRend = lineGen.GetComponent<LineRenderer> ();
 
-            if (!P1) {
-                winnerTxt.text = "Winner: X";
-                lineRend.material = oMat;
-            } else {
-                winnerTxt.text = "Winner: O";
-                lineRend.material = xMat;
-            }
+            // Confetti
+            GameObject confettiWindowObj = Instantiate (confettiWindow, new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
+
+            confettiWindowObj.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width, Screen.height);
+            confettiWindowObj.transform.SetParent (canvas.transform, false);
+
+            WindowConfetti windowScript = confettiWindowObj.GetComponent<WindowConfetti> ();
+            windowScript.pfConfetti = oConfetti;
+
+            winnerTxt.text = "Winner: O";
+            lineRend.material = oMat;
         } else {
             winnerTxt.text = "Tie";
         }
 
-        menuBtn.gameObject.SetActive (true);
+        menuButton = Instantiate (menuBtn, new Vector3 (0, 0, -2), Quaternion.identity);
+        menuButton.transform.SetParent (canvas.transform, false);
+
+        playAgainButton = Instantiate (playAgainBtn, new Vector3 (0, menuButton.GetComponent<RectTransform> ().rect.height + 10, -2), Quaternion.identity);
+        playAgainButton.transform.SetParent (canvas.transform, false);
+
         isGameOver = true;
         animateLine = true;
     }

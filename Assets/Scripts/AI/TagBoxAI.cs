@@ -25,6 +25,7 @@ public class TagBoxAI : MonoBehaviour, IPointerClickHandler {
 
     public void OnPointerClick (PointerEventData eventData) {
         // If box is not clicked or game is not yet over
+        Debug.Log ("Clicked");
         if (!clicked && !script.isGameOver) {
             // Put image and value on box and board
             image.sprite = XImg;

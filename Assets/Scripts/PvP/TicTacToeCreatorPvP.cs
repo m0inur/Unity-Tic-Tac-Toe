@@ -5,13 +5,19 @@ using UnityEngine.UI;
 
 public class TicTacToeCreatorPvP : MonoBehaviour {
     #region Variables
+    public GameObject confettiWindow;
     public GameObject line;
     public GameObject card;
 
     public Material xMat;
     public Material oMat;
 
+    public Transform xConfetti;
+    public Transform oConfetti;
+
+    public Image darkOverlay;
     public Button menuBtn;
+    public Button playAgainBtn;
     public Text winnerTxt;
 
     public float drawSpeed;
@@ -21,8 +27,11 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
     private LineRenderer lineRend;
     private Canvas canvas;
 
+    private Button menuButton;
+    private Button playAgainButton;
+
     public float boxOffset;
-    
+
     private float topBoxOffset;
 
     public int[, ] board;
@@ -72,14 +81,11 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         boardLen = 0;
         n = grid;
 
+        P1 = true;
         lineDrawPos1 = new Vector3 (0, 0, 0);
         origin = new Vector3 (0, 0, 0);
 
-        // Ui
-        winnerTxt.text = "";
-        menuBtn.gameObject.SetActive (false);
-
-        // Canvas
+        // Canvas & UI
         canvas = FindObjectOfType<Canvas> ();
         canvasW = canvas.GetComponent<RectTransform> ().rect.width;
         canvasH = canvas.GetComponent<RectTransform> ().rect.height;
@@ -87,7 +93,6 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
 
         // Booleans
         isGameOver = false;
-        P1 = true;
 
         // Calculate the size of the boxes
         size = Screen.width / grid - boxOffset;
@@ -145,7 +150,6 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             }
         }
     }
-
     // Winner Checker
     private int HasMatched () {
         int n = grid;
@@ -173,19 +177,21 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
                 }
             }
 
-            for (int j = 0; j < n - 1; j++) {
-                if (rowWinner > -1) {
-                    rowWinner = board[i, j];
-                    // If the row has a gap or doesnt match value then this row cant match
-                    if (board[i, j] == 0 || board[i, j] != board[i, j + 1]) {
-                        rowWinner = -1;
+            for (int j = 0; j < n; j++) {
+                if (j < n - 1) {
+                    if (rowWinner > -1) {
+                        rowWinner = board[i, j];
+                        // If the row has a gap or doesnt match value then this row cant match
+                        if (board[i, j] == 0 || board[i, j] != board[i, j + 1]) {
+                            rowWinner = -1;
+                        }
                     }
-                }
 
-                if (colWinner > -1) {
-                    colWinner = board[j, i];
-                    if (board[j, i] == 0 || board[j, i] != board[j + 1, i]) {
-                        colWinner = -1;
+                    if (colWinner > -1) {
+                        colWinner = board[j, i];
+                        if (board[j, i] == 0 || board[j, i] != board[j + 1, i]) {
+                            colWinner = -1;
+                        }
                     }
                 }
 
@@ -236,6 +242,10 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
 
     // Change player and check winner
     public void ChangePlayer () {
+        // Button menuButton = Instantiate (menuBtn, new Vector3 (0, menuBtn.GetComponent<RectTransform> ().rect.height, 0), Quaternion.identity);
+        // menuButton.transform.SetParent (canvas.transform, false);
+        // menuButton.gameObject.SetActive (true);
+
         if (P1) {
             P1 = false;
         } else {
@@ -259,12 +269,19 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         SceneManager.LoadScene ("Menu");
     }
 
+    public void PlayAgain () {
+        SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
+    }
+
     // .. Game Over
     public void GameOver (bool hasTied) {
         // If is already over
         if (isGameOver) {
             return;
         }
+        // Instantiate Dark Overlay
+        // Image darkOverlayObj = Instantiate (darkOverlay, new Vector3 (0, 0, 0), Quaternion.identity);
+        // darkOverlayObj.transform.SetParent (canvas.transform, false);
 
         if (!hasTied) {
             // Draw lines
@@ -275,18 +292,34 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             lineGen.transform.SetParent (canvas.transform, false);
             lineRend = lineGen.GetComponent<LineRenderer> ();
 
+            // Confetti
+            GameObject confettiWindowObj = Instantiate (confettiWindow, new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
+            confettiWindowObj.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width, Screen.height);
+            confettiWindowObj.transform.SetParent (canvas.transform, false);
+            WindowConfetti windowScript = confettiWindowObj.GetComponent<WindowConfetti> ();
+
             if (!P1) {
                 winnerTxt.text = "Winner: X";
-                lineRend.material = oMat;
+
+                lineRend.material = xMat;
+                windowScript.pfConfetti = xConfetti;
             } else {
                 winnerTxt.text = "Winner: O";
-                lineRend.material = xMat;
+                
+                lineRend.material = oMat;
+                windowScript.pfConfetti = oConfetti;
             }
         } else {
             winnerTxt.text = "Tie";
         }
 
-        menuBtn.gameObject.SetActive (true);
+        menuButton = Instantiate (menuBtn, new Vector3 (0, 0, -2), Quaternion.identity);
+        menuButton.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width, Screen.height);
+        menuButton.transform.SetParent (canvas.transform, false);
+
+        playAgainButton = Instantiate (playAgainBtn, new Vector3 (0, menuButton.GetComponent<RectTransform> ().rect.height + 10, -2), Quaternion.identity);
+        playAgainButton.transform.SetParent (canvas.transform, false);
+
         isGameOver = true;
         animateLine = true;
     }

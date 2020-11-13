@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5062912828312239567
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5062912828312239553}
+  - component: {fileID: 5062912828312239552}
+  m_Layer: 5
+  m_Name: Game Controller
+  m_TagString: GameController
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5062912828312239553
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5062912828312239567}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 75.28}
+  m_LocalScale: {x: 0.007265478, y: 0.007265478, z: 0.007265478}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5062912828312239552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5062912828312239567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad9754cfe5812a94396083a5f4d8e00d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  confettiWindow: {fileID: 3671400279255391599, guid: 7cdc90ba52453de40afdb6b02e8815c0, type: 3}
+  line: {fileID: 8584986408912705285, guid: b883ace32b90bfd4d950ff4ca57344cf, type: 3}
+  card: {fileID: 7039697055326309236, guid: 0bd90b33b66160045bea986279c11f5f, type: 3}
+  xMat: {fileID: 2100000, guid: e2f0f1be16fdaf64f903359762ead678, type: 2}
+  oMat: {fileID: 2100000, guid: d88af1355d6229844bdfe1d8c41604d3, type: 2}
+  xConfetti: {fileID: 224796149882136310, guid: e43afacb9ae4ecd47a9ab4775aeba0e1, type: 3}
+  oConfetti: {fileID: 224796149882136310, guid: c22b1981ef90f9749b184e704fb224e4, type: 3}
+  darkOverlay: {fileID: 7784891786498667094, guid: 998417f8f91861a4b80ab7d421446a34, type: 3}
+  menuBtn: {fileID: 0}
+  playAgainBtn: {fileID: 0}
+  winnerTxt: {fileID: 0}
+  drawSpeed: 12
+  drawDelay: 0.1
+  boxOffset: 10
+  grid: 3
+  boardLen: 0
+  isGameOver: 0
+  P1: 0
