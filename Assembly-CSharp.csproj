@@ -36,13 +36,14 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\LoadScenes.cs" />
      <Compile Include="Assets\Scripts\AI\TicTacToeCreatorAI.cs" />
      <Compile Include="Assets\Scripts\AI\TagBoxAI.cs" />
+     <Compile Include="Assets\Scripts\Confetti\WindowConfetti.cs" />
+     <Compile Include="Assets\Scripts\Scenes.cs" />
      <Compile Include="Assets\Scripts\PvP\TagBoxPvP.cs" />
      <Compile Include="Assets\Scripts\Confetti\ImageAnimator.cs" />
      <Compile Include="Assets\Scripts\PvP\TicTacToeCreatorPvP.cs" />
-     <Compile Include="Assets\Scripts\Confetti\WindowConfetti.cs" />
+     <Compile Include="Assets\Scripts\MenuController.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.1.10f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>

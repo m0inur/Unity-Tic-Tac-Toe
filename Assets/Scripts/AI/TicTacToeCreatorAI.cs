@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Timers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -8,17 +10,20 @@ public class TicTacToeCreatorAI : MonoBehaviour {
     public GameObject confettiWindow;
     public GameObject line;
     public GameObject card;
-    private Canvas canvas;
 
-    public Button menuButton;
-    public Button playAgainButton;
+    private Image star;
+    private Button menuButton;
+    private Button playAgainButton;
 
+    public Sprite OImg;
     public Material oMat;
     public Transform oConfetti;
 
     public Button playAgainBtn;
     public Button menuBtn;
+    public Image bgImg;
     public Text winnerTxt;
+    public Image starPr;
 
     private GameObject lineGen;
     private LineRenderer lineRend;
@@ -26,50 +31,73 @@ public class TicTacToeCreatorAI : MonoBehaviour {
     public float topOffset;
     public float boxOffset;
 
-    public int[, ] board;
     public int grid;
+
+    // Integer
+    public int[, ] board;
+    [HideInInspector]
     public int boardLen;
 
-    private int player = 1;
-    private int ai = 2;
-    private int hasTied = 3;
+    private int player;
+    private int ai;
+    private int tie;
+    private int rowCount;
+    private int colCount;
 
-    public bool isGameOver;
-    public bool P1;
+    private int n;
 
+    // Game Objects
     private RectTransform rt;
     private TagBoxAI boxScript;
     private GameObject box;
+    private Canvas canvas;
 
+    // Float
+    private float counter;
+    private float dist;
+    private float size;
+    private float cardW;
+    private float cardH;
+    private float starCount;
+    private float starW;
+    private float starH;
+    private float randStarSize;
+    private float canvasW;
+    private float canvasH;
+    private float gapX;
+    private float drawSpeed;
+    private float drawDelay;
+    private float boxGridHeight;
+    private float aiMoveDelay;
+
+    // Vector3 
     private Vector3 lineSpawnPos;
     private Vector3 lineDrawPos1;
     private Vector3 lineDrawPos;
     private Vector3 destination;
     private Vector3 origin;
 
-    private float counter;
-    private float dist;
-    private float size;
-    private float cardW;
-    private float cardH;
-    private float canvasW;
-    private float canvasH;
-    private float gapX;
-    public float drawSpeed;
-    public float drawDelay;
-
-    private float boxGridHeight;
-    private int rowCount;
-    private int colCount;
-
-    private int n;
+    // Boolean
+    [HideInInspector]
+    public bool isGameOver;
+    [HideInInspector]
+    public bool P1;
     private bool animateLine = false;
+
     #endregion
 
     #region Initially set variables board
     void Start () {
         board = new int[grid, grid];
         topOffset = -(Screen.height / 2) + -(-(Screen.height / 2) / 3);
+
+        player = 1;
+        ai = 2;
+        tie = 3;
+
+        drawSpeed = 12f;
+        drawDelay = 0.1f;
+        aiMoveDelay = 0.4f;
 
         rowCount = 0;
         colCount = 0;
@@ -87,18 +115,28 @@ public class TicTacToeCreatorAI : MonoBehaviour {
         canvasH = canvas.GetComponent<RectTransform> ().rect.height;
         canvas.GetComponent<CanvasScaler> ().referenceResolution = new Vector2 (Screen.width, Screen.height);
 
+        bgImg.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width, Screen.height);
+
         // Booleans
         isGameOver = false;
         P1 = true;
 
-        // Calculate the size of the boxes
+        // Calculate sizes
         size = Screen.width / grid - boxOffset;
-        CreateBoxGrid ();
+        starW = starPr.GetComponent<RectTransform> ().rect.width;
+        starH = starPr.GetComponent<RectTransform> ().rect.height;
+
+        starCount = (Screen.width + Screen.height) / (starH + starW);
+
+        // Initialize stars
+        InitStars ();
+        // Initialize boxes
+        InitBoxGrid ();
     }
     #endregion
 
-    #region Create grid
-    private void CreateBoxGrid () {
+    #region Init grid
+    private void InitBoxGrid () {
         // Give size of boxes
         card.GetComponent<RectTransform> ().sizeDelta = new Vector2 (size, size);
 
@@ -131,6 +169,28 @@ public class TicTacToeCreatorAI : MonoBehaviour {
 
     #endregion
 
+    #region Init Stars
+    public void InitStars () {
+        for (var i = 0; i <= starCount; i++) {
+            star = Instantiate (starPr, new Vector3 (UnityEngine.Random.Range (starW, Screen.width), -(UnityEngine.Random.Range (starH, Screen.height)), 0), Quaternion.identity);
+            star.transform.SetParent (canvas.transform, false);
+
+            // Randomize Opacity
+            Image image = star.GetComponent<Image> ();
+            image.color = new Color (image.color.r, image.color.g, image.color.b, UnityEngine.Random.Range (0.3f, 0.9f));
+
+            // Randomize star sizes
+            // Make the last few "weird" shapes
+            if (starCount - i < (starCount / 3) / 2) {
+                star.GetComponent<RectTransform> ().sizeDelta = new Vector2 (UnityEngine.Random.Range (starW, starW + 10), UnityEngine.Random.Range (starH, starH + 10));
+            } else {
+                randStarSize = UnityEngine.Random.Range (starW, starW + 10);
+                star.GetComponent<RectTransform> ().sizeDelta = new Vector2 (randStarSize, randStarSize);
+            }
+        }
+    }
+    #endregion
+
     // Animate line
     private void Update () {
         if (animateLine) {
@@ -155,7 +215,7 @@ public class TicTacToeCreatorAI : MonoBehaviour {
         int colWinner = 0;
         int diagWinner = 0;
         int antiDiagWinner = 0;
-        int hasTied = 3;
+        int tie = 3;
 
         for (int i = 0; i < n; i++) {
             if (i < n - 1) {
@@ -194,7 +254,7 @@ public class TicTacToeCreatorAI : MonoBehaviour {
                 }
 
                 if (board[i, j] == 0) {
-                    hasTied = -1;
+                    tie = -1;
                 }
             }
 
@@ -230,7 +290,7 @@ public class TicTacToeCreatorAI : MonoBehaviour {
             return antiDiagWinner;
         }
 
-        if (hasTied > -1) {
+        if (tie > -1) {
             return 3;
         }
 
@@ -292,7 +352,7 @@ public class TicTacToeCreatorAI : MonoBehaviour {
     }
 
     // Make ai move
-    public int MoveAi () {
+    public IEnumerator MoveAi () {
         double bestScore = Double.PositiveInfinity;
         int[] bestMove = new int[2];
 
@@ -314,20 +374,21 @@ public class TicTacToeCreatorAI : MonoBehaviour {
 
         // If the spot is the first value and it is not empty
         if (bestMove[0] == 0 && bestMove[1] == 0 && board[0, 0] != 0) {
-            return -1;
+
+        } else {
+            // Get game object and script
+            GameObject box = GameObject.Find (bestMove[0] + "" + bestMove[1]);
+            TagBoxAI boxScript = box.GetComponent<TagBoxAI> ();
+
+            yield return new WaitForSeconds (aiMoveDelay);
+
+            boxScript.image.sprite = OImg;
+            boxScript.clicked = true;
+            board[bestMove[0], bestMove[1]] = ai;
+
+            boardLen++;
+            ChangePlayer ();
         }
-
-        // Get game object and script
-        GameObject box = GameObject.Find (bestMove[0] + "" + bestMove[1]);
-        TagBoxAI boxScript = box.GetComponent<TagBoxAI> ();
-
-        boxScript.image.sprite = boxScript.OImg;
-        boxScript.clicked = true;
-        board[bestMove[0], bestMove[1]] = ai;
-
-        boardLen++;
-        ChangePlayer ();
-        return 1;
     }
 
     // Change player and check winner

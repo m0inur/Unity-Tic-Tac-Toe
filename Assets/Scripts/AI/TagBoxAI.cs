@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class TagBoxAI : MonoBehaviour, IPointerClickHandler {
     public Image image;
     public Sprite XImg;
-    public Sprite OImg;
 
     private TicTacToeCreatorAI script;
 
@@ -25,7 +24,6 @@ public class TagBoxAI : MonoBehaviour, IPointerClickHandler {
 
     public void OnPointerClick (PointerEventData eventData) {
         // If box is not clicked or game is not yet over
-        Debug.Log ("Clicked");
         if (!clicked && !script.isGameOver) {
             // Put image and value on box and board
             image.sprite = XImg;
@@ -47,7 +45,7 @@ public class TagBoxAI : MonoBehaviour, IPointerClickHandler {
             }
 
             clicked = true;
-            script.MoveAi ();
+            StartCoroutine (script.MoveAi ());
         }
     }
 }

@@ -17,8 +17,10 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
 
     public Image darkOverlay;
     public Button menuBtn;
+    public Image bgImg;
     public Button playAgainBtn;
     public Text winnerTxt;
+    public Image starPr;
 
     public float drawSpeed;
     public float drawDelay;
@@ -26,6 +28,7 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
     private GameObject lineGen;
     private LineRenderer lineRend;
     private Canvas canvas;
+    private Image star;
 
     private Button menuButton;
     private Button playAgainButton;
@@ -58,6 +61,10 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
     private float size;
     private float cardW;
     private float cardH;
+    private float starCount;
+    private float starW;
+    private float starH;
+    private float randStarSize;
     private float canvasW;
     private float canvasH;
     private float gapX;
@@ -91,17 +98,27 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         canvasH = canvas.GetComponent<RectTransform> ().rect.height;
         canvas.GetComponent<CanvasScaler> ().referenceResolution = new Vector2 (Screen.width, Screen.height);
 
+        bgImg.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width, Screen.height);
+
         // Booleans
         isGameOver = false;
 
-        // Calculate the size of the boxes
+        // Calculate sizes
         size = Screen.width / grid - boxOffset;
-        CreateBoxGrid ();
+        starW = starPr.GetComponent<RectTransform> ().rect.width;
+        starH = starPr.GetComponent<RectTransform> ().rect.height;
+
+        starCount = (Screen.width + Screen.height) / (starH + starW);
+
+        // Initialize stars
+        InitStars ();
+        // Initialize boxes
+        IntiBoxGrid ();
     }
     #endregion
 
-    #region Create grid
-    private void CreateBoxGrid () {
+    #region Inti grid
+    private void IntiBoxGrid () {
         // Give size of boxes
         card.GetComponent<RectTransform> ().sizeDelta = new Vector2 (size, size);
 
@@ -132,6 +149,28 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         }
     }
 
+    #endregion
+
+    #region Init Stars
+    public void InitStars () {
+        for (var i = 0; i <= starCount; i++) {
+            star = Instantiate (starPr, new Vector3 (UnityEngine.Random.Range (starW, Screen.width), -(UnityEngine.Random.Range (starH, Screen.height)), 0), Quaternion.identity);
+            star.transform.SetParent (canvas.transform, false);
+
+            // Randomize Opacity
+            Image image = star.GetComponent<Image> ();
+            image.color = new Color (image.color.r, image.color.g, image.color.b, UnityEngine.Random.Range (0.3f, 0.9f));
+
+            // Randomize star sizes
+            // Make the last few "weird" shapes
+            if (starCount - i < (starCount / 3) / 2) {
+                star.GetComponent<RectTransform> ().sizeDelta = new Vector2 (UnityEngine.Random.Range (starW, starW + 10), UnityEngine.Random.Range (starH, starH + 10));
+            } else {
+                randStarSize = UnityEngine.Random.Range (starW, starW + 10);
+                star.GetComponent<RectTransform> ().sizeDelta = new Vector2 (randStarSize, randStarSize);
+            }
+        }
+    }
     #endregion
 
     // Animate line
@@ -305,7 +344,7 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
                 windowScript.pfConfetti = xConfetti;
             } else {
                 winnerTxt.text = "Winner: O";
-                
+
                 lineRend.material = oMat;
                 windowScript.pfConfetti = oConfetti;
             }
