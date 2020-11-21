@@ -7,6 +7,9 @@ TagManager:
   - Canvas
   - Cards
   - Cards Spawner
+  - StarSpawner
+  - P1 Card
+  - P2 Card
   layers:
   - Default
   - TransparentFX

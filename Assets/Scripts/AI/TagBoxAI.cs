@@ -23,29 +23,21 @@ public class TagBoxAI : MonoBehaviour, IPointerClickHandler {
     }
 
     public void OnPointerClick (PointerEventData eventData) {
-        // If box is not clicked or game is not yet over
-        if (!clicked && !script.isGameOver) {
+        // If box is not yet clicked and game is not over and ai isnt making a move
+        if (!clicked && !script.isGameOver && !script.isAIMoving) {
             // Put image and value on box and board
             image.sprite = XImg;
             script.board[boxColNum, boxRowNum] = 1;
 
             script.boardLen++;
-            script.ChangePlayer ();
 
             if (script.boardLen >= script.grid * 2 - 1) {
-                int result = script.HasMatched ();
-
-                if (result != -1) {
-                    if (result == 3) {
-                        script.GameOver (true);
-                    } else {
-                        script.GameOver (false);
-                    }
-                }
+                script.HasEnded ();
             }
 
             clicked = true;
             StartCoroutine (script.MoveAi ());
+            script.isAIMoving = true;
         }
     }
 }

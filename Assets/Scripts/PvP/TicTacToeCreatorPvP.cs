@@ -15,27 +15,38 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
     public Transform xConfetti;
     public Transform oConfetti;
 
-    public Image darkOverlay;
-    public Button menuBtn;
-    public Image bgImg;
-    public Button playAgainBtn;
-    public Text winnerTxt;
-    public Image starPr;
+    public Sprite winnerSprite;
+    public Sprite handshakeSprite;
 
-    public float drawSpeed;
-    public float drawDelay;
+    public Image endImage;
+    public Button backButton;
+    public Image downArrowPr;
+    public Image player1Card;
+    public Image player2Card;
+    public Image darkOverlay;
+    public Image cardBorder;
+    public Image particlePr;
+    public Image blueLineDotPr;
+    public Image redLineDotPr;
+
+    public Button menuBtn;
+    public Button playAgainBtn;
+
+    public Text turnTxtPr;
+    public Text endTxt;
 
     private GameObject lineGen;
     private LineRenderer lineRend;
     private Canvas canvas;
-    private Image star;
+    private Image downArrow;
+    private Image particle;
+    private Image border;
+    private Text turnTxt;
+    private Image lineDot;
+    private Image lineDotPr;
 
     private Button menuButton;
     private Button playAgainButton;
-
-    public float boxOffset;
-
-    private float topBoxOffset;
 
     public int[, ] board;
     public int grid;
@@ -50,45 +61,77 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
     private TagBoxPvP boxScript;
     private GameObject box;
 
+    private Vector3 lineDot1Pos;
+    private Vector3 lineDot2Pos;
+    private Vector3 lineDot3Pos;
+
     private Vector3 lineSpawnPos;
     private Vector3 lineDrawPos1;
     private Vector3 lineDrawPos;
     private Vector3 destination;
     private Vector3 origin;
 
+    private float showButtonsTimer;
     private float counter;
     private float dist;
-    private float size;
+    private float boxSize;
     private float cardW;
     private float cardH;
-    private float starCount;
-    private float starW;
-    private float starH;
-    private float randStarSize;
+    private float particleCount;
+    private float particleW;
+    private float particleH;
+    private float randparticleSize;
     private float canvasW;
     private float canvasH;
     private float gapX;
-
+    private float drawSpeed;
+    private float drawDelay;
     private float boxGridHeight;
+    private float boxOffset;
+
     private int rowCount;
     private int colCount;
 
     private int n;
+    private bool hasDrawn = false;
+    private bool spawnButtons = false;
     private bool animateLine = false;
     #endregion
 
     #region Initially set variables board
     void Start () {
         board = new int[grid, grid];
-        topBoxOffset = -(Screen.height / 2) + -(-(Screen.height / 2) / 3);
+
+        endImage.gameObject.SetActive (false);
+
+        border = Instantiate (cardBorder, new Vector3 (0, 0, 0), Quaternion.identity);
+        border.transform.SetParent (player1Card.transform, false);
+
+        turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+        turnTxt.transform.SetParent (player1Card.transform, false);
+
+        downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
+        downArrow.transform.SetParent (player1Card.transform, false);
 
         // Integers
         rowCount = 0;
         colCount = 0;
         boardLen = 0;
+        boxOffset = 10;
+
+        drawSpeed = 12;
+        drawDelay = 0.1f;
+        boxGridHeight = 50;
+        showButtonsTimer = 1.5f;
+
         n = grid;
 
         P1 = true;
+
+        lineDrawPos1 = new Vector3 (0, 0, 0);
+        lineDrawPos1 = new Vector3 (0, 0, 0);
+        lineDrawPos1 = new Vector3 (0, 0, 0);
+
         lineDrawPos1 = new Vector3 (0, 0, 0);
         origin = new Vector3 (0, 0, 0);
 
@@ -96,54 +139,55 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         canvas = FindObjectOfType<Canvas> ();
         canvasW = canvas.GetComponent<RectTransform> ().rect.width;
         canvasH = canvas.GetComponent<RectTransform> ().rect.height;
-        canvas.GetComponent<CanvasScaler> ().referenceResolution = new Vector2 (Screen.width, Screen.height);
+        // canvas.GetComponent<CanvasScaler> ().referenceResolution = new Vector2 (Screen.width, Screen.height);
 
-        bgImg.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width, Screen.height);
+        particleW = particlePr.GetComponent<RectTransform> ().rect.width;
+        particleH = particlePr.GetComponent<RectTransform> ().rect.height;
 
         // Booleans
         isGameOver = false;
 
         // Calculate sizes
-        size = Screen.width / grid - boxOffset;
-        starW = starPr.GetComponent<RectTransform> ().rect.width;
-        starH = starPr.GetComponent<RectTransform> ().rect.height;
+        // boxSize = (Screen.width / grid) - boxOffset - (boxOffset / 3);
+        // boxSize = (canvasW / grid) - boxOffset * 4;
+        boxSize = 205;
+        boxSize = 170;
 
-        starCount = (Screen.width + Screen.height) / (starH + starW);
+        particleCount = 150;
+        // Debug.Log ((canvasW / grid) - (boxOffset * 3) - (boxOffset * 2) * 2);
 
-        // Initialize stars
-        InitStars ();
+        // Initialize particles
+        InitParticles ();
         // Initialize boxes
         IntiBoxGrid ();
     }
     #endregion
 
-    #region Inti grid
+    #region Init grid
     private void IntiBoxGrid () {
         // Give size of boxes
-        card.GetComponent<RectTransform> ().sizeDelta = new Vector2 (size, size);
-
-        lineGen = Instantiate (line, lineSpawnPos, Quaternion.identity) as GameObject;
-        lineGen.transform.SetParent (canvas.transform, false);
-        lineRend = lineGen.GetComponent<LineRenderer> ();
+        card.GetComponent<RectTransform> ().sizeDelta = new Vector2 (boxSize, boxSize);
+        // boxGridHeight = 50;
 
         for (int i = 0; i < grid; i++) {
             // Reset the gap on the x axis every time
-            gapX = size / 2 + boxOffset;
+            gapX = boxOffset * 2;
+            // gapX = boxSize / 2 + boxOffset;
 
             for (int j = 0; j < grid; j++) {
-                box = Instantiate (card, new Vector3 (gapX, topBoxOffset - boxGridHeight, 0), Quaternion.identity) as GameObject;
-                box.transform.SetParent (canvas.transform.transform, false);
-                box.name = colCount + "" + rowCount;
+                box = Instantiate (card, new Vector3 (gapX + 10, boxGridHeight, 0), Quaternion.identity) as GameObject;
+                box.transform.SetParent (GameObject.Find ("Card Border").transform, false);
 
                 boxScript = box.GetComponent<TagBoxPvP> ();
                 boxScript.boxColNum = colCount;
                 boxScript.boxRowNum = rowCount;
 
                 // Update gap on X axis after evey box
-                gapX += size + boxOffset;
+                gapX += boxSize + boxOffset * 2;
                 rowCount++;
             }
-            boxGridHeight += size + boxOffset;
+
+            boxGridHeight += boxSize + boxOffset;
             colCount++;
             rowCount = 0;
         }
@@ -151,24 +195,19 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
 
     #endregion
 
-    #region Init Stars
-    public void InitStars () {
-        for (var i = 0; i <= starCount; i++) {
-            star = Instantiate (starPr, new Vector3 (UnityEngine.Random.Range (starW, Screen.width), -(UnityEngine.Random.Range (starH, Screen.height)), 0), Quaternion.identity);
-            star.transform.SetParent (canvas.transform, false);
+    #region Init particles
+    public void InitParticles () {
+        for (var i = 0; i <= particleCount; i++) {
+            particle = Instantiate (particlePr, new Vector3 (UnityEngine.Random.Range (particleW, canvasW), -(UnityEngine.Random.Range (particleH, canvasH)), 0), Quaternion.identity);
+            particle.transform.SetParent (GameObject.Find ("Particle Spawner").transform, false);
 
             // Randomize Opacity
-            Image image = star.GetComponent<Image> ();
-            image.color = new Color (image.color.r, image.color.g, image.color.b, UnityEngine.Random.Range (0.3f, 0.9f));
+            Image image = particle.GetComponent<Image> ();
+            image.color = new Color (image.color.r, image.color.g, image.color.b, UnityEngine.Random.Range (0.2f, 0.6f));
 
-            // Randomize star sizes
-            // Make the last few "weird" shapes
-            if (starCount - i < (starCount / 3) / 2) {
-                star.GetComponent<RectTransform> ().sizeDelta = new Vector2 (UnityEngine.Random.Range (starW, starW + 10), UnityEngine.Random.Range (starH, starH + 10));
-            } else {
-                randStarSize = UnityEngine.Random.Range (starW, starW + 10);
-                star.GetComponent<RectTransform> ().sizeDelta = new Vector2 (randStarSize, randStarSize);
-            }
+            // Randomize particle sizes
+            randparticleSize = UnityEngine.Random.Range (particleW, particleW + 8);
+            particle.GetComponent<RectTransform> ().sizeDelta = new Vector2 (randparticleSize, randparticleSize);
         }
     }
     #endregion
@@ -185,10 +224,65 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
 
                 Vector3 ALine = x * Vector3.Normalize (B - A) + A;
 
-                lineRend.SetPosition (1, ALine);
+                lineRend.SetPosition (0, ALine);
+            } else {
+                animateLine = false;
+            }
+        }
+
+        if (isGameOver && !spawnButtons) {
+            if (showButtonsTimer > 0) {
+                showButtonsTimer -= Time.deltaTime;
+            } else {
+                // Disable
+                GameObject.Find ("Card Border").SetActive (false);
+                GameObject.Find ("Line Dots").SetActive (false);
+
+                border.gameObject.SetActive (false);
+                turnTxt.gameObject.SetActive (false);
+                downArrow.gameObject.SetActive (false);
+
+                // If it didnt draw check who won
+                if (!hasDrawn) {
+                    lineGen.gameObject.SetActive (false);
+                    if (!P1) {
+                        turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        turnTxt.transform.SetParent (player1Card.transform, false);
+                        turnTxt.text = "Winner";
+
+                        turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        turnTxt.transform.SetParent (player2Card.transform, false);
+                        turnTxt.text = "Loser";
+                    } else {
+                        turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        turnTxt.transform.SetParent (player2Card.transform, false);
+                        turnTxt.text = "Winner";
+
+                        turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        turnTxt.transform.SetParent (player1Card.transform, false);
+                        turnTxt.text = "Loser";
+                    }
+
+                    endImage.GetComponent<Image> ().sprite = winnerSprite;
+                    endTxt.text = "You Won";
+                } else {
+                    turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                    turnTxt.transform.SetParent (player2Card.transform, false);
+                    turnTxt.text = "Draw";
+
+                    turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                    turnTxt.transform.SetParent (player1Card.transform, false);
+
+                    endImage.GetComponent<Image> ().sprite = handshakeSprite;
+                    endTxt.text = "Draw";
+                }
+
+                endImage.gameObject.SetActive (true);
+                spawnButtons = true;
             }
         }
     }
+
     // Winner Checker
     private int HasMatched () {
         int n = grid;
@@ -201,17 +295,17 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         for (int i = 0; i < n; i++) {
             if (i < n - 1) {
                 // Detect Diagnal and Anti Diagnal
-                if (antiDiagWinner > -1) {
-                    antiDiagWinner = board[i, (n - 1) - i];
+                if (diagWinner > -1) {
+                    diagWinner = board[i, (n - 1) - i];
                     if (board[i, (n - 1) - i] == 0 || board[i, (n - 1) - i] != board[i + 1, (n - 1) - i - 1]) {
-                        antiDiagWinner = -1;
+                        diagWinner = -1;
                     }
                 }
 
-                if (diagWinner > -1) {
-                    diagWinner = board[i, i];
+                if (antiDiagWinner > -1) {
+                    antiDiagWinner = board[i, i];
                     if (board[i, i] == 0 || board[i, i] != board[i + 1, i + 1]) {
-                        diagWinner = -1;
+                        antiDiagWinner = -1;
                     }
                 }
             }
@@ -240,16 +334,41 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             }
 
             if (rowWinner > -1) {
-                // lineSpawnPos = new Vector3 (0, topBoxOffset - (size * i) - (boxOffset * i), -1);
-                lineSpawnPos = new Vector3 (0, topBoxOffset - (size * i) - (boxOffset * i), -1);
-                lineDrawPos = new Vector3 (Screen.width, 0, 0);
+                lineSpawnPos = new Vector3 (170, 192 + boxSize * (1 + i) + boxOffset * (1 + i) - boxSize / 2 - 5, -1);
+                // lineSpawnPos = new Vector3 ((boxSize / 2 + boxOffset + 3) + boxSize / 2, (cardBorderRect.anchoredPosition.y - cardBorderRect.rect.width / 2 + 42) + (boxSize * (1 + 2)) + boxOffset * (2) - boxSize / 2, -1);
+                // lineSpawnPos = new Vector3 ((boxSize / 2 + boxOffset + 3) + boxSize / 2, boxSize * (0 + 1) + boxOffset * (0 + 1) + 3, -1);
+                lineDrawPos = new Vector3 (canvasW - ((boxSize * 2) + 3 + boxOffset - 10), 0, 0);
+
+                destination = lineDrawPos;
+                dist = Vector3.Distance (origin, destination);
+
+                // 1st line dot
+                lineDot1Pos = lineSpawnPos;
+
+                // 2nd line dot
+                lineDot2Pos = new Vector3 ((boxSize / 2 + boxOffset + 3) + boxSize * 2 + boxOffset - boxSize / 2, lineSpawnPos.y, lineSpawnPos.z);
+
+                // 3rd line dot
+                lineDot3Pos = new Vector3 (552, lineSpawnPos.y, lineSpawnPos.z);
 
                 return rowWinner;
             }
 
             if (colWinner > -1) {
-                lineSpawnPos = new Vector3 (((size + boxOffset) * (i + 1)) - size / 2, topBoxOffset - boxGridHeight + size / 2 + boxOffset, -1);
-                lineDrawPos = new Vector3 (0, boxGridHeight - boxOffset, 0);
+                lineSpawnPos = new Vector3 ((80 + boxSize * (1 + i) + boxOffset * 2 * (1 + i)) - boxSize / 2 - boxOffset - 5, 194 + boxSize / 2, -1);
+                lineDrawPos = new Vector3 (0, boxSize * (grid - 1) + (boxOffset * grid), 0);
+
+                destination = lineDrawPos;
+                dist = Vector3.Distance (origin, destination);
+
+                // 1st line dot
+                lineDot1Pos = new Vector3 (lineSpawnPos.x, lineSpawnPos.y + 5, lineSpawnPos.z);
+
+                // 2nd line dot
+                lineDot2Pos = new Vector3 (lineSpawnPos.x, 461, lineSpawnPos.z);
+
+                // 3rd line dot
+                lineDot3Pos = new Vector3 (lineSpawnPos.x, lineSpawnPos.y + dist - 5, lineSpawnPos.z);
 
                 return colWinner;
             }
@@ -259,15 +378,41 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         }
 
         if (diagWinner > -1) {
-            lineSpawnPos = new Vector3 (11, topBoxOffset + size / 2, -1);
-            lineDrawPos = new Vector3 (boxGridHeight - boxOffset, -(boxGridHeight - boxOffset), 0);
+            lineSpawnPos = new Vector3 (173, 640, -1);
+            lineDrawPos = new Vector3 (375, -360, 0);
+            // lineDrawPos = new Vector3 (boxSize * (grid - 1) + boxOffset * grid - boxOffset, -(boxSize * (grid - 1) + boxOffset * grid - boxOffset), 0);
+
+            destination = lineDrawPos;
+            dist = Vector3.Distance (origin, destination);
+
+            // 1st line dot
+            lineDot1Pos = lineSpawnPos;
+
+            // 2nd line dot
+            lineDot2Pos = new Vector3 (360, 460, lineSpawnPos.z);
+            // lineDot2Pos = new Vector3 (boxSize + boxSize / 2 + boxOffset, -lineDrawPos.y, lineSpawnPos.z);
+
+            // 3rd line dot
+            lineDot3Pos = new Vector3 (549, 281, lineSpawnPos.z);
 
             return diagWinner;
         }
 
         if (antiDiagWinner > -1) {
-            lineSpawnPos = new Vector3 (11, topBoxOffset - boxGridHeight + size / 2 + boxOffset, -1);
-            lineDrawPos = new Vector3 (boxGridHeight - boxOffset, boxGridHeight - boxOffset, 0);
+            lineSpawnPos = new Vector3 (553, 640, -1);
+            lineDrawPos = new Vector3 (-380, -360, 0);
+
+            destination = lineDrawPos;
+            dist = Vector3.Distance (origin, destination);
+
+            // 1st line dot
+            lineDot1Pos = lineSpawnPos;
+
+            // 2nd line dot
+            lineDot2Pos = new Vector3 (360, 459, lineSpawnPos.z);
+
+            // 3rd line dot
+            lineDot3Pos = new Vector3 (173, 281, lineSpawnPos.z);
 
             return antiDiagWinner;
         }
@@ -281,14 +426,18 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
 
     // Change player and check winner
     public void ChangePlayer () {
-        // Button menuButton = Instantiate (menuBtn, new Vector3 (0, menuBtn.GetComponent<RectTransform> ().rect.height, 0), Quaternion.identity);
-        // menuButton.transform.SetParent (canvas.transform, false);
-        // menuButton.gameObject.SetActive (true);
-
         if (P1) {
             P1 = false;
+            border.transform.SetParent (player2Card.transform, false);
+            turnTxt.transform.SetParent (player2Card.transform, false);
+            turnTxt.text = "Player 2's Turn";
+            downArrow.transform.SetParent (player2Card.transform, false);
         } else {
             P1 = true;
+            border.transform.SetParent (player1Card.transform, false);
+            turnTxt.transform.SetParent (player1Card.transform, false);
+            turnTxt.text = "Your Turn";
+            downArrow.transform.SetParent (player1Card.transform, false);
         }
 
         if (boardLen >= grid * 2 - 1) {
@@ -312,7 +461,6 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
     }
 
-    // .. Game Over
     public void GameOver (bool hasTied) {
         // If is already over
         if (isGameOver) {
@@ -324,11 +472,8 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
 
         if (!hasTied) {
             // Draw lines
-            destination = lineDrawPos;
-            dist = Vector3.Distance (origin, destination);
-
             lineGen = Instantiate (line, lineSpawnPos, Quaternion.identity) as GameObject;
-            lineGen.transform.SetParent (canvas.transform, false);
+            lineGen.transform.SetParent (GameObject.Find ("Line Wrapper").transform, false);
             lineRend = lineGen.GetComponent<LineRenderer> ();
 
             // Confetti
@@ -338,27 +483,36 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             WindowConfetti windowScript = confettiWindowObj.GetComponent<WindowConfetti> ();
 
             if (!P1) {
-                winnerTxt.text = "Winner: X";
+                endTxt.text = "Winner";
 
                 lineRend.material = xMat;
                 windowScript.pfConfetti = xConfetti;
+                lineDotPr = redLineDotPr;
             } else {
-                winnerTxt.text = "Winner: O";
+                endTxt.text = "Winner";
 
                 lineRend.material = oMat;
                 windowScript.pfConfetti = oConfetti;
+                lineDotPr = blueLineDotPr;
             }
+
+            // 1st line dot
+            lineDot = Instantiate (lineDotPr, lineDot1Pos, Quaternion.identity);
+            lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
+
+            // 2nd line dot
+            lineDot = Instantiate (lineDotPr, lineDot2Pos, Quaternion.identity);
+            lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
+
+            // 3rd line dot
+            lineDot = Instantiate (lineDotPr, lineDot3Pos, Quaternion.identity);
+            lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
         } else {
-            winnerTxt.text = "Tie";
+            hasDrawn = true;
+            endTxt.text = "It's a Draw!";
         }
 
-        menuButton = Instantiate (menuBtn, new Vector3 (0, 0, -2), Quaternion.identity);
-        menuButton.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width, Screen.height);
-        menuButton.transform.SetParent (canvas.transform, false);
-
-        playAgainButton = Instantiate (playAgainBtn, new Vector3 (0, menuButton.GetComponent<RectTransform> ().rect.height + 10, -2), Quaternion.identity);
-        playAgainButton.transform.SetParent (canvas.transform, false);
-
+        // Disable back button
         isGameOver = true;
         animateLine = true;
     }

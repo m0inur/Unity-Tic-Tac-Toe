@@ -44,8 +44,8 @@ public class WindowConfetti : MonoBehaviour {
     }
 
     private void SpawnConfetti () {
-        float width = transform.GetComponent<RectTransform> ().rect.width;
-        float height = transform.GetComponent<RectTransform> ().rect.height;
+        float width = FindObjectOfType<Canvas> ().GetComponent<RectTransform> ().rect.width;
+        float height = FindObjectOfType<Canvas> ().GetComponent<RectTransform> ().rect.height;
 
         Vector2 anchoredPosition = new Vector2 (Random.Range (-width / 2f, width / 2f), height / 2f);
         Confetti confetti = new Confetti (pfConfetti, transform, anchoredPosition, -height / 2f);
