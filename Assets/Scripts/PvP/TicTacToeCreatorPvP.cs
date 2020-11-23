@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class TicTacToeCreatorPvP : MonoBehaviour {
     #region Variables
     public GameObject confettiWindow;
+    public GameObject cardBorder;
     public GameObject line;
     public GameObject card;
 
@@ -24,7 +25,7 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
     public Image player1Card;
     public Image player2Card;
     public Image darkOverlay;
-    public Image cardBorder;
+    public Image playerCardBorder;
     public Image particlePr;
     public Image blueLineDotPr;
     public Image redLineDotPr;
@@ -58,6 +59,7 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
     public bool P1;
 
     private RectTransform rt;
+    private RectTransform cardBoarderRt;
     private TagBoxPvP boxScript;
     private GameObject box;
 
@@ -88,6 +90,9 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
     private float drawDelay;
     private float boxGridHeight;
     private float boxOffset;
+    private float cardBorderLeftOffset;
+    private float linedotSize;
+    private float cardBorderTopGap;
 
     private int rowCount;
     private int colCount;
@@ -104,7 +109,7 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
 
         endImage.gameObject.SetActive (false);
 
-        border = Instantiate (cardBorder, new Vector3 (0, 0, 0), Quaternion.identity);
+        border = Instantiate (playerCardBorder, new Vector3 (0, 0, 0), Quaternion.identity);
         border.transform.SetParent (player1Card.transform, false);
 
         turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
@@ -123,7 +128,8 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         drawDelay = 0.1f;
         boxGridHeight = 50;
         showButtonsTimer = 1.5f;
-
+        linedotSize = 15;
+        cardBorderTopGap = boxGridHeight;
         n = grid;
 
         P1 = true;
@@ -144,18 +150,21 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         particleW = particlePr.GetComponent<RectTransform> ().rect.width;
         particleH = particlePr.GetComponent<RectTransform> ().rect.height;
 
+        cardBoarderRt = cardBorder.GetComponent<RectTransform> ();
         // Booleans
         isGameOver = false;
 
-        // Calculate sizes
-        // boxSize = (Screen.width / grid) - boxOffset - (boxOffset / 3);
-        // boxSize = (canvasW / grid) - boxOffset * 4;
-        boxSize = 205;
         boxSize = 170;
-
         particleCount = 150;
-        // Debug.Log ((canvasW / grid) - (boxOffset * 3) - (boxOffset * 2) * 2);
+        cardBorderLeftOffset = cardBoarderRt.anchoredPosition.x;
 
+        // lineGen = Instantiate (line, lineSpawnPos, Quaternion.identity) as GameObject;
+        // lineGen.transform.SetParent (GameObject.Find ("Card Border").transform, false);
+        // lineRend = lineGen.GetComponent<LineRenderer> ();
+        // lineRend.material = xMat;
+        // lineDotPr = redLineDotPr;
+
+        // animateLine = true;
         // Initialize particles
         InitParticles ();
         // Initialize boxes
@@ -191,6 +200,18 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             colCount++;
             rowCount = 0;
         }
+
+        // // 1st line dot
+        // lineDot = Instantiate (lineDotPr, lineDot1Pos, Quaternion.identity);
+        // lineDot.transform.SetParent (GameObject.Find ("Card Border").transform, false);
+
+        // // 2nd line dot
+        // lineDot = Instantiate (lineDotPr, lineDot2Pos, Quaternion.identity);
+        // lineDot.transform.SetParent (GameObject.Find ("Card Border").transform, false);
+
+        // // 3rd line dot
+        // lineDot = Instantiate (lineDotPr, lineDot3Pos, Quaternion.identity);
+        // lineDot.transform.SetParent (GameObject.Find ("Card Border").transform, false);
     }
 
     #endregion
@@ -214,6 +235,11 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
 
     // Animate line
     private void Update () {
+        // Go back to menu if back was pressed
+        if (Input.GetKeyDown (KeyCode.Escape)) {
+            GoToMenu ();
+        }
+
         if (animateLine) {
             if (counter < dist) {
                 counter += drawDelay / drawSpeed;
@@ -236,7 +262,6 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             } else {
                 // Disable
                 GameObject.Find ("Card Border").SetActive (false);
-                GameObject.Find ("Line Dots").SetActive (false);
 
                 border.gameObject.SetActive (false);
                 turnTxt.gameObject.SetActive (false);
@@ -246,6 +271,8 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
                 if (!hasDrawn) {
                     lineGen.gameObject.SetActive (false);
                     if (!P1) {
+                        endTxt.text = "Player 1 Won";
+
                         turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
                         turnTxt.transform.SetParent (player1Card.transform, false);
                         turnTxt.text = "Winner";
@@ -254,6 +281,8 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
                         turnTxt.transform.SetParent (player2Card.transform, false);
                         turnTxt.text = "Loser";
                     } else {
+                        endTxt.text = "Player 2 Won";
+
                         turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
                         turnTxt.transform.SetParent (player2Card.transform, false);
                         turnTxt.text = "Winner";
@@ -264,7 +293,6 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
                     }
 
                     endImage.GetComponent<Image> ().sprite = winnerSprite;
-                    endTxt.text = "You Won";
                 } else {
                     turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
                     turnTxt.transform.SetParent (player2Card.transform, false);
@@ -334,41 +362,41 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             }
 
             if (rowWinner > -1) {
-                lineSpawnPos = new Vector3 (170, 192 + boxSize * (1 + i) + boxOffset * (1 + i) - boxSize / 2 - 5, -1);
-                // lineSpawnPos = new Vector3 ((boxSize / 2 + boxOffset + 3) + boxSize / 2, (cardBorderRect.anchoredPosition.y - cardBorderRect.rect.width / 2 + 42) + (boxSize * (1 + 2)) + boxOffset * (2) - boxSize / 2, -1);
-                // lineSpawnPos = new Vector3 ((boxSize / 2 + boxOffset + 3) + boxSize / 2, boxSize * (0 + 1) + boxOffset * (0 + 1) + 3, -1);
-                lineDrawPos = new Vector3 (canvasW - ((boxSize * 2) + 3 + boxOffset - 10), 0, 0);
+                // lineSpawnPos = new Vector3 ((boxOffset * 2) + 5 + (boxSize - (boxSize / 2)), 0, -1);
+                lineSpawnPos = new Vector3 ((boxOffset * 2) + 5 + (boxSize - (boxSize / 2)), cardBorderTopGap + (boxSize * (1 + i) + (boxOffset * i)) - (boxSize / 2), -1);
+                lineDrawPos = new Vector3 ((boxSize * (grid - 1)) + (boxOffset * 2) * (grid - 1) + 5, 0, 0);
 
                 destination = lineDrawPos;
                 dist = Vector3.Distance (origin, destination);
 
                 // 1st line dot
-                lineDot1Pos = lineSpawnPos;
+                lineDot1Pos = new Vector3 (lineSpawnPos.x + linedotSize / 2, lineSpawnPos.y, lineSpawnPos.z);
 
                 // 2nd line dot
-                lineDot2Pos = new Vector3 ((boxSize / 2 + boxOffset + 3) + boxSize * 2 + boxOffset - boxSize / 2, lineSpawnPos.y, lineSpawnPos.z);
+                lineDot2Pos = new Vector3 (lineSpawnPos.x + boxSize + (boxOffset * 2) + linedotSize / 2, lineSpawnPos.y, lineSpawnPos.z);
 
                 // 3rd line dot
-                lineDot3Pos = new Vector3 (552, lineSpawnPos.y, lineSpawnPos.z);
+                lineDot3Pos = new Vector3 (lineSpawnPos.x + lineDrawPos.x, lineSpawnPos.y, lineSpawnPos.z);
 
                 return rowWinner;
             }
 
             if (colWinner > -1) {
-                lineSpawnPos = new Vector3 ((80 + boxSize * (1 + i) + boxOffset * 2 * (1 + i)) - boxSize / 2 - boxOffset - 5, 194 + boxSize / 2, -1);
-                lineDrawPos = new Vector3 (0, boxSize * (grid - 1) + (boxOffset * grid), 0);
+                // Draw lines
+                lineSpawnPos = new Vector3 (10 + (boxSize * (1 + i)) - (boxSize / 2) + (boxOffset * 2) * (1 + i), cardBorderTopGap + boxSize - (boxSize / 2) - 5, -1);
+                lineDrawPos = new Vector3 (0, (boxSize * (grid - 1)) + boxOffset * (grid - 1) + 10, 0);
 
                 destination = lineDrawPos;
                 dist = Vector3.Distance (origin, destination);
 
                 // 1st line dot
-                lineDot1Pos = new Vector3 (lineSpawnPos.x, lineSpawnPos.y + 5, lineSpawnPos.z);
+                lineDot1Pos = new Vector3 (lineSpawnPos.x, lineSpawnPos.y + linedotSize / 2, lineSpawnPos.z);
 
                 // 2nd line dot
-                lineDot2Pos = new Vector3 (lineSpawnPos.x, 461, lineSpawnPos.z);
+                lineDot2Pos = new Vector3 (lineSpawnPos.x, lineSpawnPos.y + boxSize + (boxOffset * 2) - linedotSize / 2, lineSpawnPos.z);
 
                 // 3rd line dot
-                lineDot3Pos = new Vector3 (lineSpawnPos.x, lineSpawnPos.y + dist - 5, lineSpawnPos.z);
+                lineDot3Pos = new Vector3 (lineSpawnPos.x, lineSpawnPos.y + lineDrawPos.y - linedotSize / 2, lineSpawnPos.z);
 
                 return colWinner;
             }
@@ -378,9 +406,9 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         }
 
         if (diagWinner > -1) {
-            lineSpawnPos = new Vector3 (173, 640, -1);
-            lineDrawPos = new Vector3 (375, -360, 0);
-            // lineDrawPos = new Vector3 (boxSize * (grid - 1) + boxOffset * grid - boxOffset, -(boxSize * (grid - 1) + boxOffset * grid - boxOffset), 0);
+            float lineSize = (boxSize * (grid - 1)) + (boxOffset * 2) * (grid - 1);
+            lineSpawnPos = new Vector3 ((boxOffset * 2) + 10 + boxSize / 2, cardBorderTopGap + (boxSize * grid + boxOffset * (grid - 1)) - boxSize / 2, -1);
+            lineDrawPos = new Vector3 (lineSize, -lineSize + 15, 0);
 
             destination = lineDrawPos;
             dist = Vector3.Distance (origin, destination);
@@ -389,18 +417,18 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             lineDot1Pos = lineSpawnPos;
 
             // 2nd line dot
-            lineDot2Pos = new Vector3 (360, 460, lineSpawnPos.z);
-            // lineDot2Pos = new Vector3 (boxSize + boxSize / 2 + boxOffset, -lineDrawPos.y, lineSpawnPos.z);
+            lineDot2Pos = new Vector3 (lineSpawnPos.x + (boxSize + boxOffset * 2), lineSpawnPos.y - (boxSize + boxOffset * 2) + 6, lineSpawnPos.z);
 
             // 3rd line dot
-            lineDot3Pos = new Vector3 (549, 281, lineSpawnPos.z);
+            lineDot3Pos = new Vector3 (lineSpawnPos.x + lineDrawPos.x, lineSpawnPos.y + lineDrawPos.y, lineSpawnPos.z);
 
             return diagWinner;
         }
 
         if (antiDiagWinner > -1) {
-            lineSpawnPos = new Vector3 (553, 640, -1);
-            lineDrawPos = new Vector3 (-380, -360, 0);
+            float lineSize = (boxSize * (grid - 1)) + (boxOffset * 2) * (grid - 1);
+            lineSpawnPos = new Vector3 ((boxOffset * 2) + 10 + (boxSize * grid) + (boxOffset * grid) - boxSize / 2 + 10, cardBorderTopGap + (boxSize * grid + boxOffset * (grid - 1)) - boxSize / 2, -1);
+            lineDrawPos = new Vector3 (-lineSize, -lineSize + 15, 0);
 
             destination = lineDrawPos;
             dist = Vector3.Distance (origin, destination);
@@ -409,10 +437,10 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
             lineDot1Pos = lineSpawnPos;
 
             // 2nd line dot
-            lineDot2Pos = new Vector3 (360, 459, lineSpawnPos.z);
+            lineDot2Pos = new Vector3 (lineSpawnPos.x - (boxSize + boxOffset * 2), lineSpawnPos.y - (boxSize + boxOffset * 2) + 8, lineSpawnPos.z);
 
             // 3rd line dot
-            lineDot3Pos = new Vector3 (173, 281, lineSpawnPos.z);
+            lineDot3Pos = new Vector3 (lineSpawnPos.x + lineDrawPos.x, lineSpawnPos.y + lineDrawPos.y, lineSpawnPos.z);
 
             return antiDiagWinner;
         }
@@ -473,7 +501,7 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
         if (!hasTied) {
             // Draw lines
             lineGen = Instantiate (line, lineSpawnPos, Quaternion.identity) as GameObject;
-            lineGen.transform.SetParent (GameObject.Find ("Line Wrapper").transform, false);
+            lineGen.transform.SetParent (GameObject.Find ("Card Border").transform, false);
             lineRend = lineGen.GetComponent<LineRenderer> ();
 
             // Confetti
@@ -498,15 +526,15 @@ public class TicTacToeCreatorPvP : MonoBehaviour {
 
             // 1st line dot
             lineDot = Instantiate (lineDotPr, lineDot1Pos, Quaternion.identity);
-            lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
+            lineDot.transform.SetParent (GameObject.Find ("Card Border").transform, false);
 
             // 2nd line dot
             lineDot = Instantiate (lineDotPr, lineDot2Pos, Quaternion.identity);
-            lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
+            lineDot.transform.SetParent (GameObject.Find ("Card Border").transform, false);
 
             // 3rd line dot
             lineDot = Instantiate (lineDotPr, lineDot3Pos, Quaternion.identity);
-            lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
+            lineDot.transform.SetParent (GameObject.Find ("Card Border").transform, false);
         } else {
             hasDrawn = true;
             endTxt.text = "It's a Draw!";

@@ -10,8 +10,10 @@ public class StarMovement : MonoBehaviour {
 
     private float xForce;
     private float yForce;
+
     private float width;
     private float height;
+    
     private float canvasW;
     private float canvasH;
 

@@ -29,6 +29,13 @@ public class MenuController : MonoBehaviour {
         InitParticles ();
     }
 
+    private void Update () {
+        // Quit the application if back was pressed
+        if (Input.GetKeyDown (KeyCode.Escape)) {
+            Application.Quit ();
+        }
+    }
+
     #region Init particles
     public void InitParticles () {
         for (var i = 0; i <= particleCount; i++) {
