@@ -3,6 +3,7 @@ using System.Collections;
 using System.Timers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class TicTacToeCreatorAI : MonoBehaviour {
@@ -10,13 +11,13 @@ public class TicTacToeCreatorAI : MonoBehaviour {
     public GameObject line;
     public GameObject card;
 
-    private Image particle;
-    private Button menuButton;
-    private Button playAgainButton;
+    private Image _particle;
+    private Button _menuButton;
+    private Button _playAgainButton;
 
     public Sprite handshakeSprite;
     public Sprite loserSprite;
-    public Sprite OImg;
+    public Sprite oImg;
 
     public Material oMat;
 
@@ -33,7 +34,7 @@ public class TicTacToeCreatorAI : MonoBehaviour {
     public Text turnTxtPr;
     public Text endText;
     public Image particlePr;
-    private Image lineDot;
+    private Image _lineDot;
     private Image lineDotPr;
 
     private Image downArrow;
@@ -200,16 +201,16 @@ public class TicTacToeCreatorAI : MonoBehaviour {
     #region Init particles
     public void InitParticles () {
         for (var i = 0; i <= particleCount; i++) {
-            particle = Instantiate (particlePr, new Vector3 (UnityEngine.Random.Range (particleW, canvasW), -(UnityEngine.Random.Range (particleH, canvasH)), 0), Quaternion.identity);
-            particle.transform.SetParent (GameObject.Find ("Particle Spawner").transform, false);
+            _particle = Instantiate (particlePr, new Vector3 (UnityEngine.Random.Range (particleW, canvasW), -(UnityEngine.Random.Range (particleH, canvasH)), 0), Quaternion.identity);
+            _particle.transform.SetParent (GameObject.Find ("Particle Spawner").transform, false);
 
             // Randomize Opacity
-            Image image = particle.GetComponent<Image> ();
+            Image image = _particle.GetComponent<Image> ();
             image.color = new Color (image.color.r, image.color.g, image.color.b, UnityEngine.Random.Range (0.2f, 0.6f));
 
             // Randomize particle sizes
             randParticleSize = UnityEngine.Random.Range (particleW, particleW + 8);
-            particle.GetComponent<RectTransform> ().sizeDelta = new Vector2 (randParticleSize, randParticleSize);
+            _particle.GetComponent<RectTransform> ().sizeDelta = new Vector2 (randParticleSize, randParticleSize);
         }
     }
     #endregion
@@ -230,6 +231,7 @@ public class TicTacToeCreatorAI : MonoBehaviour {
             }
         }
 
+        
         if (!hasInitButton && isGameOver) {
             if (buttonCounter > 0) {
                 buttonCounter -= Time.deltaTime;
@@ -502,7 +504,7 @@ public class TicTacToeCreatorAI : MonoBehaviour {
 
             yield return new WaitForSeconds (aiMoveDelay);
 
-            boxScript.image.sprite = OImg;
+            boxScript.image.sprite = oImg;
             boxScript.clicked = true;
             board[bestMove[0], bestMove[1]] = ai;
 
@@ -553,16 +555,16 @@ public class TicTacToeCreatorAI : MonoBehaviour {
             lineDotPr = blueLineDotPr;
 
             // 1st line dot
-            lineDot = Instantiate (lineDotPr, lineDot1Pos, Quaternion.identity);
-            lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
+            _lineDot = Instantiate (lineDotPr, lineDot1Pos, Quaternion.identity);
+            _lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
 
             // 2nd line dot
-            lineDot = Instantiate (lineDotPr, lineDot2Pos, Quaternion.identity);
-            lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
+            _lineDot = Instantiate (lineDotPr, lineDot2Pos, Quaternion.identity);
+            _lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
 
             // 3rd line dot
-            lineDot = Instantiate (lineDotPr, lineDot3Pos, Quaternion.identity);
-            lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
+            _lineDot = Instantiate (lineDotPr, lineDot3Pos, Quaternion.identity);
+            _lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
 
             animateLine = true;
         } else { }
