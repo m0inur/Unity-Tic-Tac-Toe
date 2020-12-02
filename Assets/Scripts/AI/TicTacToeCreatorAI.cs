@@ -9,12 +9,9 @@ namespace AI
     public class TicTacToeCreatorAI : MonoBehaviour {
         #region Variables
 
-        public static TicTacToeCreatorAI Instance;
         public GameObject line;
         public GameObject card;
 
-        public Image cardBorder;
-        private Image _particle;
         private Button _menuButton;
         private Button _playAgainButton;
 
@@ -24,6 +21,7 @@ namespace AI
 
         public Material oMat;
 
+        public Image cardBorder;
         public Image endImage;
         public Image downArrowPr;
         public Image player1Card;
@@ -33,6 +31,7 @@ namespace AI
 
         public Text turnTxtPr;
         public Text endText;
+        
         private Image _lineDot;
         private Image _lineDotPr;
 
@@ -60,6 +59,9 @@ namespace AI
         private GameObject _box;
         private Canvas _canvas;
         private Text _turnTxt;
+        private Text _winnerTxt;
+        private Text _loserTxt;
+        private Image _particle;
 
         // Float
         private float _counter;
@@ -97,6 +99,8 @@ namespace AI
         public bool isAIMoving;
         private bool _animateLine;
         private bool _hasInitButton;
+        private bool _hasLost;
+        
         #endregion
 
         #region Setup Variable
@@ -115,6 +119,7 @@ namespace AI
 
             _downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
             _downArrow.transform.SetParent (player1Card.transform, false);
+            Debug.Log("Instantiating Border, turn text and down arrow");
 
             _player = 1;
             _ai = 2;
@@ -145,7 +150,7 @@ namespace AI
 
             _boxSize = 170;
             _boxOffset = 10;
-            
+
             // Initialize board
             InitBoxGrid();
         }
@@ -155,11 +160,19 @@ namespace AI
             Board = new int[grid, grid];
 
             endImage.gameObject.SetActive (false);
+            if (!_hasLost)
+            {
+                Destroy(_border.gameObject);
+                Destroy(_turnTxt.gameObject);
+                Destroy(_downArrow.gameObject);
+            }
 
+            _border = Instantiate (playerCardBorder, new Vector3 (0, 0, 0), Quaternion.identity);
             _border.transform.SetParent (player1Card.transform, false);
-
+            
+            _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
             _turnTxt.transform.SetParent (player1Card.transform, false);
-
+            
             _downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
             _downArrow.transform.SetParent (player1Card.transform, false);
             
@@ -169,6 +182,7 @@ namespace AI
             _buttonCounter = 1.5f;
             _linedotSize = 15;
 
+            _counter = 0;
             _rowCount = 0;
             _colCount = 0;
             _boxGridHeight = 50;
@@ -181,6 +195,8 @@ namespace AI
             _hasInitButton = false;
             isAIMoving = false;
             _animateLine = false;
+            _hasLost = false;
+            _hasLost = false;
 
             if (boardLen > 0)
             {
@@ -193,7 +209,12 @@ namespace AI
             boardLen = 0;
 
             // Destroy arrow after being disabled
-            GameObject.Destroy(GameObject.FindWithTag("Down_Arrow"));
+            cardBorder.gameObject.SetActive(true);
+            if (_winnerTxt != null)
+            {
+                Destroy(_winnerTxt);
+                Destroy(_loserTxt);
+            }
         }
 
         #endregion
@@ -230,8 +251,6 @@ namespace AI
                 _colCount++;
                 _rowCount = 0;
             }
-            
-            Debug.Log(_boxGridHeight);
         }
 
         #endregion
@@ -255,20 +274,20 @@ namespace AI
         
             if (!_hasInitButton && isGameOver) {
                 if (_buttonCounter > 0) {
-                    // _buttonCounter -= Time.deltaTime;
+                    _buttonCounter -= Time.deltaTime;
                 } else {
-                    _border.gameObject.SetActive (false);
-                    _turnTxt.gameObject.SetActive (false);
-                    _downArrow.gameObject.SetActive (false);
-
+                    Destroy(_border.gameObject);
+                    Destroy(_turnTxt.gameObject);
+                    Destroy(_downArrow.gameObject);
+                    
                     if (!isAIMoving) {
-                        _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                        _turnTxt.transform.SetParent (player2Card.transform, false);
-                        _turnTxt.text = "Winner";
+                        _winnerTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        _winnerTxt.transform.SetParent (player2Card.transform, false);
+                        _winnerTxt.text = "Winner";
 
-                        _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                        _turnTxt.transform.SetParent (player1Card.transform, false);
-                        _turnTxt.text = "Loser";
+                        _loserTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        _loserTxt.transform.SetParent (player1Card.transform, false);
+                        _loserTxt.text = "Loser";
 
                         endImage.GetComponent<Image> ().sprite = loserSprite;
                         endText.text = "You Lose";
@@ -589,17 +608,18 @@ namespace AI
         }
 
         // Game Over
-        public void GameOver (bool hasTied) {
+        private void GameOver (bool hasTied) {
             // If is already over
             if (isGameOver) {
                 return;
             }
-
+            
+            // If AI won
             if (!hasTied)
             {
                 // Draw lines
                 _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
-                _lineGen.transform.SetParent(_canvas.transform, false);
+                _lineGen.transform.SetParent(cardBorder.transform, false);
                 _lineRend = _lineGen.GetComponent<LineRenderer>();
 
                 _lineRend.material = oMat;
@@ -618,8 +638,9 @@ namespace AI
                 _lineDot.transform.SetParent(cardBorder.transform, false);
 
                 _animateLine = true;
+                _hasLost = true;
             }
-
+            
             isGameOver = true;
         }
     }
