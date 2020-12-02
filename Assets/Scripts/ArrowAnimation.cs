@@ -18,7 +18,7 @@ public class ArrowAnimation : MonoBehaviour {
 
     // Update is called once per frame
     private void FixedUpdate () {
-        transform.position += transform.up * speed * Time.deltaTime;
+        transform.position +=  speed * Time.deltaTime * transform.up;
     }
 
     IEnumerator MoveDelay () {

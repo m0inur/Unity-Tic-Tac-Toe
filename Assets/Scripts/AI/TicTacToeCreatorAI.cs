@@ -9,6 +9,7 @@ namespace AI
     public class TicTacToeCreatorAI : MonoBehaviour {
         #region Variables
 
+        public GameObject menu;
         public GameObject line;
         public GameObject card;
 
@@ -119,7 +120,6 @@ namespace AI
 
             _downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
             _downArrow.transform.SetParent (player1Card.transform, false);
-            Debug.Log("Instantiating Border, turn text and down arrow");
 
             _player = 1;
             _ai = 2;
@@ -257,6 +257,12 @@ namespace AI
 
         // Animate line
         private void Update () {
+            // Go back to menu if back was pressed
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                GoToMenu();
+            }
+            
             if (_animateLine) {
                 if (_counter < _dist) {
                     _counter += _drawDelay / _drawSpeed;
@@ -604,7 +610,8 @@ namespace AI
         }
 
         public void GoToMenu () {
-            SceneManager.LoadScene ("Menu");
+            menu.SetActive(true);
+            gameObject.SetActive(false);
         }
 
         // Game Over

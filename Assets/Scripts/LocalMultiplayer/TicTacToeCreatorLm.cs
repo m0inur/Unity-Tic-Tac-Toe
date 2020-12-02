@@ -2,6 +2,7 @@
 using Confetti;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace LocalMultiplayer
@@ -15,6 +16,7 @@ namespace LocalMultiplayer
         public GameObject cardBorder;
         public GameObject line;
         public GameObject card;
+        public GameObject menu;
 
         public Material xMat;
         public Material oMat;
@@ -146,7 +148,7 @@ namespace LocalMultiplayer
             // Initialize boxes
             InitBoxGrid();
         }
-
+        
         private void OnDisable()
         {
             // If someone has won
@@ -154,7 +156,6 @@ namespace LocalMultiplayer
             {
                 GameObject.Destroy(_windowConfetti);
                 GameObject.Destroy(_cardPlayerWinnerTxt);
-                GameObject.Destroy(_turnTxt);
             }
 
             // If Board has been used then destroy all children and create new board
@@ -164,34 +165,42 @@ namespace LocalMultiplayer
                     GameObject.Destroy(child.gameObject);
                 }
                 
-                
                 // Initialize boxes
                 InitBoxGrid();
             }
             
-            // Disable arrow after being disabled
-            GameObject.Destroy(GameObject.FindWithTag("Down_Arrow"));
-            
+            if (_downArrow)
+            {
+                // Disable arrow after being disabled
+                GameObject.Destroy(_downArrow.gameObject);
+            }
+
             endImage.gameObject.SetActive(false);
 
-            _border = Instantiate(playerCardBorder, new Vector3(0, 0, 0), Quaternion.identity);
+            if (!_border)
+            {
+                _border = Instantiate(playerCardBorder, new Vector3(0, 0, 0), Quaternion.identity);
+            }
+
             _border.transform.SetParent(player1Card.transform, false);
 
-            _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+            if (!_turnTxt)
+            {
+                _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+            }
+
             _turnTxt.transform.SetParent(player1Card.transform, false);
 
             _downArrow = Instantiate(downArrowPr, downArrowPr.transform.position, Quaternion.identity);
             _downArrow.transform.SetParent(player1Card.transform, false);
+
 
             Board = new int[grid, grid];
 
             _border.transform.SetParent(player1Card.transform, false);
             _turnTxt.transform.SetParent(player1Card.transform, false);
             _turnTxt.text = "Your Turn";
-            
-            _downArrow = Instantiate(downArrowPr, downArrowPr.transform.position, Quaternion.identity);
-            _downArrow.transform.SetParent(player1Card.transform, false);
-            
+
             // Integers
             _boxOffset = 10;
             boardLen = 0;
@@ -298,9 +307,9 @@ namespace LocalMultiplayer
                 else
                 {
                     // Destroy
-                    GameObject.Destroy(_border);
-                    GameObject.Destroy(_turnTxt);
-                    GameObject.Destroy(_downArrow);
+                    GameObject.Destroy(_border.gameObject);
+                    GameObject.Destroy(_turnTxt.gameObject);
+                    GameObject.Destroy(_downArrow.gameObject);
                     cardBorder.SetActive(false);
 
                     // If it didnt draw check who won
@@ -420,7 +429,6 @@ namespace LocalMultiplayer
 
                 if (rowWinner > -1)
                 {
-                    Debug.Log(_cardBorderTopGap);
                     _lineSpawnPos = new Vector3((_boxOffset * 2) + 5 + (_boxSize - (_boxSize / 2)),
                         _cardBorderTopGap + (_boxSize * (1 + i) + (_boxOffset * i)) - (_boxSize / 2), -1);
                     _lineDrawPos = new Vector3((_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1) + 5, 0, 0);
@@ -566,7 +574,8 @@ namespace LocalMultiplayer
 
         public void GoToMenu()
         {
-            SceneManager.LoadScene("Menu");
+            menu.SetActive(true);
+            gameObject.SetActive(false);
         }
 
         public void PlayAgain()

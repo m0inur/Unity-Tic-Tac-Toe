@@ -16,7 +16,7 @@ namespace AI
         public int boxRowNum;
 
         private void Start () {
-            GameObject gameControllerObj = GameObject.Find ("Single Player Controller");
+            GameObject gameControllerObj = GameObject.Find ("Single_Player_Controller");
             image = GetComponent<Image> ();
             if (gameControllerObj != null) {
                 _ticTacToeCreatorAIScript = gameControllerObj.GetComponent<TicTacToeCreatorAI> ();

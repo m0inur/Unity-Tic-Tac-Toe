@@ -4,9 +4,17 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class MenuController : MonoBehaviourPunCallbacks {
+public class MenuController : MonoBehaviourPunCallbacks
+{
+    // Store scene Game Objects
+    public GameObject localMultiplayer;
+    public GameObject singlePlayer;
+    public GameObject privateMultiplayer;
+    public GameObject multiplayer;
+        
     private void Update () {
         // Quit the application if back was pressed
         if (Input.GetKeyDown (KeyCode.Escape)) {
@@ -18,12 +26,14 @@ public class MenuController : MonoBehaviourPunCallbacks {
         SceneManager.LoadScene ("Menu");
     }
 
-    public void PvP () {
-        SceneManager.LoadScene ("Local_Multiplayer");
+    public void LocalMultiplayer () {
+        gameObject.SetActive(false);
+        localMultiplayer.SetActive(true);
     }
 
-    public void AI () {
-        SceneManager.LoadScene ("Single_Player");
+    public void SinglePlayer () {
+        gameObject.SetActive(false);
+        singlePlayer.SetActive(true);
     }
     
     public void Private_Multiplayer_Rooms () {
