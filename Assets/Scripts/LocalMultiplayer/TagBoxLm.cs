@@ -23,7 +23,7 @@ namespace LocalMultiplayer
             if (!_ticTacToeCreatorScript)
             {
                 image = GetComponent<Image>();
-                _ticTacToeCreatorScript = GameObject.Find("Local_Multiplayer_Controller").GetComponent<TicTacToeCreatorLm>();
+                _ticTacToeCreatorScript = GameObject.Find("Local Multiplayer Controller").GetComponent<TicTacToeCreatorLm>();
             }
         }
 

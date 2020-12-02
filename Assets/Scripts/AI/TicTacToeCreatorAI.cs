@@ -614,6 +614,13 @@ namespace AI
             gameObject.SetActive(false);
         }
 
+        // Restart Game
+        public void Restart()
+        {
+            gameObject.SetActive(false);
+            gameObject.SetActive(true);
+        }
+        
         // Game Over
         private void GameOver (bool hasTied) {
             // If is already over

@@ -788,7 +788,7 @@ GameObject:
   - component: {fileID: 342658356}
   - component: {fileID: 342658358}
   m_Layer: 5
-  m_Name: Back Button
+  m_Name: LM  Back Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -918,7 +918,7 @@ GameObject:
   - component: {fileID: 359555591}
   - component: {fileID: 359555590}
   m_Layer: 5
-  m_Name: End Text
+  m_Name: SP End Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1042,7 +1042,7 @@ GameObject:
   - component: {fileID: 398223095}
   - component: {fileID: 398223094}
   m_Layer: 5
-  m_Name: Back Button
+  m_Name: SP Back Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1494,7 +1494,7 @@ GameObject:
   - component: {fileID: 615516956}
   - component: {fileID: 615516955}
   m_Layer: 5
-  m_Name: Player 2 Card
+  m_Name: LM Player 2 Card
   m_TagString: P2 Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1685,7 +1685,7 @@ GameObject:
   - component: {fileID: 646511124}
   - component: {fileID: 646511123}
   m_Layer: 5
-  m_Name: Single_Player_Controller
+  m_Name: Single Player Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2388,7 +2388,7 @@ GameObject:
   - component: {fileID: 1028531501}
   - component: {fileID: 1028531500}
   m_Layer: 5
-  m_Name: Single Player Card Border
+  m_Name: SP Card Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2464,7 +2464,7 @@ GameObject:
   - component: {fileID: 1128247807}
   - component: {fileID: 1128247806}
   m_Layer: 5
-  m_Name: Single Player 1 Card
+  m_Name: SP Player Card
   m_TagString: P1 Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2772,7 +2772,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1170662447}
   m_Layer: 5
-  m_Name: Line Wrapper
+  m_Name: LM Line Wrapper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2810,7 +2810,7 @@ GameObject:
   - component: {fileID: 1172001989}
   - component: {fileID: 1172001988}
   m_Layer: 5
-  m_Name: Retry Button
+  m_Name: SP Retry Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2878,9 +2878,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5062912828312239552, guid: 100ac289cec6f0a41a161a0412800fcc, type: 3}
-        m_TargetAssemblyTypeName: TicTacToeCreatorPvP, Assembly-CSharp
-        m_MethodName: PlayAgain
+      - m_Target: {fileID: 646511124}
+        m_TargetAssemblyTypeName: AI.TicTacToeCreatorAI, Assembly-CSharp
+        m_MethodName: Restart
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2940,7 +2940,7 @@ GameObject:
   - component: {fileID: 1215834662}
   - component: {fileID: 1215834661}
   m_Layer: 5
-  m_Name: Card Border
+  m_Name: LM Card Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3017,7 +3017,7 @@ GameObject:
   - component: {fileID: 1244006002}
   - component: {fileID: 1244006001}
   m_Layer: 5
-  m_Name: Retry Button
+  m_Name: LM Retry Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3085,9 +3085,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5062912828312239552, guid: 100ac289cec6f0a41a161a0412800fcc, type: 3}
-        m_TargetAssemblyTypeName: TicTacToeCreatorPvP, Assembly-CSharp
-        m_MethodName: PlayAgain
+      - m_Target: {fileID: 1489889971}
+        m_TargetAssemblyTypeName: LocalMultiplayer.TicTacToeCreatorLm, Assembly-CSharp
+        m_MethodName: Restart
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3384,7 +3384,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1456723270}
   m_Layer: 5
-  m_Name: Buttons
+  m_Name: Menu Buttons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3426,7 +3426,7 @@ GameObject:
   - component: {fileID: 1489889972}
   - component: {fileID: 1489889971}
   m_Layer: 5
-  m_Name: Local_Multiplayer_Controller
+  m_Name: Local Multiplayer Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4129,7 +4129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1684152999}
   m_Layer: 5
-  m_Name: Card Border Props
+  m_Name: LM Card Border Props
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4242,7 +4242,7 @@ GameObject:
   - component: {fileID: 1723880631}
   - component: {fileID: 1723880630}
   m_Layer: 5
-  m_Name: End Text
+  m_Name: LM End Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4400,7 +4400,7 @@ GameObject:
   - component: {fileID: 1778539886}
   - component: {fileID: 1778539885}
   m_Layer: 5
-  m_Name: Single Player Bot Card
+  m_Name: SP Bot Card
   m_TagString: P2 Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4477,7 +4477,7 @@ GameObject:
   - component: {fileID: 1782730295}
   - component: {fileID: 1782730294}
   m_Layer: 5
-  m_Name: Player 1 Card
+  m_Name: LM Player 1 Card
   m_TagString: P1 Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4554,7 +4554,7 @@ GameObject:
   - component: {fileID: 1864977819}
   - component: {fileID: 1864977818}
   m_Layer: 5
-  m_Name: End Image
+  m_Name: SP End Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5005,7 +5005,7 @@ GameObject:
   - component: {fileID: 2074957041}
   - component: {fileID: 2074957040}
   m_Layer: 5
-  m_Name: End Image
+  m_Name: LM End Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

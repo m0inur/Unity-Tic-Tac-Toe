@@ -578,6 +578,12 @@ namespace LocalMultiplayer
             gameObject.SetActive(false);
         }
 
+        public void Restart()
+        {
+            gameObject.SetActive(false);
+            gameObject.SetActive(true);
+        }
+
         public void PlayAgain()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -597,7 +603,7 @@ namespace LocalMultiplayer
                 
                 // Draw lines
                 _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
-                _lineGen.transform.SetParent(GameObject.Find("Card Border").transform, false);
+                _lineGen.transform.SetParent(cardBorder.transform, false);
                 _lineRend = _lineGen.GetComponent<LineRenderer>();
 
                 // Start the confetti
@@ -624,15 +630,15 @@ namespace LocalMultiplayer
 
                 // 1st line dot
                 _lineDot = Instantiate(_lineDotPr, _lineDot1Pos, Quaternion.identity);
-                _lineDot.transform.SetParent(GameObject.Find("Card Border").transform, false);
+                _lineDot.transform.SetParent(cardBorder.transform, false);
 
                 // 2nd line dot
                 _lineDot = Instantiate(_lineDotPr, _lineDot2Pos, Quaternion.identity);
-                _lineDot.transform.SetParent(GameObject.Find("Card Border").transform, false);
+                _lineDot.transform.SetParent(cardBorder.transform, false);
 
                 // 3rd line dot
                 _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
-                _lineDot.transform.SetParent(GameObject.Find("Card Border").transform, false);
+                _lineDot.transform.SetParent(cardBorder.transform, false);
             }
             else
             {
