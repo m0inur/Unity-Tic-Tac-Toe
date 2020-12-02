@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3088909668383710565
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5448178018442613822}
+  - component: {fileID: 2039593920905301444}
+  - component: {fileID: 8078846389595919653}
+  m_Layer: 5
+  m_Name: Local_Multiplayer_Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5448178018442613822
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3088909668383710565}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2039593920905301444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3088909668383710565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  observableSearch: 2
+  Synchronization: 3
+  OwnershipTransfer: 0
+  ObservedComponents: []
+  viewIdField: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &8078846389595919653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3088909668383710565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a23eb1f356a7d74f97264eb8c491420, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  confettiWindow: {fileID: 3671400279255391599, guid: 7cdc90ba52453de40afdb6b02e8815c0, type: 3}
+  cardBorder: {fileID: 0}
+  line: {fileID: 8584986408912705285, guid: b883ace32b90bfd4d950ff4ca57344cf, type: 3}
+  card: {fileID: 7039697055326309236, guid: f2d9e0a5b62568145b9e3d722499897f, type: 3}
+  xMat: {fileID: 2100000, guid: e2f0f1be16fdaf64f903359762ead678, type: 2}
+  oMat: {fileID: 2100000, guid: d88af1355d6229844bdfe1d8c41604d3, type: 2}
+  xConfetti: {fileID: 224796149882136310, guid: e43afacb9ae4ecd47a9ab4775aeba0e1, type: 3}
+  oConfetti: {fileID: 224796149882136310, guid: c22b1981ef90f9749b184e704fb224e4, type: 3}
+  winnerSprite: {fileID: 21300000, guid: 1042d2f629244504a8f580a46af03e1f, type: 3}
+  handshakeSprite: {fileID: 21300000, guid: 0d191560cdbcf524eb314f6d42c55297, type: 3}
+  endImage: {fileID: 0}
+  backButton: {fileID: 0}
+  downArrowPr: {fileID: 2534042502086443925, guid: 75d421f33bb0bd34d86bc3014de09984, type: 3}
+  player1Card: {fileID: 0}
+  player2Card: {fileID: 0}
+  playerCardBorder: {fileID: 1505189153031262440, guid: 365afbf3037d6bb47bce87634bd3cad6, type: 3}
+  blueLineDotPr: {fileID: 3143241423614161275, guid: bf8598f7394c37f45a3b984eded51c76, type: 3}
+  redLineDotPr: {fileID: 3143241423614161275, guid: ff9b2a879145a264484245c406e1b62a, type: 3}
+  turnTxtPr: {fileID: 2925965935007828296, guid: b34fe0c5482c5a44791f36f052b92364, type: 3}
+  endTxt: {fileID: 0}
+  grid: 3
+  boardLen: 0
+  isGameOver: 0
+  p1: 0

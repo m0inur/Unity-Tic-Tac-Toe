@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using Confetti;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -9,14 +11,13 @@ namespace LocalMultiplayer
         #region Variables
         public static TicTacToeCreatorLm Instance;
 
-        public GameObject confettiWindow;
+        public GameObject confettiWindowPr;
         public GameObject cardBorder;
         public GameObject line;
         public GameObject card;
 
         public Material xMat;
         public Material oMat;
-
         public Transform xConfetti;
         public Transform oConfetti;
 
@@ -24,12 +25,10 @@ namespace LocalMultiplayer
         public Sprite handshakeSprite;
 
         public Image endImage;
-        public Button backButton;
         public Image downArrowPr;
         public Image player1Card;
         public Image player2Card;
         public Image playerCardBorder;
-        public Image particlePr;
         public Image blueLineDotPr;
         public Image redLineDotPr;
 
@@ -40,11 +39,12 @@ namespace LocalMultiplayer
         private LineRenderer _lineRend;
         private Canvas _canvas;
         private Image _downArrow;
-        private Image _particle;
         private Image _border;
         private Text _turnTxt;
+        private Text _cardPlayerWinnerTxt;
         private Image _lineDot;
         private Image _lineDotPr;
+        private WindowConfetti _windowConfettiScript;
 
         private Button _menuButton;
         private Button _playAgainButton;
@@ -58,6 +58,7 @@ namespace LocalMultiplayer
 
         private RectTransform _rt;
         private GameObject _box;
+        private GameObject _windowConfetti;
 
         private Vector3 _lineDot1Pos;
         private Vector3 _lineDot2Pos;
@@ -74,10 +75,6 @@ namespace LocalMultiplayer
         private float _boxSize;
         private float _cardW;
         private float _cardH;
-        private float _particleCount;
-        private float _particleW;
-        private float _particleH;
-        private float _randparticleSize;
         private float _canvasW;
         private float _canvasH;
         private float _gapX;
@@ -91,14 +88,16 @@ namespace LocalMultiplayer
         private int _rowCount;
         private int _colCount;
 
-        private bool _hasDrawn = false;
-        private bool _spawnButtons = false;
-        private bool _animateLine = false;
+        private bool _hasDrawn;
+        private bool _spawnButtons;
+        private bool _animateLine;
+        private bool _hasWon;
 
         #endregion
 
-        #region Initially set variables board
-        void Start()
+        #region Variable Setup
+
+        private void Start()
         {
             Board = new int[grid, grid];
 
@@ -116,8 +115,8 @@ namespace LocalMultiplayer
             // Integers
             _rowCount = 0;
             _colCount = 0;
-            boardLen = 0;
             _boxOffset = 10;
+            boardLen = 0;
 
             _drawSpeed = 12;
             _drawDelay = 0.1f;
@@ -134,21 +133,89 @@ namespace LocalMultiplayer
             _canvas = FindObjectOfType<Canvas>();
             _canvasW = _canvas.GetComponent<RectTransform>().rect.width;
             _canvasH = _canvas.GetComponent<RectTransform>().rect.height;
-            // canvas.GetComponent<CanvasScaler> ().referenceResolution = new Vector2 (Screen.width, Screen.height);
-
-            _particleW = particlePr.GetComponent<RectTransform>().rect.width;
-            _particleH = particlePr.GetComponent<RectTransform>().rect.height;
-
+            
             // Booleans
             isGameOver = false;
-
-            _boxSize = 170;
-            _particleCount = 150;
+            _hasDrawn = false;
+            _spawnButtons = false;
+            _animateLine = false;
+            _hasWon = false;
             
-            // Initialize particles
-            InitParticles();
+            _boxSize = 170;
+            
             // Initialize boxes
             InitBoxGrid();
+        }
+
+        private void OnDisable()
+        {
+            // If someone has won
+            if (_hasWon)
+            {
+                GameObject.Destroy(_windowConfetti);
+                GameObject.Destroy(_cardPlayerWinnerTxt);
+                GameObject.Destroy(_turnTxt);
+            }
+
+            // If Board has been used then destroy all children and create new board
+            if (boardLen > 0)
+            {
+                foreach (Transform child in cardBorder.transform) {
+                    GameObject.Destroy(child.gameObject);
+                }
+                
+                
+                // Initialize boxes
+                InitBoxGrid();
+            }
+            
+            // Disable arrow after being disabled
+            GameObject.Destroy(GameObject.FindWithTag("Down_Arrow"));
+            
+            endImage.gameObject.SetActive(false);
+
+            _border = Instantiate(playerCardBorder, new Vector3(0, 0, 0), Quaternion.identity);
+            _border.transform.SetParent(player1Card.transform, false);
+
+            _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+            _turnTxt.transform.SetParent(player1Card.transform, false);
+
+            _downArrow = Instantiate(downArrowPr, downArrowPr.transform.position, Quaternion.identity);
+            _downArrow.transform.SetParent(player1Card.transform, false);
+
+            Board = new int[grid, grid];
+
+            _border.transform.SetParent(player1Card.transform, false);
+            _turnTxt.transform.SetParent(player1Card.transform, false);
+            _turnTxt.text = "Your Turn";
+            
+            _downArrow = Instantiate(downArrowPr, downArrowPr.transform.position, Quaternion.identity);
+            _downArrow.transform.SetParent(player1Card.transform, false);
+            
+            // Integers
+            _boxOffset = 10;
+            boardLen = 0;
+
+            _drawSpeed = 12;
+            _drawDelay = 0.1f;
+            _showButtonsTimer = 1.5f;
+            _linedotSize = 15;
+            _counter = 0;
+            
+            p1 = true;
+
+            _origin = new Vector3(0, 0, 0);
+            
+            // Booleans
+            isGameOver = false;
+            _hasDrawn = false;
+            _spawnButtons = false;
+            _animateLine = false;
+        }
+
+        private void OnEnable()
+        {
+            cardBorder.SetActive(true);
         }
 
         #endregion
@@ -159,19 +226,23 @@ namespace LocalMultiplayer
         {
             // Give size of boxes
             card.GetComponent<RectTransform>().sizeDelta = new Vector2(_boxSize, _boxSize);
+            
+            _boxGridHeight = 50;
+            _rowCount = 0;
+            _colCount = 0;
+            _cardBorderTopGap = _boxGridHeight;
 
             for (var i = 0; i < grid; i++)
             {
-                // Reset the gap on the x axis every time
+                // Reset the gap on the x axis every new column
                 _gapX = _boxOffset * 2;
-                // gapX = boxSize / 2 + boxOffset;
 
                 for (var j = 0; j < grid; j++)
                 {
                     _box = Instantiate(card, new Vector3(_gapX + 10, _boxGridHeight, 0),
                         Quaternion.identity) as GameObject;
-                    _box.transform.SetParent(GameObject.Find("Card Border").transform, false);
-                    TagBoxLm _boxScript = _box.GetComponent<TagBoxLm>();
+                    _box.transform.SetParent(cardBorder.transform, false);
+                    var _boxScript = _box.GetComponent<TagBoxLm>();
                     
                     _boxScript.boxColNum = _colCount;
                     _boxScript.boxRowNum = _rowCount;
@@ -188,31 +259,7 @@ namespace LocalMultiplayer
         }
 
         #endregion
-
-        #region Init particles
-
-        public void InitParticles()
-        {
-            for (var i = 0; i <= _particleCount; i++)
-            {
-                _particle = Instantiate(particlePr,
-                    new Vector3(UnityEngine.Random.Range(_particleW, _canvasW),
-                        -(UnityEngine.Random.Range(_particleH, _canvasH)), 0), Quaternion.identity);
-                _particle.transform.SetParent(GameObject.Find("Particle Spawner").transform, false);
-
-                // Randomize Opacity
-                Image image = _particle.GetComponent<Image>();
-                image.color = new Color(image.color.r, image.color.g, image.color.b,
-                    UnityEngine.Random.Range(0.2f, 0.6f));
-
-                // Randomize particle sizes
-                _randparticleSize = UnityEngine.Random.Range(_particleW, _particleW + 8);
-                _particle.GetComponent<RectTransform>().sizeDelta = new Vector2(_randparticleSize, _randparticleSize);
-            }
-        }
-
-        #endregion
-
+        
         // Animate line
         private void Update()
         {
@@ -250,12 +297,11 @@ namespace LocalMultiplayer
                 }
                 else
                 {
-                    // Disable
-                    GameObject.Find("Card Border").SetActive(false);
-
-                    _border.gameObject.SetActive(false);
-                    _turnTxt.gameObject.SetActive(false);
-                    _downArrow.gameObject.SetActive(false);
+                    // Destroy
+                    GameObject.Destroy(_border);
+                    GameObject.Destroy(_turnTxt);
+                    GameObject.Destroy(_downArrow);
+                    cardBorder.SetActive(false);
 
                     // If it didnt draw check who won
                     if (!_hasDrawn)
@@ -265,9 +311,10 @@ namespace LocalMultiplayer
                         {
                             endTxt.text = "Player 1 Won";
 
-                            _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                            _turnTxt.transform.SetParent(player1Card.transform, false);
-                            _turnTxt.text = "Winner";
+                            _cardPlayerWinnerTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _cardPlayerWinnerTxt.transform.SetParent(player1Card.transform, false);
+                            _cardPlayerWinnerTxt.name = "CardPlayerWinnerTxt";
+                            _cardPlayerWinnerTxt.text = "Winner";
 
                             _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
                             _turnTxt.transform.SetParent(player2Card.transform, false);
@@ -373,7 +420,7 @@ namespace LocalMultiplayer
 
                 if (rowWinner > -1)
                 {
-                    // lineSpawnPos = new Vector3 ((boxOffset * 2) + 5 + (boxSize - (boxSize / 2)), 0, -1);
+                    Debug.Log(_cardBorderTopGap);
                     _lineSpawnPos = new Vector3((_boxOffset * 2) + 5 + (_boxSize - (_boxSize / 2)),
                         _cardBorderTopGap + (_boxSize * (1 + i) + (_boxOffset * i)) - (_boxSize / 2), -1);
                     _lineDrawPos = new Vector3((_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1) + 5, 0, 0);
@@ -527,7 +574,7 @@ namespace LocalMultiplayer
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
-        public void GameOver(bool hasTied)
+        private void GameOver(bool hasTied)
         {
             // If is already over
             if (isGameOver)
@@ -537,24 +584,24 @@ namespace LocalMultiplayer
 
             if (!hasTied)
             {
+                _hasWon = true;
+                
                 // Draw lines
                 _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
                 _lineGen.transform.SetParent(GameObject.Find("Card Border").transform, false);
                 _lineRend = _lineGen.GetComponent<LineRenderer>();
 
-                // Confetti
-                GameObject confettiWindowObj =
-                    Instantiate(confettiWindow, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-                confettiWindowObj.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
-                confettiWindowObj.transform.SetParent(_canvas.transform, false);
-                WindowConfetti windowScript = confettiWindowObj.GetComponent<WindowConfetti>();
-
+                // Start the confetti
+                _windowConfetti = Instantiate(confettiWindowPr, new Vector3(0, 0, 0), Quaternion.identity);
+                _windowConfetti.transform.SetParent(_canvas.transform, false);
+                _windowConfettiScript = _windowConfetti.GetComponent<WindowConfetti>();
+                
                 if (!p1)
                 {
                     endTxt.text = "Winner";
 
                     _lineRend.material = xMat;
-                    windowScript.pfConfetti = xConfetti;
+                    _windowConfettiScript.pfConfetti = xConfetti;
                     _lineDotPr = redLineDotPr;
                 }
                 else
@@ -562,7 +609,7 @@ namespace LocalMultiplayer
                     endTxt.text = "Winner";
 
                     _lineRend.material = oMat;
-                    windowScript.pfConfetti = oConfetti;
+                    _windowConfettiScript.pfConfetti = oConfetti;
                     _lineDotPr = blueLineDotPr;
                 }
 

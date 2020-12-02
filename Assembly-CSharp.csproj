@@ -52,7 +52,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\LocalMultiplayer\TagBoxLm.cs" />
      <Compile Include="Assets\Scripts\AI\TicTacToeCreatorAI.cs" />
-     <Compile Include="Assets\Scripts\Utilities\EXTTransforms.cs" />
+     <Compile Include="Assets\Scripts\My Photon\Utilities\EXTTransforms.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\ChatGui.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\Common\TextToggleIsOnTransition.cs" />
      <Compile Include="Assets\Scripts\ArrowAnimation.cs" />
@@ -61,6 +61,7 @@
      <Compile Include="Assets\Scripts\My Photon\Managers\SingletonScriptableObject.cs" />
      <Compile Include="Assets\Scripts\My Photon\Rooms\RoomListing.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\NamePickGui.cs" />
+     <Compile Include="Assets\Scripts\My Photon\Rooms\WaitingRoom.cs" />
      <Compile Include="Assets\Scripts\My Photon\Managers\MasterManager\MasterManager.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\Common\EventSystemSpawner.cs" />
      <Compile Include="Assets\Scripts\AI\TagBoxAI.cs" />
@@ -81,12 +82,12 @@
      <Compile Include="Assets\Scripts\My Photon\Managers\GameSettings.cs" />
      <Compile Include="Assets\Scripts\My Photon\Rooms\RoomListingsMenu.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\Common\OnStartDelete.cs" />
+     <Compile Include="Assets\Scripts\Particle\InitParticles.cs" />
+     <Compile Include="Assets\Scripts\My Photon\Rooms\MultiplayerManager.cs" />
      <Compile Include="Assets\Scripts\LocalMultiplayer\TicTacToeCreatorLm.cs" />
      <Compile Include="Assets\Photon\PhotonLibs\WebSocket\WebSocket.cs" />
-     <Compile Include="Assets\Scripts\StarMovement.cs" />
+     <Compile Include="Assets\Scripts\Particle\StarMovement.cs" />
      <Compile Include="Assets\Scripts\Multiplayer_Game\TicTacToeCreatorMp.cs" />
-     <Compile Include="Assets\Scripts\My Photon\Rooms\WaitingRoom.cs" />
-     <Compile Include="Assets\Scripts\My Photon\Rooms\MultiplayerManager.cs" />
      <None Include="Assets\Photon\PhotonLibs\netstandard2.0\Photon3Unity3D.xml" />
      <None Include="Assets\Photon\PhotonUnityNetworking\changelog.txt" />
      <None Include="Assets\Photon\PhotonLibs\changes-library.txt" />

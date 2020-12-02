@@ -10,6 +10,7 @@ TagManager:
   - StarSpawner
   - P1 Card
   - P2 Card
+  - Down_Arrow
   layers:
   - Default
   - TransparentFX

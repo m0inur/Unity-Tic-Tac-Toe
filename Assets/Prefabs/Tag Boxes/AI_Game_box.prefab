@@ -89,7 +89,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 0}
-  XImg: {fileID: 21300000, guid: 5865b0780994b9546bcf99ffe19c3a6a, type: 3}
+  xImg: {fileID: 21300000, guid: 5865b0780994b9546bcf99ffe19c3a6a, type: 3}
   clicked: 0
   boxColNum: 0
   boxRowNum: 0

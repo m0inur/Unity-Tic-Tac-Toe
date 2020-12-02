@@ -1,574 +1,626 @@
 ﻿using System;
 using System.Collections;
-using System.Timers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class TicTacToeCreatorAI : MonoBehaviour {
-    #region Variables
-    public GameObject line;
-    public GameObject card;
+namespace AI
+{
+    public class TicTacToeCreatorAI : MonoBehaviour {
+        #region Variables
 
-    private Image _particle;
-    private Button _menuButton;
-    private Button _playAgainButton;
+        public static TicTacToeCreatorAI Instance;
+        public GameObject line;
+        public GameObject card;
 
-    public Sprite handshakeSprite;
-    public Sprite loserSprite;
-    public Sprite oImg;
+        public Image cardBorder;
+        private Image _particle;
+        private Button _menuButton;
+        private Button _playAgainButton;
 
-    public Material oMat;
+        public Sprite handshakeSprite;
+        public Sprite loserSprite;
+        public Sprite oImg;
 
-    public Image endImage;
-    public Image downArrowPr;
-    public Image player1Card;
-    public Image player2Card;
-    public Image cardBorder;
-    public Image blueLineDotPr;
+        public Material oMat;
 
-    public Button playAgainBtn;
-    public Button menuBtn;
-    public Image bgImg;
-    public Text turnTxtPr;
-    public Text endText;
-    public Image particlePr;
-    private Image _lineDot;
-    private Image lineDotPr;
+        public Image endImage;
+        public Image downArrowPr;
+        public Image player1Card;
+        public Image player2Card;
+        public Image playerCardBorder;
+        public Image blueLineDotPr;
 
-    private Image downArrow;
-    private Image border;
+        public Text turnTxtPr;
+        public Text endText;
+        private Image _lineDot;
+        private Image _lineDotPr;
 
-    private GameObject lineGen;
-    private LineRenderer lineRend;
+        private Image _downArrow;
+        private Image _border;
 
-    public float topOffset;
-    public float boxOffset;
+        private GameObject _lineGen;
+        private LineRenderer _lineRend;
+        
+        public int grid;
 
-    public int grid;
+        // Integer
+        public int[, ] Board;
+        [HideInInspector]
+        public int boardLen;
 
-    // Integer
-    public int[, ] board;
-    [HideInInspector]
-    public int boardLen;
+        private int _player;
+        private int _ai;
+        private int _rowCount;
+        private int _colCount;
 
-    private int player;
-    private int ai;
-    private int tie;
-    private int rowCount;
-    private int colCount;
+        // Game Objects
+        private RectTransform _rt;
+        private TagBoxAI _boxScript;
+        private GameObject _box;
+        private Canvas _canvas;
+        private Text _turnTxt;
 
-    private int n;
+        // Float
+        private float _counter;
+        private float _dist;
+        private float _boxSize;
+        private float _cardW;
+        private float _cardH;
+        private float _randParticleSize;
+        private float _canvasW;
+        private float _canvasH;
+        private float _gapX;
+        private float _drawSpeed;
+        private float _drawDelay;
+        private float _boxGridHeight;
+        private float _aiMoveDelay;
+        private float _buttonCounter;
+        private float _boxOffset;
+        private float _cardBorderTopGap;
+        private float _linedotSize;
+        
+        // Vector3 
+        private Vector3 _lineDot1Pos;
+        private Vector3 _lineDot2Pos;
+        private Vector3 _lineDot3Pos;
 
-    // Game Objects
-    private RectTransform rt;
-    private TagBoxAI boxScript;
-    private GameObject box;
-    private Canvas canvas;
-    private Text turnTxt;
+        private Vector3 _lineSpawnPos;
+        private Vector3 _lineDrawPos;
+        private Vector3 _destination;
+        private Vector3 _origin;
 
-    // Float
-    private float counter;
-    private float dist;
-    private float boxSize;
-    private float cardW;
-    private float cardH;
-    private float particleCount;
-    private float particleW;
-    private float particleH;
-    private float randParticleSize;
-    private float canvasW;
-    private float canvasH;
-    private float gapX;
-    private float drawSpeed;
-    private float drawDelay;
-    private float boxGridHeight;
-    private float aiMoveDelay;
-    private float buttonCounter;
+        // Boolean
+        [HideInInspector]
+        public bool isGameOver;
+        [HideInInspector]
+        public bool isAIMoving;
+        private bool _animateLine;
+        private bool _hasInitButton;
+        #endregion
 
-    // Vector3 
-    private Vector3 lineDot1Pos;
-    private Vector3 lineDot2Pos;
-    private Vector3 lineDot3Pos;
+        #region Setup Variable
+        // Create the board
+        private void Start()
+        {
+            Board = new int[grid, grid];
 
-    private Vector3 lineSpawnPos;
-    private Vector3 lineDrawPos1;
-    private Vector3 lineDrawPos;
-    private Vector3 destination;
-    private Vector3 origin;
+            endImage.gameObject.SetActive (false);
 
-    // Boolean
-    [HideInInspector]
-    public bool isGameOver;
-    [HideInInspector]
-    public bool isAIMoving;
-    private bool animateLine = false;
-    private bool hasInitButton;
-    #endregion
+            _border = Instantiate (playerCardBorder, new Vector3 (0, 0, 0), Quaternion.identity);
+            _border.transform.SetParent (player1Card.transform, false);
 
-    #region Initially set variables board
-    void Start () {
-        board = new int[grid, grid];
-        topOffset = -(Screen.height / 2) + -(-(Screen.height / 2) / 3);
+            _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+            _turnTxt.transform.SetParent (player1Card.transform, false);
 
-        endImage.gameObject.SetActive (false);
+            _downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
+            _downArrow.transform.SetParent (player1Card.transform, false);
 
-        border = Instantiate (cardBorder, new Vector3 (0, 0, 0), Quaternion.identity);
-        border.transform.SetParent (player1Card.transform, false);
+            _player = 1;
+            _ai = 2;
 
-        turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-        turnTxt.transform.SetParent (player1Card.transform, false);
+            _drawSpeed = 12f;
+            _drawDelay = 0.1f;
+            _aiMoveDelay = 1f;
+            _buttonCounter = 1.5f;
+            _linedotSize = 15;
 
-        downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
-        downArrow.transform.SetParent (player1Card.transform, false);
+            _rowCount = 0;
+            _colCount = 0;
+            boardLen = 0;
+            _boxGridHeight = 50;
+            _cardBorderTopGap = _boxGridHeight;
 
-        hasInitButton = false;
-        player = 1;
-        ai = 2;
-        tie = 3;
+            _origin = new Vector3 (0, 0, 0);
 
-        drawSpeed = 12f;
-        drawDelay = 0.1f;
-        aiMoveDelay = 1f;
-        buttonCounter = 1.5f;
+            // Canvas
+            _canvas = FindObjectOfType<Canvas> ();
+            _canvasW = _canvas.GetComponent<RectTransform> ().rect.width;
+            _canvasH = _canvas.GetComponent<RectTransform> ().rect.height;
 
-        rowCount = 0;
-        colCount = 0;
-        boardLen = 0;
-        n = grid;
+            // Booleans
+            _hasInitButton = false;
+            _animateLine = false;
+            isGameOver = false;
 
-        lineDrawPos1 = new Vector3 (0, 0, 0);
-        origin = new Vector3 (0, 0, 0);
+            _boxSize = 170;
+            _boxOffset = 10;
+            
+            // Initialize board
+            InitBoxGrid();
+        }
 
-        // Canvas
-        canvas = FindObjectOfType<Canvas> ();
-        canvasW = canvas.GetComponent<RectTransform> ().rect.width;
-        canvasH = canvas.GetComponent<RectTransform> ().rect.height;
-        // canvas.GetComponent<CanvasScaler> ().referenceResolution = new Vector2 (Screen.width, Screen.height);
+        private void OnDisable()
+        {
+            Board = new int[grid, grid];
 
-        bgImg.GetComponent<RectTransform> ().sizeDelta = new Vector2 (canvasW, canvasH);
+            endImage.gameObject.SetActive (false);
 
-        // Booleans
-        isGameOver = false;
+            _border.transform.SetParent (player1Card.transform, false);
 
-        particleCount = 150;
-        boxSize = 170;
-        // boxSize = Screen.width / grid - boxOffset;
-        particleW = particlePr.GetComponent<RectTransform> ().rect.width;
-        particleH = particlePr.GetComponent<RectTransform> ().rect.height;
+            _turnTxt.transform.SetParent (player1Card.transform, false);
 
-        // Initialize particles
-        InitParticles ();
-        // Initialize boxes
-        IntiBoxGrid ();
-    }
-    #endregion
+            _downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
+            _downArrow.transform.SetParent (player1Card.transform, false);
+            
+            _drawSpeed = 12f;
+            _drawDelay = 0.1f;
+            _aiMoveDelay = 1f;
+            _buttonCounter = 1.5f;
+            _linedotSize = 15;
 
-    #region Init grid
-    private void IntiBoxGrid () {
-        // Give size of boxes
-        card.GetComponent<RectTransform> ().sizeDelta = new Vector2 (boxSize, boxSize);
-        boxGridHeight = 50;
+            _rowCount = 0;
+            _colCount = 0;
+            _boxGridHeight = 50;
+            _cardBorderTopGap = _boxGridHeight;
 
-        for (int i = 0; i < grid; i++) {
-            // Reset the gap on the x axis every time
-            gapX = boxOffset * 2;
-            // gapX = boxSize / 2 + boxOffset;
+            _origin = new Vector3 (0, 0, 0);
 
-            for (int j = 0; j < grid; j++) {
-                box = Instantiate (card, new Vector3 (gapX + 10, boxGridHeight, 0), Quaternion.identity) as GameObject;
-                box.transform.SetParent (GameObject.Find ("Card Border").transform, false);
-                box.name = colCount + "" + rowCount;
+            // Booleans
+            isGameOver = false;
+            _hasInitButton = false;
+            isAIMoving = false;
+            _animateLine = false;
 
-                boxScript = box.GetComponent<TagBoxAI> ();
-                boxScript.boxColNum = colCount;
-                boxScript.boxRowNum = rowCount;
-
-                // Update gap on X axis after evey box
-                gapX += boxSize + boxOffset * 2;
-                rowCount++;
+            if (boardLen > 0)
+            {
+                // Destroy previous board if it's been used  
+                foreach (Transform child in cardBorder.transform) {
+                    GameObject.Destroy(child.gameObject);
+                }
+                InitBoxGrid();
             }
+            boardLen = 0;
 
-            boxGridHeight += boxSize + boxOffset;
-            colCount++;
-            rowCount = 0;
+            // Destroy arrow after being disabled
+            GameObject.Destroy(GameObject.FindWithTag("Down_Arrow"));
         }
-    }
 
-    #endregion
+        #endregion
+        
+        #region Init grid
 
-    #region Init particles
-    public void InitParticles () {
-        for (var i = 0; i <= particleCount; i++) {
-            _particle = Instantiate (particlePr, new Vector3 (UnityEngine.Random.Range (particleW, canvasW), -(UnityEngine.Random.Range (particleH, canvasH)), 0), Quaternion.identity);
-            _particle.transform.SetParent (GameObject.Find ("Particle Spawner").transform, false);
+        private void InitBoxGrid()
+        {
+            // Give size of boxes
+            card.GetComponent<RectTransform>().sizeDelta = new Vector2(_boxSize, _boxSize);
 
-            // Randomize Opacity
-            Image image = _particle.GetComponent<Image> ();
-            image.color = new Color (image.color.r, image.color.g, image.color.b, UnityEngine.Random.Range (0.2f, 0.6f));
+            for (var i = 0; i < grid; i++)
+            {
+                // Reset the gap on the x axis every time
+                _gapX = _boxOffset * 2;
 
-            // Randomize particle sizes
-            randParticleSize = UnityEngine.Random.Range (particleW, particleW + 8);
-            _particle.GetComponent<RectTransform> ().sizeDelta = new Vector2 (randParticleSize, randParticleSize);
-        }
-    }
-    #endregion
+                for (var j = 0; j < grid; j++)
+                {
+                    _box = Instantiate(card, new Vector3(_gapX + 10, _boxGridHeight, 0),
+                        Quaternion.identity) as GameObject;
+                    _box.transform.SetParent(cardBorder.transform, false);
+                    _box.name = _colCount + "" + _rowCount;
+                    TagBoxAI _boxScript = _box.GetComponent<TagBoxAI>();
+                    
+                    _boxScript.boxColNum = _colCount;
+                    _boxScript.boxRowNum = _rowCount;
 
-    // Animate line
-    private void Update () {
-        if (animateLine) {
-            if (counter < dist) {
-                counter += drawDelay / drawSpeed;
-                float x = Mathf.Lerp (0, dist, counter);
+                    // Update gap on X axis after evey box
+                    _gapX += _boxSize + _boxOffset * 2;
+                    _rowCount++;
+                }
 
-                Vector3 A = origin;
-                Vector3 B = destination;
-
-                Vector3 ALine = x * Vector3.Normalize (B - A) + A;
-
-                lineRend.SetPosition (1, ALine);
+                _boxGridHeight += _boxSize + _boxOffset;
+                _colCount++;
+                _rowCount = 0;
             }
+            
+            Debug.Log(_boxGridHeight);
         }
+
+        #endregion
+
+        // Animate line
+        private void Update () {
+            if (_animateLine) {
+                if (_counter < _dist) {
+                    _counter += _drawDelay / _drawSpeed;
+                    var x = Mathf.Lerp (0, _dist, _counter);
+
+                    var a = _origin;
+                    var b = _destination;
+
+                    var aLine = x * Vector3.Normalize (b - a) + a;
+
+                    _lineRend.SetPosition (1, aLine);
+                }
+            }
 
         
-        if (!hasInitButton && isGameOver) {
-            if (buttonCounter > 0) {
-                buttonCounter -= Time.deltaTime;
-            } else {
-                border.gameObject.SetActive (false);
-                turnTxt.gameObject.SetActive (false);
-                downArrow.gameObject.SetActive (false);
-
-                if (!isAIMoving) {
-                    turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                    turnTxt.transform.SetParent (player2Card.transform, false);
-                    turnTxt.text = "Winner";
-
-                    turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                    turnTxt.transform.SetParent (player1Card.transform, false);
-                    turnTxt.text = "Loser";
-
-                    endImage.GetComponent<Image> ().sprite = loserSprite;
-                    endText.text = "You Lose";
-                    lineGen.gameObject.SetActive (false);
+            if (!_hasInitButton && isGameOver) {
+                if (_buttonCounter > 0) {
+                    // _buttonCounter -= Time.deltaTime;
                 } else {
-                    turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                    turnTxt.transform.SetParent (player2Card.transform, false);
-                    turnTxt.text = "Draw";
+                    _border.gameObject.SetActive (false);
+                    _turnTxt.gameObject.SetActive (false);
+                    _downArrow.gameObject.SetActive (false);
 
-                    turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                    turnTxt.transform.SetParent (player1Card.transform, false);
-                    turnTxt.text = "Draw";
+                    if (!isAIMoving) {
+                        _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        _turnTxt.transform.SetParent (player2Card.transform, false);
+                        _turnTxt.text = "Winner";
 
-                    endImage.GetComponent<Image> ().sprite = handshakeSprite;
-                    endText.text = "Draw";
+                        _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        _turnTxt.transform.SetParent (player1Card.transform, false);
+                        _turnTxt.text = "Loser";
+
+                        endImage.GetComponent<Image> ().sprite = loserSprite;
+                        endText.text = "You Lose";
+                        _lineGen.gameObject.SetActive (false);
+                    } else {
+                        _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        _turnTxt.transform.SetParent (player2Card.transform, false);
+                        _turnTxt.text = "Draw";
+
+                        _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        _turnTxt.transform.SetParent (player1Card.transform, false);
+                        _turnTxt.text = "Draw";
+
+                        endImage.GetComponent<Image> ().sprite = handshakeSprite;
+                        endText.text = "Draw";
+                    }
+
+                    cardBorder.gameObject.SetActive (false);
+                    endImage.gameObject.SetActive (true);
+                    _hasInitButton = true;
                 }
-
-                GameObject.Find ("Card Border").SetActive (false);
-                GameObject.Find ("Line Dots").SetActive (false);
-                endImage.gameObject.SetActive (true);
-                hasInitButton = true;
             }
         }
-    }
+        
+          // Winner Checker
+        private int HasMatched()
+        {
+            int n = grid;
+            int rowWinner = 0;
+            int colWinner = 0;
+            int diagWinner = 0;
+            int antiDiagWinner = 0;
+            int hasTied = 3;
 
-    // Winner Checker
-    private int HasMatched () {
-        int n = grid;
-        int rowWinner = 0;
-        int colWinner = 0;
-        int diagWinner = 0;
-        int antiDiagWinner = 0;
-        int hasTied = 3;
-
-        for (int i = 0; i < n; i++) {
-            if (i < n - 1) {
-                // Detect Diagnal and Anti Diagnal
-                if (diagWinner > -1) {
-                    diagWinner = board[i, (n - 1) - i];
-                    if (board[i, (n - 1) - i] == 0 || board[i, (n - 1) - i] != board[i + 1, (n - 1) - i - 1]) {
-                        diagWinner = -1;
-                    }
-                }
-
-                if (antiDiagWinner > -1) {
-                    antiDiagWinner = board[i, i];
-                    if (board[i, i] == 0 || board[i, i] != board[i + 1, i + 1]) {
-                        antiDiagWinner = -1;
-                    }
-                }
-            }
-
-            for (int j = 0; j < n; j++) {
-                if (j < n - 1) {
-                    if (rowWinner > -1) {
-                        rowWinner = board[i, j];
-                        // If the row has a gap or doesnt match value then this row cant match
-                        if (board[i, j] == 0 || board[i, j] != board[i, j + 1]) {
-                            rowWinner = -1;
+            for (int i = 0; i < n; i++)
+            {
+                if (i < n - 1)
+                {
+                    // Detect Diagnal and Anti Diagnal
+                    if (diagWinner > -1)
+                    {
+                        diagWinner = Board[i, (n - 1) - i];
+                        if (Board[i, (n - 1) - i] == 0 || Board[i, (n - 1) - i] != Board[i + 1, (n - 1) - i - 1])
+                        {
+                            diagWinner = -1;
                         }
                     }
 
-                    if (colWinner > -1) {
-                        colWinner = board[j, i];
-                        if (board[j, i] == 0 || board[j, i] != board[j + 1, i]) {
-                            colWinner = -1;
+                    if (antiDiagWinner > -1)
+                    {
+                        antiDiagWinner = Board[i, i];
+                        if (Board[i, i] == 0 || Board[i, i] != Board[i + 1, i + 1])
+                        {
+                            antiDiagWinner = -1;
                         }
                     }
                 }
 
-                if (board[i, j] == 0) {
-                    hasTied = -1;
+                for (int j = 0; j < n; j++)
+                {
+                    if (j < n - 1)
+                    {
+                        if (rowWinner > -1)
+                        {
+                            rowWinner = Board[i, j];
+                            // If the row has a gap or doesnt match value then this row cant match
+                            if (Board[i, j] == 0 || Board[i, j] != Board[i, j + 1])
+                            {
+                                rowWinner = -1;
+                            }
+                        }
+
+                        if (colWinner > -1)
+                        {
+                            colWinner = Board[j, i];
+                            if (Board[j, i] == 0 || Board[j, i] != Board[j + 1, i])
+                            {
+                                colWinner = -1;
+                            }
+                        }
+                    }
+
+                    if (Board[i, j] == 0)
+                    {
+                        hasTied = -1;
+                    }
                 }
+
+                if (rowWinner > -1)
+                {
+                    _lineSpawnPos = new Vector3((_boxOffset * 2) + 5 + (_boxSize - (_boxSize / 2)),
+                        _cardBorderTopGap + (_boxSize * (1 + i) + (_boxOffset * i)) - (_boxSize / 2), -1);
+                    _lineDrawPos = new Vector3((_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1) + 5, 0, 0);
+
+                    _destination = _lineDrawPos;
+                    _dist = Vector3.Distance(_origin, _destination);
+
+                    // 1st line dot
+                    _lineDot1Pos = new Vector3(_lineSpawnPos.x + _linedotSize / 2, _lineSpawnPos.y, _lineSpawnPos.z);
+
+                    // 2nd line dot
+                    _lineDot2Pos = new Vector3(_lineSpawnPos.x + _boxSize + (_boxOffset * 2) + _linedotSize / 2,
+                        _lineSpawnPos.y, _lineSpawnPos.z);
+
+                    // 3rd line dot
+                    _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y, _lineSpawnPos.z);
+
+                    return rowWinner;
+                }
+
+                if (colWinner > -1)
+                {
+                    // Draw lines
+                    _lineSpawnPos = new Vector3(10 + (_boxSize * (1 + i)) - (_boxSize / 2) + (_boxOffset * 2) * (1 + i),
+                        _cardBorderTopGap + _boxSize - (_boxSize / 2) - 5, -1);
+                    _lineDrawPos = new Vector3(0, (_boxSize * (grid - 1)) + _boxOffset * (grid - 1) + 10, 0);
+
+                    _destination = _lineDrawPos;
+                    _dist = Vector3.Distance(_origin, _destination);
+
+                    // 1st line dot
+                    _lineDot1Pos = new Vector3(_lineSpawnPos.x, _lineSpawnPos.y + _linedotSize / 2, _lineSpawnPos.z);
+
+                    // 2nd line dot
+                    _lineDot2Pos = new Vector3(_lineSpawnPos.x,
+                        _lineSpawnPos.y + _boxSize + (_boxOffset * 2) - _linedotSize / 2, _lineSpawnPos.z);
+
+                    // 3rd line dot
+                    _lineDot3Pos = new Vector3(_lineSpawnPos.x, _lineSpawnPos.y + _lineDrawPos.y - _linedotSize / 2,
+                        _lineSpawnPos.z);
+
+                    return colWinner;
+                }
+
+                rowWinner = 0;
+                colWinner = 0;
             }
 
-            if (rowWinner > -1) {
-                lineSpawnPos = new Vector3 (170, 192 + boxSize * (1 + i) + boxOffset * (1 + i) - boxSize / 2 - 5, -1);
-                // lineSpawnPos = new Vector3 ((boxSize / 2 + boxOffset + 3) + boxSize / 2, (cardBorderRect.anchoredPosition.y - cardBorderRect.rect.width / 2 + 42) + (boxSize * (1 + 2)) + boxOffset * (2) - boxSize / 2, -1);
-                // lineSpawnPos = new Vector3 ((boxSize / 2 + boxOffset + 3) + boxSize / 2, boxSize * (0 + 1) + boxOffset * (0 + 1) + 3, -1);
-                lineDrawPos = new Vector3 (canvasW - ((boxSize * 2) + 3 + boxOffset - 10), 0, 0);
+            if (diagWinner > -1)
+            {
+                float lineSize = (_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1);
+                _lineSpawnPos = new Vector3((_boxOffset * 2) + 10 + _boxSize / 2,
+                    _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                _lineDrawPos = new Vector3(lineSize, -lineSize + 15, 0);
 
-                destination = lineDrawPos;
-                dist = Vector3.Distance (origin, destination);
+                _destination = _lineDrawPos;
+                _dist = Vector3.Distance(_origin, _destination);
 
                 // 1st line dot
-                lineDot1Pos = lineSpawnPos;
+                _lineDot1Pos = _lineSpawnPos;
 
                 // 2nd line dot
-                lineDot2Pos = new Vector3 ((boxSize / 2 + boxOffset + 3) + boxSize * 2 + boxOffset - boxSize / 2, lineSpawnPos.y, lineSpawnPos.z);
+                _lineDot2Pos = new Vector3(_lineSpawnPos.x + (_boxSize + _boxOffset * 2),
+                    _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 6, _lineSpawnPos.z);
 
                 // 3rd line dot
-                lineDot3Pos = new Vector3 (552, lineSpawnPos.y, lineSpawnPos.z);
+                _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y + _lineDrawPos.y,
+                    _lineSpawnPos.z);
 
-                return rowWinner;
+                return diagWinner;
             }
 
-            if (colWinner > -1) {
-                lineSpawnPos = new Vector3 ((80 + boxSize * (1 + i) + boxOffset * 2 * (1 + i)) - boxSize / 2 - boxOffset - 5, 194 + boxSize / 2, -1);
-                lineDrawPos = new Vector3 (0, boxSize * (grid - 1) + (boxOffset * grid), 0);
+            if (antiDiagWinner > -1)
+            {
+                float lineSize = (_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1);
+                _lineSpawnPos =
+                    new Vector3((_boxOffset * 2) + 10 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
+                        _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                _lineDrawPos = new Vector3(-lineSize, -lineSize + 15, 0);
 
-                destination = lineDrawPos;
-                dist = Vector3.Distance (origin, destination);
+                _destination = _lineDrawPos;
+                _dist = Vector3.Distance(_origin, _destination);
 
                 // 1st line dot
-                lineDot1Pos = new Vector3 (lineSpawnPos.x, lineSpawnPos.y + 5, lineSpawnPos.z);
+                _lineDot1Pos = _lineSpawnPos;
 
                 // 2nd line dot
-                lineDot2Pos = new Vector3 (lineSpawnPos.x, 461, lineSpawnPos.z);
+                _lineDot2Pos = new Vector3(_lineSpawnPos.x - (_boxSize + _boxOffset * 2),
+                    _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 8, _lineSpawnPos.z);
 
                 // 3rd line dot
-                lineDot3Pos = new Vector3 (lineSpawnPos.x, lineSpawnPos.y + dist - 5, lineSpawnPos.z);
+                _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y + _lineDrawPos.y,
+                    _lineSpawnPos.z);
 
-                return colWinner;
+                return antiDiagWinner;
             }
 
-            rowWinner = 0;
-            colWinner = 0;
-        }
-
-        if (diagWinner > -1) {
-            lineSpawnPos = new Vector3 (173, 640, -1);
-            lineDrawPos = new Vector3 (375, -360, 0);
-            // lineDrawPos = new Vector3 (boxSize * (grid - 1) + boxOffset * grid - boxOffset, -(boxSize * (grid - 1) + boxOffset * grid - boxOffset), 0);
-
-            destination = lineDrawPos;
-            dist = Vector3.Distance (origin, destination);
-
-            // 1st line dot
-            lineDot1Pos = lineSpawnPos;
-
-            // 2nd line dot
-            lineDot2Pos = new Vector3 (360, 460, lineSpawnPos.z);
-            // lineDot2Pos = new Vector3 (boxSize + boxSize / 2 + boxOffset, -lineDrawPos.y, lineSpawnPos.z);
-
-            // 3rd line dot
-            lineDot3Pos = new Vector3 (549, 281, lineSpawnPos.z);
-
-            return diagWinner;
-        }
-
-        if (antiDiagWinner > -1) {
-            lineSpawnPos = new Vector3 (553, 640, -1);
-            lineDrawPos = new Vector3 (-380, -360, 0);
-
-            destination = lineDrawPos;
-            dist = Vector3.Distance (origin, destination);
-
-            // 1st line dot
-            lineDot1Pos = lineSpawnPos;
-
-            // 2nd line dot
-            lineDot2Pos = new Vector3 (360, 459, lineSpawnPos.z);
-
-            // 3rd line dot
-            lineDot3Pos = new Vector3 (173, 281, lineSpawnPos.z);
-
-            return antiDiagWinner;
-        }
-
-        if (hasTied > -1) {
-            return 3;
-        }
-
-        return -1;
-    }
-
-    private double Minimax (int[, ] board, int depth, bool isMax) {
-        int result = HasMatched ();
-
-        // -1 = No one won nor did it tie
-        if (result != -1) {
-            // X = O = 0, tie = 3
-            if (result == 3) {
-                return 0;
-            } else if (result == 1) {
-                return 10 - depth;
-            } else if (result == 2) {
-                return -10 + depth;
+            if (hasTied > -1)
+            {
+                return 3;
             }
+
+            return -1;
         }
 
-        if (isMax) {
-            var bestScore = Double.NegativeInfinity;
+        private double Minimax (int[, ] board, int depth, bool isMax) {
+            int result = HasMatched ();
 
-            for (int i = 0; i < grid; i++) {
-                for (int j = 0; j < grid; j++) {
-                    if (board[i, j] == 0) {
-                        board[i, j] = player;
-                        var score = Minimax (board, depth + 1, false);
-                        board[i, j] = 0;
+            // -1 = No one won nor did it tie
+            if (result != -1) {
+                // X = O = 0, tie = 3
+                if (result == 3) {
+                    return 0;
+                } else if (result == 1) {
+                    return 10 - depth;
+                } else if (result == 2) {
+                    return -10 + depth;
+                }
+            }
 
-                        if (score > bestScore) {
-                            bestScore = score;
+            if (isMax) {
+                var bestScore = Double.NegativeInfinity;
+
+                for (int i = 0; i < grid; i++) {
+                    for (int j = 0; j < grid; j++) {
+                        if (board[i, j] == 0) {
+                            board[i, j] = _player;
+                            var score = Minimax (board, depth + 1, false);
+                            board[i, j] = 0;
+
+                            if (score > bestScore) {
+                                bestScore = score;
+                            }
                         }
                     }
                 }
-            }
 
-            return bestScore;
-        } else {
-            var bestScore = Double.PositiveInfinity;
-
-            for (int i = 0; i < grid; i++) {
-                for (int j = 0; j < grid; j++) {
-                    if (board[i, j] == 0) {
-                        board[i, j] = ai;
-                        var score = Minimax (board, depth + 1, true);
-                        board[i, j] = 0;
-
-                        if (score < bestScore) {
-                            bestScore = score;
-                        }
-                    }
-                }
-            }
-
-            return bestScore;
-        }
-    }
-
-    // Make ai move
-    public IEnumerator MoveAi () {
-        border.transform.SetParent (player2Card.transform, false);
-        turnTxt.transform.SetParent (player2Card.transform, false);
-        turnTxt.text = "Bot's Turn";
-        downArrow.transform.SetParent (player2Card.transform, false);
-
-        double bestScore = Double.PositiveInfinity;
-        int[] bestMove = new int[2];
-
-        for (int i = 0; i < grid; i++) {
-            for (int j = 0; j < grid; j++) {
-                if (board[i, j] == 0) {
-                    board[i, j] = ai;
-                    double score = Minimax (board, 0, true);
-                    board[i, j] = 0;
-
-                    if (bestScore > score) {
-                        bestScore = score;
-                        bestMove[0] = i;
-                        bestMove[1] = j;
-                    }
-                }
-            }
-        }
-
-        // If the spot is the first value and it is not empty
-        if (bestMove[0] == 0 && bestMove[1] == 0 && board[0, 0] != 0) {
-
-        } else {
-            // Get game object and script
-            GameObject box = GameObject.Find (bestMove[0] + "" + bestMove[1]);
-            TagBoxAI boxScript = box.GetComponent<TagBoxAI> ();
-
-            yield return new WaitForSeconds (aiMoveDelay);
-
-            boxScript.image.sprite = oImg;
-            boxScript.clicked = true;
-            board[bestMove[0], bestMove[1]] = ai;
-
-            boardLen++;
-            isAIMoving = false;
-            HasEnded ();
-
-            border.transform.SetParent (player1Card.transform, false);
-            turnTxt.transform.SetParent (player1Card.transform, false);
-            turnTxt.text = "Your turn";
-            downArrow.transform.SetParent (player1Card.transform, false);
-        }
-    }
-
-    // Change player and check winner
-    public void HasEnded () {
-        int result = HasMatched ();
-
-        if (result != -1) {
-            if (result == 3) {
-                GameOver (true);
+                return bestScore;
             } else {
-                if (result == 2) {
-                    GameOver (false);
+                var bestScore = Double.PositiveInfinity;
+
+                for (int i = 0; i < grid; i++) {
+                    for (int j = 0; j < grid; j++) {
+                        if (board[i, j] == 0) {
+                            board[i, j] = _ai;
+                            var score = Minimax (board, depth + 1, true);
+                            board[i, j] = 0;
+
+                            if (score < bestScore) {
+                                bestScore = score;
+                            }
+                        }
+                    }
+                }
+
+                return bestScore;
+            }
+        }
+
+        // Make ai move
+        public IEnumerator MoveAi () {
+            _border.transform.SetParent (player2Card.transform, false);
+            _turnTxt.transform.SetParent (player2Card.transform, false);
+            _turnTxt.text = "Bot's Turn";
+            _downArrow.transform.SetParent (player2Card.transform, false);
+
+            double bestScore = Double.PositiveInfinity;
+            int[] bestMove = new int[2];
+
+            for (int i = 0; i < grid; i++) {
+                for (int j = 0; j < grid; j++) {
+                    if (Board[i, j] == 0) {
+                        Board[i, j] = _ai;
+                        double score = Minimax (Board, 0, true);
+                        Board[i, j] = 0;
+
+                        if (bestScore > score) {
+                            bestScore = score;
+                            bestMove[0] = i;
+                            bestMove[1] = j;
+                        }
+                    }
+                }
+            }
+
+            // If the spot is the first value and it is not empty
+            if (bestMove[0] == 0 && bestMove[1] == 0 && Board[0, 0] != 0) {
+
+            } else {
+                // Get game object and script
+                GameObject box = GameObject.Find (bestMove[0] + "" + bestMove[1]);
+                TagBoxAI boxScript = box.GetComponent<TagBoxAI> ();
+
+                yield return new WaitForSeconds (_aiMoveDelay);
+
+                boxScript.image.sprite = oImg;
+                boxScript.clicked = true;
+                Board[bestMove[0], bestMove[1]] = _ai;
+
+                boardLen++;
+                isAIMoving = false;
+                HasEnded ();
+
+                _border.transform.SetParent (player1Card.transform, false);
+                _turnTxt.transform.SetParent (player1Card.transform, false);
+                _turnTxt.text = "Your turn";
+                _downArrow.transform.SetParent (player1Card.transform, false);
+            }
+        }
+
+        // Change player and check winner
+        public void HasEnded () {
+            int result = HasMatched ();
+
+            if (result != -1) {
+                if (result == 3) {
+                    GameOver (true);
+                } else {
+                    if (result == 2) {
+                        GameOver (false);
+                    }
                 }
             }
         }
-    }
 
-    public void GoToMenu () {
-        SceneManager.LoadScene ("Menu");
-    }
-
-    // Game Over
-    public void GameOver (bool hasTied) {
-        // If is already over
-        if (isGameOver) {
-            return;
+        public void GoToMenu () {
+            SceneManager.LoadScene ("Menu");
         }
 
-        if (!hasTied) {
-            // Draw lines
-            lineGen = Instantiate (line, lineSpawnPos, Quaternion.identity) as GameObject;
-            lineGen.transform.SetParent (canvas.transform, false);
-            lineRend = lineGen.GetComponent<LineRenderer> ();
+        // Game Over
+        public void GameOver (bool hasTied) {
+            // If is already over
+            if (isGameOver) {
+                return;
+            }
 
-            lineRend.material = oMat;
-            lineDotPr = blueLineDotPr;
+            if (!hasTied)
+            {
+                // Draw lines
+                _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
+                _lineGen.transform.SetParent(_canvas.transform, false);
+                _lineRend = _lineGen.GetComponent<LineRenderer>();
 
-            // 1st line dot
-            _lineDot = Instantiate (lineDotPr, lineDot1Pos, Quaternion.identity);
-            _lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
+                _lineRend.material = oMat;
+                _lineDotPr = blueLineDotPr;
 
-            // 2nd line dot
-            _lineDot = Instantiate (lineDotPr, lineDot2Pos, Quaternion.identity);
-            _lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
+                // 1st line dot
+                _lineDot = Instantiate(_lineDotPr, _lineDot1Pos, Quaternion.identity);
+                _lineDot.transform.SetParent(cardBorder.transform, false);
 
-            // 3rd line dot
-            _lineDot = Instantiate (lineDotPr, lineDot3Pos, Quaternion.identity);
-            _lineDot.transform.SetParent (GameObject.Find ("Line Dots").transform, false);
+                // 2nd line dot
+                _lineDot = Instantiate(_lineDotPr, _lineDot2Pos, Quaternion.identity);
+                _lineDot.transform.SetParent(cardBorder.transform, false);
 
-            animateLine = true;
-        } else { }
+                // 3rd line dot
+                _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
+                _lineDot.transform.SetParent(cardBorder.transform, false);
 
-        isGameOver = true;
+                _animateLine = true;
+            }
+
+            isGameOver = true;
+        }
     }
 }

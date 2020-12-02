@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using Confetti;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
