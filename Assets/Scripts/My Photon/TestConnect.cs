@@ -7,12 +7,10 @@ namespace My_Photon
 {
     public class TestConnect : MonoBehaviourPunCallbacks {
         public Text connectTxt;
-        public bool _tryJoinRoom = false;
 
         // Start is called before the first frame update
-        void Start () {
+        private void Start () {
             Debug.Log ("Connecting to Photon", this);
-
             PhotonNetwork.AutomaticallySyncScene = true;
             PhotonNetwork.NickName = MasterManager.GameSettings.NickName;
             PhotonNetwork.GameVersion = MasterManager.GameSettings.GameVersion;
@@ -27,11 +25,9 @@ namespace My_Photon
 
             if (!PhotonNetwork.InLobby) {
                 PhotonNetwork.JoinLobby ();
-                Debug.Log("Joined lobby");
             }
 
-            Debug.Log ("Connected to Photon", this);
-            _tryJoinRoom = true;
+            Debug.Log ("Connected to Photon and joined lobby", this);
         }
 
         public override void OnDisconnected (DisconnectCause cause) {
