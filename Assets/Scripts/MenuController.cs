@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using AI;
 using My_Photon.Rooms;
 using Photon.Pun;
 using Photon.Realtime;
@@ -11,6 +13,10 @@ using UnityEngine.UI;
 public class MenuController : MonoBehaviourPunCallbacks
 {
     // Store scene Game Objects
+    public Image tictactoeImage;
+    
+    public GameObject menuButtons;
+    public GameObject singlePlayerButtons;
     public GameObject localMultiplayer;
     public GameObject singlePlayer;
     public GameObject privateMultiplayer;
@@ -18,13 +24,15 @@ public class MenuController : MonoBehaviourPunCallbacks
 
     public Text connectionText;
 
+    private TicTacToeCreatorAI tictactoeCreatorAIScript;
     private int _roomLength;
     private bool _isConnected = false;
     private float _disableConnectionTextWait;
-
+    
     private void Start()
     {
-        _disableConnectionTextWait = 5f;
+        _disableConnectionTextWait = 3f;
+        tictactoeCreatorAIScript = singlePlayer.GetComponent<TicTacToeCreatorAI>();
     }
 
     private void Update () {
@@ -44,7 +52,29 @@ public class MenuController : MonoBehaviourPunCallbacks
     }
 
     public void SinglePlayer () {
+        tictactoeImage.gameObject.SetActive(false);
+        menuButtons.SetActive(false);
+        singlePlayerButtons.SetActive(true);
+    }
+
+    public void EasyBot()
+    {
         gameObject.SetActive(false);
+        tictactoeCreatorAIScript.mode = 0;
+        singlePlayer.SetActive(true);
+    }
+    
+    public void MediumBot()
+    {
+        gameObject.SetActive(false);
+        tictactoeCreatorAIScript.mode = 1;
+        singlePlayer.SetActive(true);
+    }
+    
+    public void HardBot()
+    {
+        gameObject.SetActive(false);
+        tictactoeCreatorAIScript.mode = 2;
         singlePlayer.SetActive(true);
     }
     
@@ -59,7 +89,7 @@ public class MenuController : MonoBehaviourPunCallbacks
         }
         else
         {
-            ShowText("You are not connected", false);
+            StartCoroutine(ShowText("You are not connected", false));
         }
     }
     
@@ -78,20 +108,20 @@ public class MenuController : MonoBehaviourPunCallbacks
     
     public override void OnConnectedToMaster ()
     {
-        ShowText("You are connected", true);
+        StartCoroutine(ShowText("You are connected", true));
         _isConnected = true;
     }
 
     public override void OnDisconnected (DisconnectCause cause) {
-        ShowText("You are Disconnected, because: " + cause.ToString (), false);
+        StartCoroutine(ShowText("You are Disconnected, because: " + cause.ToString (), false));
     }
 
-    private void ShowText(string _text, bool good)
+    private IEnumerator ShowText(string _text, bool isGood)
     {
+        Color color;
         connectionText.text = _text;
-        var color = connectionText.color;
 
-        if (good)
+        if (isGood)
         {
             color = Color.green;
         }
@@ -99,7 +129,22 @@ public class MenuController : MonoBehaviourPunCallbacks
         {
             color = Color.red;
         }
-
-        color = new Color(color.r, color.g, color.b, 1);
+        
+        // Show
+        for (float i = 0; i <= 5; i += Time.deltaTime)
+        { 
+            // set color with i as alpha
+            connectionText.color = new Color(color.r, color.g, color.b, i);
+            yield return null;
+        }
+            
+        yield return new WaitForSeconds(_disableConnectionTextWait);
+        // Hide
+        for (float i = 1; i >= 0; i -= Time.deltaTime)
+        {
+            // set color with i as alpha
+            connectionText.color = new Color(color.r, color.g, color.b, i);
+            yield return null;
+        }
     }
 }

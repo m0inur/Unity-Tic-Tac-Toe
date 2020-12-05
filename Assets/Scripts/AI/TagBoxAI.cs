@@ -37,10 +37,14 @@ namespace AI
                 if (_ticTacToeCreatorAIScript.boardLen >= _ticTacToeCreatorAIScript.grid * 2 - 1) {
                     _ticTacToeCreatorAIScript.HasEnded ();
                 }
-
+                
                 clicked = true;
-                StartCoroutine (_ticTacToeCreatorAIScript.MoveAi ());
-                _ticTacToeCreatorAIScript.isAIMoving = true;
+                _ticTacToeCreatorAIScript.HasEnded();
+                if (!_ticTacToeCreatorAIScript.isGameOver)
+                {
+                    StartCoroutine (_ticTacToeCreatorAIScript.MoveAi ());
+                }
+                
                 _ticTacToeCreatorAIScript.boardLen++;
             }
         }

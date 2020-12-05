@@ -29,7 +29,6 @@ namespace My_Photon.Rooms
             if (!PhotonNetwork.IsConnected || roomName.text == "") {
                 return;
             }
-            
             Debug.Log ("Creating room = " + roomName.text);
         
             RoomOptions options = new RoomOptions ();

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using Confetti;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,6 +11,7 @@ namespace AI
     public class TicTacToeCreatorAI : MonoBehaviour {
         #region Variables
 
+        public GameObject confettiWindow;
         public GameObject menu;
         public GameObject line;
         public GameObject card;
@@ -16,11 +19,15 @@ namespace AI
         private Button _menuButton;
         private Button _playAgainButton;
 
+        public Transform xConfetti;
+
+        public Sprite winnerSprite;
         public Sprite handshakeSprite;
         public Sprite loserSprite;
         public Sprite oImg;
 
         public Material oMat;
+        public Material xMat;
 
         public Image cardBorder;
         public Image endImage;
@@ -29,6 +36,7 @@ namespace AI
         public Image player2Card;
         public Image playerCardBorder;
         public Image blueLineDotPr;
+        public Image redLineDotPr;
 
         public Text turnTxtPr;
         public Text endText;
@@ -39,8 +47,11 @@ namespace AI
         private Image _downArrow;
         private Image _border;
 
+        private GameObject _confettiWindow;
         private GameObject _lineGen;
         private LineRenderer _lineRend;
+
+        private WindowConfetti _windowConfettiScript;
         
         public int grid;
 
@@ -48,11 +59,14 @@ namespace AI
         public int[, ] Board;
         [HideInInspector]
         public int boardLen;
+        [HideInInspector]
+        public int mode;
 
         private int _player;
         private int _ai;
         private int _rowCount;
         private int _colCount;
+        private int _winner;
 
         // Game Objects
         private RectTransform _rt;
@@ -60,8 +74,8 @@ namespace AI
         private GameObject _box;
         private Canvas _canvas;
         private Text _turnTxt;
-        private Text _winnerTxt;
-        private Text _loserTxt;
+        private Text _player1CardEndTxt;
+        private Text _player2CardEndTxt;
         private Image _particle;
 
         // Float
@@ -108,6 +122,7 @@ namespace AI
         // Create the board
         private void Start()
         {
+            // Mode = Easy = 0, Medium = 1, Hard = 2
             Board = new int[grid, grid];
 
             endImage.gameObject.SetActive (false);
@@ -129,6 +144,7 @@ namespace AI
             _aiMoveDelay = 1f;
             _buttonCounter = 1.5f;
             _linedotSize = 15;
+            grid = 3;
 
             _rowCount = 0;
             _colCount = 0;
@@ -160,22 +176,37 @@ namespace AI
             Board = new int[grid, grid];
 
             endImage.gameObject.SetActive (false);
-            if (!_hasLost)
+
+            if (_confettiWindow)
             {
-                Destroy(_border.gameObject);
-                Destroy(_turnTxt.gameObject);
-                Destroy(_downArrow.gameObject);
+                Destroy(_confettiWindow.gameObject);
             }
 
-            _border = Instantiate (playerCardBorder, new Vector3 (0, 0, 0), Quaternion.identity);
-            _border.transform.SetParent (player1Card.transform, false);
-            
-            _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-            _turnTxt.transform.SetParent (player1Card.transform, false);
-            
-            _downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
-            _downArrow.transform.SetParent (player1Card.transform, false);
-            
+            if (_downArrow)
+            {
+                // Disable arrow after being disabled
+                GameObject.Destroy(_downArrow.gameObject);
+            }
+
+            endImage.gameObject.SetActive(false);
+
+            if (!_border)
+            {
+                _border = Instantiate(playerCardBorder, new Vector3(0, 0, 0), Quaternion.identity);
+            }
+
+            _border.transform.SetParent(player1Card.transform, false);
+
+            if (!_turnTxt)
+            {
+                _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+            }
+
+            _turnTxt.transform.SetParent(player1Card.transform, false);
+
+            _downArrow = Instantiate(downArrowPr, downArrowPr.transform.position, Quaternion.identity);
+            _downArrow.transform.SetParent(player1Card.transform, false);
+
             _drawSpeed = 12f;
             _drawDelay = 0.1f;
             _aiMoveDelay = 1f;
@@ -210,10 +241,10 @@ namespace AI
 
             // Destroy arrow after being disabled
             cardBorder.gameObject.SetActive(true);
-            if (_winnerTxt != null)
+            if (_player1CardEndTxt != null)
             {
-                Destroy(_winnerTxt);
-                Destroy(_loserTxt);
+                Destroy(_player1CardEndTxt.gameObject);
+                Destroy(_player2CardEndTxt.gameObject);
             }
         }
 
@@ -282,30 +313,48 @@ namespace AI
                 if (_buttonCounter > 0) {
                     _buttonCounter -= Time.deltaTime;
                 } else {
+                    Debug.Log("Destroy Turn Txt");
                     Destroy(_border.gameObject);
                     Destroy(_turnTxt.gameObject);
                     Destroy(_downArrow.gameObject);
                     
-                    if (!isAIMoving) {
-                        _winnerTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                        _winnerTxt.transform.SetParent (player2Card.transform, false);
-                        _winnerTxt.text = "Winner";
+                    if (_winner != -1) {
+                        if (_winner == 1)
+                        {
+                            _player1CardEndTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _player1CardEndTxt.transform.SetParent (player1Card.transform, false);
+                            _player1CardEndTxt.text = "Winner";
 
-                        _loserTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                        _loserTxt.transform.SetParent (player1Card.transform, false);
-                        _loserTxt.text = "Loser";
+                            _player2CardEndTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _player2CardEndTxt.transform.SetParent (player2Card.transform, false);
+                            _player2CardEndTxt.text = "Loser";
 
-                        endImage.GetComponent<Image> ().sprite = loserSprite;
-                        endText.text = "You Lose";
-                        _lineGen.gameObject.SetActive (false);
+                            endImage.GetComponent<Image> ().sprite = winnerSprite;
+                            endText.text = "You Win";
+                            _lineGen.gameObject.SetActive (false);
+                        }
+                        else
+                        {
+                            _player1CardEndTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _player1CardEndTxt.transform.SetParent (player2Card.transform, false);
+                            _player1CardEndTxt.text = "Winner";
+
+                            _player2CardEndTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _player2CardEndTxt.transform.SetParent (player1Card.transform, false);
+                            _player2CardEndTxt.text = "Loser";
+
+                            endImage.GetComponent<Image> ().sprite = loserSprite;
+                            endText.text = "You Lose";
+                            _lineGen.gameObject.SetActive (false);
+                        }
                     } else {
-                        _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                        _turnTxt.transform.SetParent (player2Card.transform, false);
-                        _turnTxt.text = "Draw";
+                        _player1CardEndTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        _player1CardEndTxt.transform.SetParent (player2Card.transform, false);
+                        _player1CardEndTxt.text = "Draw";
 
-                        _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                        _turnTxt.transform.SetParent (player1Card.transform, false);
-                        _turnTxt.text = "Draw";
+                        _player2CardEndTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        _player2CardEndTxt.transform.SetParent (player1Card.transform, false);
+                        _player2CardEndTxt.text = "Draw";
 
                         endImage.GetComponent<Image> ().sprite = handshakeSprite;
                         endText.text = "Draw";
@@ -489,108 +538,183 @@ namespace AI
             return -1;
         }
 
-        private double Minimax (int[, ] board, int depth, bool isMax) {
-            int result = HasMatched ();
-
-            // -1 = No one won nor did it tie
-            if (result != -1) {
-                // X = O = 0, tie = 3
-                if (result == 3) {
-                    return 0;
-                } else if (result == 1) {
-                    return 10 - depth;
-                } else if (result == 2) {
-                    return -10 + depth;
-                }
-            }
-
-            if (isMax) {
-                var bestScore = Double.NegativeInfinity;
-
-                for (int i = 0; i < grid; i++) {
-                    for (int j = 0; j < grid; j++) {
-                        if (board[i, j] == 0) {
-                            board[i, j] = _player;
-                            var score = Minimax (board, depth + 1, false);
-                            board[i, j] = 0;
-
-                            if (score > bestScore) {
-                                bestScore = score;
-                            }
-                        }
-                    }
-                }
-
-                return bestScore;
-            } else {
-                var bestScore = Double.PositiveInfinity;
-
-                for (int i = 0; i < grid; i++) {
-                    for (int j = 0; j < grid; j++) {
-                        if (board[i, j] == 0) {
-                            board[i, j] = _ai;
-                            var score = Minimax (board, depth + 1, true);
-                            board[i, j] = 0;
-
-                            if (score < bestScore) {
-                                bestScore = score;
-                            }
-                        }
-                    }
-                }
-
-                return bestScore;
-            }
-        }
-
-        // Make ai move
+                // Make ai move
         public IEnumerator MoveAi () {
             _border.transform.SetParent (player2Card.transform, false);
             _turnTxt.transform.SetParent (player2Card.transform, false);
             _turnTxt.text = "Bot's Turn";
             _downArrow.transform.SetParent (player2Card.transform, false);
+            isAIMoving = true;
 
-            double bestScore = Double.PositiveInfinity;
+            var bestScore = Double.PositiveInfinity;
             int[] bestMove = new int[2];
+            int index;
+            
+            if (mode == 0)
+            {
+                index = Minimax(Board, 0, true);
+            }
+            else
+            { 
+                for (int i = 0; i < grid; i++) {
+                    for (int j = 0; j < grid; j++) {
+                        if (Board[i, j] == 0) {
+                            Board[i, j] = _ai;
+                            int score = Minimax (Board, 0, true);
+                            Board[i, j] = 0;
 
-            for (int i = 0; i < grid; i++) {
-                for (int j = 0; j < grid; j++) {
-                    if (Board[i, j] == 0) {
-                        Board[i, j] = _ai;
-                        double score = Minimax (Board, 0, true);
-                        Board[i, j] = 0;
-
-                        if (bestScore > score) {
-                            bestScore = score;
-                            bestMove[0] = i;
-                            bestMove[1] = j;
+                            if (bestScore > score) {
+                                bestScore = score;
+                                bestMove[0] = i;
+                                bestMove[1] = j;
+                            }
                         }
                     }
                 }
+                index = -1;
             }
 
             // If the spot is the first value and it is not empty
-            if (bestMove[0] == 0 && bestMove[1] == 0 && Board[0, 0] != 0) {
+            if (bestMove[0] == 0 && bestMove[1] == 0 && Board[0, 0] != 0 && mode != 0)
+            {
+            }
+            else {
 
-            } else {
-                // Get game object and script
-                GameObject box = GameObject.Find (bestMove[0] + "" + bestMove[1]);
+            // Get game object and script
+                GameObject box;
+                
+                if (mode == 0)
+                {
+                    if (index.ToString().Length == 1)
+                    {
+                        Board[0, index] = _ai;
+                        box = GameObject.Find (0 + "" + index);
+                    }
+                    else
+                    {
+                        Board[index.ToString()[0] - '0', index.ToString()[1] - '0'] = _ai;
+                        box = GameObject.Find (index.ToString()[0] + "" + index.ToString()[1]);
+                    }
+                }
+                else
+                {
+                    box = GameObject.Find (bestMove[0] + "" + bestMove[1]);
+                    Board[bestMove[0], bestMove[1]] = _ai;
+                }
+                
                 TagBoxAI boxScript = box.GetComponent<TagBoxAI> ();
-
+                
                 yield return new WaitForSeconds (_aiMoveDelay);
-
+                
                 boxScript.image.sprite = oImg;
                 boxScript.clicked = true;
-                Board[bestMove[0], bestMove[1]] = _ai;
-
+                
                 boardLen++;
                 isAIMoving = false;
                 HasEnded ();
-
+                
                 _border.transform.SetParent (player1Card.transform, false);
                 _turnTxt.transform.SetParent (player1Card.transform, false);
                 _turnTxt.text = "Your turn";
                 _downArrow.transform.SetParent (player1Card.transform, false);
+            }
+        }
+        
+        private int Minimax (int[, ] board, int depth, bool isMax) {
+            // If its easy mode
+            if (mode == 0)
+            {
+                var n = grid * grid;
+                int[] emptyIndices = new int[n];
+                var emptyIndicesLen = 0;
+            
+                // Get all the empty spots
+                for (int i = 0; i < grid; i++)
+                {
+                    for (int j = 0; j < grid; j++)
+                    {
+                        if (board[i, j] == 0)
+                        {
+                            emptyIndices[emptyIndicesLen] = int.Parse(i + "" + j);
+                            emptyIndicesLen++;
+                        }
+                    }
+                }
+            
+                // Pick a random index on those empty spots
+                var randIndex = UnityEngine.Random.Range(0, emptyIndicesLen - 1);
+            
+                // Return a random empty spot
+                return emptyIndices[randIndex];
+            }
+            else
+            {
+                int result = HasMatched ();
+
+                // -1 = No one won nor did it tie
+                if (result != -1) {
+                    // X = O = 0, tie = 3
+                    if (result == 3) {
+                        return 0;
+                    } else if (result == 1) {
+                        return 10 - depth;
+                    } else if (result == 2) {
+                        return -10 + depth;
+                    }
+                }
+                
+                if (depth > 1 && mode == 1)
+                {
+                    if (isMax)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }    
+
+                if (isMax) {
+                    var bestScore = Double.NegativeInfinity;
+
+                    // If its medium hardness only go 1 depth
+                        for (int i = 0; i < grid; i++) {
+                            for (int j = 0; j < grid; j++) {
+                                if (board[i, j] == 0) {
+                                    board[i, j] = _player;
+
+                                    var score = Minimax (board, depth + 1, false);
+                                    
+                                    board[i, j] = 0;
+
+                                    if (score > bestScore) {
+                                        bestScore = score;
+                                    }
+                                }
+                            }
+                        }
+                        
+                    return Convert.ToInt32(bestScore);
+                } else {
+                    var bestScore = Double.PositiveInfinity;
+
+                        for (int i = 0; i < grid; i++) {
+                            for (int j = 0; j < grid; j++) {
+                                if (board[i, j] == 0) {
+                                    board[i, j] = _ai;
+                                    var score = Minimax (board, depth + 1, true);
+                                    board[i, j] = 0;
+
+                                    if (score < bestScore) {
+                                        bestScore = score;
+                                    }
+                                }
+                            }
+                        }
+
+                    return Convert.ToInt32(bestScore);
+                }
             }
         }
 
@@ -600,11 +724,9 @@ namespace AI
 
             if (result != -1) {
                 if (result == 3) {
-                    GameOver (true);
+                    GameOver (-1);
                 } else {
-                    if (result == 2) {
-                        GameOver (false);
-                    }
+                    GameOver (result);
                 }
             }
         }
@@ -622,22 +744,42 @@ namespace AI
         }
         
         // Game Over
-        private void GameOver (bool hasTied) {
+        private void GameOver (int winner) {
             // If is already over
             if (isGameOver) {
                 return;
             }
-            
-            // If AI won
-            if (!hasTied)
+
+            _winner = winner;
+            if (winner != -1) 
             {
+
                 // Draw lines
                 _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
                 _lineGen.transform.SetParent(cardBorder.transform, false);
                 _lineRend = _lineGen.GetComponent<LineRenderer>();
+                
+                // if AI Won
+                if (winner == 2)
+                {
+                    _lineRend.material = oMat;
+                    _lineDotPr = blueLineDotPr;
+                }
+                else
+                {
+                    // If player won
+                    _lineRend.material = xMat;
+                    _lineDotPr = redLineDotPr;
+                    
+                    // Start the confetti
+                    _confettiWindow = Instantiate(confettiWindow, new Vector3(0, 0, 0), Quaternion.identity);
+                    _confettiWindow.transform.SetParent(_canvas.transform, false);
+                    
+                    _windowConfettiScript = _confettiWindow.GetComponent<WindowConfetti>();
+                    _windowConfettiScript.pfConfetti = xConfetti;
 
-                _lineRend.material = oMat;
-                _lineDotPr = blueLineDotPr;
+                    endImage.sprite = winnerSprite;
+                }
 
                 // 1st line dot
                 _lineDot = Instantiate(_lineDotPr, _lineDot1Pos, Quaternion.identity);

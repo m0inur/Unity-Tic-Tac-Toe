@@ -59,9 +59,10 @@
      <Compile Include="Assets\Scripts\MenuController.cs" />
      <Compile Include="Assets\Photon\PhotonRealtime\Demos\DemoLoadBalancing\ConnectAndJoinRandomLb.cs" />
      <Compile Include="Assets\Scripts\My Photon\Managers\SingletonScriptableObject.cs" />
+     <Compile Include="Assets\Scripts\MpTextAnimation.cs" />
      <Compile Include="Assets\Scripts\My Photon\Rooms\RoomListing.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\NamePickGui.cs" />
-     <Compile Include="Assets\Scripts\My Photon\Rooms\WaitingRoom.cs" />
+     <Compile Include="Assets\Scripts\My Photon\Rooms\WaitingRoomController.cs" />
      <Compile Include="Assets\Scripts\My Photon\Managers\MasterManager\MasterManager.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\Common\EventSystemSpawner.cs" />
      <Compile Include="Assets\Scripts\AI\TagBoxAI.cs" />

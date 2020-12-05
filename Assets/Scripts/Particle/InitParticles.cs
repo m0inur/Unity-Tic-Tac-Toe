@@ -47,8 +47,8 @@ namespace Particle
                 // Randomize Opacity
                 Image image = _particle.GetComponent<Image>();
                 image.color = new Color(image.color.r, image.color.g, image.color.b,
-                    UnityEngine.Random.Range(0.2f, 0.6f));
-
+                   UnityEngine.Random.Range(0.2f, 0.6f));
+                
                 // Randomize particle sizes
                 _randParticleSize = UnityEngine.Random.Range(_particleW, _particleW + 8);
                 _particle.GetComponent<RectTransform>().sizeDelta = new Vector2(_randParticleSize, _randParticleSize);

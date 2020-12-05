@@ -22,7 +22,7 @@ namespace Multiplayer_Game
         {
             image = GetComponent<Image>();
             _playerIndex = PhotonNetwork.IsMasterClient ? 1 : 2;
-            _ticTacToeCreatorScript = GameObject.Find("Game Controller").GetComponent<TicTacToeCreatorMp>();
+            _ticTacToeCreatorScript = GameObject.Find("Multiplayer Game Controller").GetComponent<TicTacToeCreatorMp>();
         }
 
         public void OnPointerClick(PointerEventData eventData)

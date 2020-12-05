@@ -384,6 +384,7 @@
             <e p="TicTacToeCreatorLM.cs" t="Include" />
           </e>
           <e p="MenuController.cs" t="Include" />
+          <e p="MPTextAnimation.cs" t="Include" />
           <e p="Multiplayer_Game" t="Include">
             <e p="TagBoxMP.cs" t="Include" />
             <e p="TicTacToeCreatorMP.cs" t="Include" />
@@ -401,7 +402,7 @@
               <e p="MultiplayerManager.cs" t="Include" />
               <e p="RoomListing.cs" t="Include" />
               <e p="RoomListingsMenu.cs" t="Include" />
-              <e p="WaitingRoom.cs" t="Include" />
+              <e p="WaitingRoomController.cs" t="Include" />
             </e>
             <e p="SingletonRefrences.cs" t="Include" />
             <e p="TestConnect.cs" t="Include" />
