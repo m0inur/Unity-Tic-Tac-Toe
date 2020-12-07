@@ -120,7 +120,7 @@ namespace LocalMultiplayer
             _boxOffset = 10;
             boardLen = 0;
 
-            _drawSpeed = 12;
+            _drawSpeed = 5;
             _drawDelay = 0.1f;
             _boxGridHeight = 50;
             _showButtonsTimer = 1.5f;
@@ -251,10 +251,10 @@ namespace LocalMultiplayer
                     _box = Instantiate(card, new Vector3(_gapX + 10, _boxGridHeight, 0),
                         Quaternion.identity) as GameObject;
                     _box.transform.SetParent(cardBorder.transform, false);
-                    var _boxScript = _box.GetComponent<TagBoxLm>();
+                    var boxScript = _box.GetComponent<TagBoxLm>();
                     
-                    _boxScript.boxColNum = _colCount;
-                    _boxScript.boxRowNum = _rowCount;
+                    boxScript.boxColNum = _colCount;
+                    boxScript.boxRowNum = _rowCount;
 
                     // Update gap on X axis after evey box
                     _gapX += _boxSize + _boxOffset * 2;
@@ -275,23 +275,22 @@ namespace LocalMultiplayer
             // Go back to menu if back was pressed
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                GoToMenu();
+                Menu();
             }
 
             if (_animateLine)
             {
-                if (_counter < _dist)
-                {
-                    _counter += _drawDelay / _drawSpeed;
-                    float x = Mathf.Lerp(0, _dist, _counter);
+                    if (_counter < _dist) {
+                        _counter += _drawDelay / _drawSpeed;
+                        var x = Mathf.Lerp (0, _dist, _counter);
 
-                    Vector3 A = _origin;
-                    Vector3 B = _destination;
+                        var a = _origin;
+                        var b = _destination;
 
-                    Vector3 ALine = x * Vector3.Normalize(B - A) + A;
+                        var aLine = x * Vector3.Normalize (b - a) + a;
 
-                    _lineRend.SetPosition(0, ALine);
-                }
+                        _lineRend.SetPosition (1, aLine);
+                    }
                 else
                 {
                     _animateLine = false;
@@ -366,14 +365,14 @@ namespace LocalMultiplayer
         // Winner Checker
         private int HasMatched()
         {
-            int n = grid;
-            int rowWinner = 0;
-            int colWinner = 0;
-            int diagWinner = 0;
-            int antiDiagWinner = 0;
-            int hasTied = 3;
+            var n = grid;
+            var rowWinner = 0;
+            var colWinner = 0;
+            var diagWinner = 0;
+            var antiDiagWinner = 0;
+            var hasTied = 3;
 
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 if (i < n - 1)
                 {
@@ -397,7 +396,7 @@ namespace LocalMultiplayer
                     }
                 }
 
-                for (int j = 0; j < n; j++)
+                for (var j = 0; j < n; j++)
                 {
                     if (j < n - 1)
                     {
@@ -572,7 +571,7 @@ namespace LocalMultiplayer
             }
         }
 
-        public void GoToMenu()
+        public void Menu()
         {
             menu.SetActive(true);
             gameObject.SetActive(false);
@@ -583,12 +582,7 @@ namespace LocalMultiplayer
             gameObject.SetActive(false);
             gameObject.SetActive(true);
         }
-
-        public void PlayAgain()
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
-
+        
         private void GameOver(bool hasTied)
         {
             // If is already over

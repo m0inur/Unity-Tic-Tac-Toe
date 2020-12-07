@@ -427,9 +427,19 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 12150}
     - Class: 114
+      Script: {instanceID: 12208}
+    - Class: 114
       Script: {instanceID: 12250}
     - Class: 114
       Script: {instanceID: 12358}
+    - Class: 114
+      Script: {instanceID: 12460}
+    - Class: 114
+      Script: {instanceID: 12504}
+    - Class: 114
+      Script: {instanceID: 12810}
+    - Class: 114
+      Script: {instanceID: 12860}
     - Class: 114
       Script: {instanceID: 13062}
     - Class: 114
@@ -438,6 +448,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 13412}
     - Class: 114
       Script: {instanceID: 13414}
+    - Class: 114
+      Script: {instanceID: 13482}
     - Class: 114
       Script: {instanceID: 13488}
     - Class: 114
@@ -453,11 +465,17 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 14046}
     - Class: 114
+      Script: {instanceID: 14138}
+    - Class: 114
       Script: {instanceID: 14150}
     - Class: 114
       Script: {instanceID: 14272}
     - Class: 114
       Script: {instanceID: 14290}
+    - Class: 114
+      Script: {instanceID: 14312}
+    - Class: 114
+      Script: {instanceID: 14446}
     - Class: 114
       Script: {instanceID: 14632}
     - Class: 114
@@ -472,6 +490,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 14838}
     - Class: 114
       Script: {instanceID: 14880}
+    - Class: 114
+      Script: {instanceID: 15082}
     - Class: 114
       Script: {instanceID: 15410}
     - Class: 114
@@ -662,7 +682,7 @@ ScriptsOnlyBuild:
     className: TMP_Dropdown
   - hash:
       serializedVersion: 2
-      Hash: 822dc25bf22ab4da912aacc5bde38d47
+      Hash: 67f29d720f31779b18d3dfc1049a3478
     assemblyName: Assembly-CSharp.dll
     namespaceName: AI
     className: TicTacToeCreatorAI
@@ -830,7 +850,7 @@ ScriptsOnlyBuild:
     className: BezierSpline
   - hash:
       serializedVersion: 2
-      Hash: 500fcd295c25467864972726a18691d4
+      Hash: 446057a106c6e5cc5cc6a945ceda49ec
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: MenuController
@@ -1172,7 +1192,7 @@ ScriptsOnlyBuild:
     className: CurrentRoomIsOpenToggle
   - hash:
       serializedVersion: 2
-      Hash: 5f8c3838025016060996237d82d12c90
+      Hash: 5ed7b316f9f9f4819d363a4e2cc920ba
     assemblyName: Assembly-CSharp.dll
     namespaceName: My_Photon.Rooms
     className: WaitingRoomController
@@ -1550,7 +1570,7 @@ ScriptsOnlyBuild:
     className: Physics2DRaycaster
   - hash:
       serializedVersion: 2
-      Hash: c4a0d04dfcd3f060f8d88b8f80a01bb5
+      Hash: 9c4d18b57b6a941b350634c421bfce4f
     assemblyName: Assembly-CSharp.dll
     namespaceName: My_Photon.Rooms
     className: CreateRoom
@@ -1868,7 +1888,7 @@ ScriptsOnlyBuild:
     className: CurrentRoomAutoCleanupProperty
   - hash:
       serializedVersion: 2
-      Hash: 16cb4c35dc5e738fc4038419d8ea8a89
+      Hash: 04bd86feb309af16b1c611f33460b94f
     assemblyName: Assembly-CSharp.dll
     namespaceName: My_Photon.Rooms
     className: MultiplayerManager
@@ -2036,7 +2056,7 @@ ScriptsOnlyBuild:
     className: ToggleGroup
   - hash:
       serializedVersion: 2
-      Hash: deb53e5b05106ad8b0b162de535408d0
+      Hash: e6772dc026df88c308529dcbc9f8521e
     assemblyName: Assembly-CSharp.dll
     namespaceName: Multiplayer_Game
     className: TicTacToeCreatorMp

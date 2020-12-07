@@ -20,29 +20,31 @@ namespace My_Photon.Rooms
 
         // Need a SingletonRefrence to use "OnRoomListUpdate"
         public override void OnRoomListUpdate (List<RoomInfo> roomList) {
-            foreach (RoomInfo info in roomList) {
-                // Remove from list
-                if (info.RemovedFromList) {
-                    int index = _listings.FindIndex (x => x.RoomInfo.Name == info.Name);
+            foreach (var info in roomList)
+            {
+                if (info.Name != "PunfishQuickmatch2131")
+                {
+                    // Remove from list
+                    if (info.RemovedFromList) {
+                        int index = _listings.FindIndex (x => x.RoomInfo.Name == info.Name);
 
-                    if (index != -1) {
-                        Destroy (_listings[index].gameObject);
-                        _listings.RemoveAt (index);
-                    }
-                } else {
-                    int index = _listings.FindIndex (x => x.RoomInfo.Name == info.Name);
+                        if (index != -1) {
+                            Destroy (_listings[index].gameObject);
+                            _listings.RemoveAt (index);
+                        }
+                    } else {
+                        int index = _listings.FindIndex (x => x.RoomInfo.Name == info.Name);
 
-                    if (index == -1) {
-                        RoomListing listing = (RoomListing) Instantiate (roomListing, content);
-                        if (listing != null) {
-                            Debug.Log ("Setting room info");
-                            listing.SetRoomInfo (info);
-                            _listings.Add (listing);
+                        if (index == -1) {
+                            RoomListing listing = (RoomListing) Instantiate (roomListing, content);
+                            if (listing != null) {
+                                listing.SetRoomInfo (info);
+                                _listings.Add (listing);
+                            }
                         }
                     }
                 }
             }
-            Debug.Log ("Room List Updated");
         }
     }
 }

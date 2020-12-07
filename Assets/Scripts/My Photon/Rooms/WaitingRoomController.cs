@@ -11,8 +11,10 @@ namespace My_Photon.Rooms
 {
     public class WaitingRoomController : MonoBehaviourPunCallbacks
     {
+        public GameObject multiplayerGame;
         public GameObject menu;
-        
+        public GameObject waitingRoom;
+
         public Image player2Card;
         
         public Text player1CardText;
@@ -20,7 +22,8 @@ namespace My_Photon.Rooms
         
         private int _playerIndex;
         private float _loadSceneWait;
-        private bool hasPlayerLeftRoom;
+        private bool _hasPlayerLeftRoom;
+        private bool _hasCoroutineEnded;
         
         private void Start()
         {
@@ -40,7 +43,7 @@ namespace My_Photon.Rooms
                 player2CardText.text = "You";
             }
         }
-        
+
         private void Update () {
             // if back was pressed leave room
             if (Input.GetKeyDown (KeyCode.Escape))
@@ -54,6 +57,7 @@ namespace My_Photon.Rooms
         {
             gameObject.SetActive(false);
             menu.SetActive(true);
+            
             // If the master client leaves the room
             if (PhotonNetwork.IsMasterClient)
             {
@@ -62,23 +66,24 @@ namespace My_Photon.Rooms
             }
             else
             {
-                hasPlayerLeftRoom = true;
+                _hasPlayerLeftRoom = true;
                 player2Card.gameObject.SetActive(false);
             }
         }
 
         public override void OnPlayerEnteredRoom (Player newPlayer) {
+            Debug.Log("Player entered room");
             // Show Player 2 Card when player joins
             player2Card.gameObject.SetActive(true);
             player2CardText.text = "Player 2";
-            hasPlayerLeftRoom = false;
-            StartCoroutine(LoadScene());
+            _hasPlayerLeftRoom = false;
+            base.photonView.RPC("LoadScene", RpcTarget.All);
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
             // If the master client leaves the room
-            if (PhotonNetwork.IsMasterClient)
+            if (otherPlayer.IsMasterClient)
             {
                 // Destroy the room
                 PhotonNetwork.LeaveRoom(true);
@@ -86,19 +91,23 @@ namespace My_Photon.Rooms
             else
             {
                 // If player 2 has left
-                hasPlayerLeftRoom = true;
+                _hasPlayerLeftRoom = true;
                 player2Card.gameObject.SetActive(false);
             }
         }
 
-        private IEnumerator LoadScene()
+        [PunRPC]
+        public void LoadScene()
         {
-            yield return new WaitForSeconds(_loadSceneWait);
-            // If player hasn't left room continue to game
-            if (!hasPlayerLeftRoom)
-            {
-                
-            }
+            StartCoroutine(MakeDelay(_loadSceneWait));
+        }
+
+        // Crappy code 101
+        private IEnumerator MakeDelay(float wait)
+        {
+            yield return new WaitForSeconds(wait);
+            gameObject.SetActive(false);
+            multiplayerGame.SetActive(true);
         }
     }
 }

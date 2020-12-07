@@ -11,8 +11,8 @@ namespace Multiplayer_Game
         public Image image;
         public Sprite xImg;
         public Sprite oImg;
-        private TicTacToeCreatorMp _ticTacToeCreatorScript;
-
+        private TicTacToeCreatorMp _ticTacToeCreatorScript;    
+    
         private int _playerIndex;
         public bool clicked = false;
         public int boxColNum;

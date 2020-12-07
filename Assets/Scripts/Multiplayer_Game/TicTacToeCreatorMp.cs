@@ -1,6 +1,7 @@
 ﻿using Confetti;
 using My_Photon;
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,7 +11,8 @@ namespace Multiplayer_Game
     public class TicTacToeCreatorMp : MonoBehaviourPunCallbacks {
         #region Variables
         public static TicTacToeCreatorMp Instance;
-    
+        
+        public GameObject menu;
         public GameObject confettiWindow;
         public GameObject cardBorder;
         public GameObject line;
@@ -22,6 +24,7 @@ namespace Multiplayer_Game
         public Transform xConfetti;
         public Transform oConfetti;
 
+        public Sprite loserSprite;
         public Sprite winnerSprite;
         public Sprite handshakeSprite;
 
@@ -43,6 +46,8 @@ namespace Multiplayer_Game
         private Image _downArrow;
         private Image _border;
         private Text _turnTxt;
+        private Text _winnerTxt;
+        private Text _loserTxt;
         private Text _cardPlayerWinnerTxt;
         private Image _lineDot;
         private Image _lineDotPr;
@@ -96,7 +101,7 @@ namespace Multiplayer_Game
 
         private int _n;
         private bool _hasDrawn = false;
-        private bool _spawnButtons = false;
+        private bool _showedEndImg = false;
         private bool _animateLine = false;
         public bool isMyTurn = false;
         private bool _hasWon;
@@ -125,7 +130,7 @@ namespace Multiplayer_Game
             boardLen = 0;
             _boxOffset = 10;
 
-            _drawSpeed = 12;
+            _drawSpeed = 5;
             _drawDelay = 0.1f;
             _boxGridHeight = 50;
             _showButtonsTimer = 1.5f;
@@ -134,6 +139,7 @@ namespace Multiplayer_Game
             _n = grid;
 
             p1 = true;
+            _hasDrawn = false;
         
             _origin = new Vector3 (0, 0, 0);
 
@@ -212,8 +218,8 @@ namespace Multiplayer_Game
             _downArrow = Instantiate(downArrowPr, downArrowPr.transform.position, Quaternion.identity);
             _downArrow.transform.SetParent(player1Card.transform, false);
 
-            
             _border.transform.SetParent(player1Card.transform, false);
+            
             _turnTxt.transform.SetParent(player1Card.transform, false);
             _turnTxt.text = "Your Turn";
 
@@ -234,7 +240,7 @@ namespace Multiplayer_Game
             // Booleans
             isGameOver = false;
             _hasDrawn = false;
-            _spawnButtons = false;
+            _showedEndImg = false;
             _animateLine = false;
         }
 
@@ -282,56 +288,82 @@ namespace Multiplayer_Game
             if (_animateLine) {
                 if (_counter < _dist) {
                     _counter += _drawDelay / _drawSpeed;
-                    float x = Mathf.Lerp (0, _dist, _counter);
+                    var x = Mathf.Lerp (0, _dist, _counter);
 
-                    Vector3 A = _origin;
-                    Vector3 B = _destination;
+                    var a = _origin;
+                    var b = _destination;
 
-                    Vector3 ALine = x * Vector3.Normalize (B - A) + A;
+                    var aLine = x * Vector3.Normalize (b - a) + a;
 
-                    _lineRend.SetPosition (0, ALine);
+                    _lineRend.SetPosition (1, aLine);
                 } else {
                     _animateLine = false;
                 }
             }
 
-            if (isGameOver && !_spawnButtons) {
+            if (isGameOver && !_showedEndImg) {
                 if (_showButtonsTimer > 0) {
                     _showButtonsTimer -= Time.deltaTime;
                 } else {
+                    Debug.Log("Show End image");
                     // Disable
                     cardBorder.SetActive (false);
 
-                    _border.gameObject.SetActive (false);
-                    _turnTxt.gameObject.SetActive (false);
-                    _downArrow.gameObject.SetActive (false);
-
-                    // If it didnt draw check who won
+                    Destroy(_border.gameObject);
+                    Destroy(_turnTxt.gameObject);
+                    Destroy(_downArrow.gameObject);
+                    
                     if (!_hasDrawn) {
                         _lineGen.gameObject.SetActive (false);
-                        if (!p1) {
-                            endTxt.text = "Player 1 Won";
+                        // If player wins
+                        if (_hasWon) {
+                            endTxt.text = "You win";
 
-                            _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                            _turnTxt.transform.SetParent (player1Card.transform, false);
-                            _turnTxt.text = "Winner";
+                            _winnerTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _winnerTxt.text = "Winner";
 
-                            _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                            _turnTxt.transform.SetParent (player2Card.transform, false);
-                            _turnTxt.text = "Loser";
+                            _loserTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _loserTxt.text = "Loser";
+                            
+                            // If player card = X
+                            if (_playerIndex == 1)
+                            {
+                                _winnerTxt.transform.SetParent (player1Card.transform, false);
+                                _loserTxt.transform.SetParent (player2Card.transform, false);
+                            }
+                            else
+                            {
+                                // If this player card = O
+                                _winnerTxt.transform.SetParent (player2Card.transform, false);
+                                _loserTxt.transform.SetParent (player1Card.transform, false);
+                            }
+                            
+                            endImage.GetComponent<Image> ().sprite = winnerSprite;
                         } else {
-                            endTxt.text = "Player 2 Won";
+                            // If this player loses
+                            endTxt.text = "You lose";
 
-                            _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                            _turnTxt.transform.SetParent (player2Card.transform, false);
-                            _turnTxt.text = "Winner";
+                            _winnerTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _winnerTxt.text = "Winner";
 
-                            _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                            _turnTxt.transform.SetParent (player1Card.transform, false);
-                            _turnTxt.text = "Loser";
+                            _loserTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _loserTxt.text = "Loser";
+
+                            // If player card = X
+                            if (_playerIndex == 1)
+                            {
+                                _loserTxt.transform.SetParent (player1Card.transform, false);
+                                _winnerTxt.transform.SetParent (player2Card.transform, false);
+                            }
+                            else
+                            {
+                                // If this player card = O
+                                _winnerTxt.transform.SetParent (player1Card.transform, false);
+                                _loserTxt.transform.SetParent (player2Card.transform, false);
+                            }
+                            
+                            endImage.GetComponent<Image> ().sprite = loserSprite;
                         }
-
-                        endImage.GetComponent<Image> ().sprite = winnerSprite;
                     } else {
                         _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
                         _turnTxt.transform.SetParent (player2Card.transform, false);
@@ -345,7 +377,7 @@ namespace Multiplayer_Game
                     }
 
                     endImage.gameObject.SetActive (true);
-                    _spawnButtons = true;
+                    _showedEndImg = true;
                 }
             }
         }
@@ -427,6 +459,8 @@ namespace Multiplayer_Game
 
                     _destination = _lineDrawPos;
                     _dist = Vector3.Distance (_origin, _destination);
+                    
+                    Debug.Log(colWinner + " won, set dist and destination");
 
                     // 1st line dot
                     _lineDot1Pos = new Vector3 (_lineSpawnPos.x, _lineSpawnPos.y + _linedotSize / 2, _lineSpawnPos.z);
@@ -494,7 +528,6 @@ namespace Multiplayer_Game
         // Change player and check winner
         public void ChangePlayer () {
             if (p1) {
-                Debug.Log("Changing player to 2");
                 p1 = false;
                 _border.transform.SetParent (player2Card.transform, false);
                 _turnTxt.transform.SetParent (player2Card.transform, false);
@@ -527,6 +560,7 @@ namespace Multiplayer_Game
         // Check if someone won
         public void IsGameOver()
         {
+            // X = 1, O = 2, Tie = 3
             if (boardLen >= grid * 2 - 1)
             {
                 int result = HasMatched();
@@ -535,11 +569,11 @@ namespace Multiplayer_Game
                 {
                     if (result == 3)
                     {
-                        GameOver(true);
+                        GameOver(result, false);
                     }
                     else
                     {
-                        GameOver(false);
+                        GameOver(result, true);
                     }
                 }
             }
@@ -552,11 +586,14 @@ namespace Multiplayer_Game
         }
 
         public void GoToMenu () {
-            SceneManager.LoadScene ("Menu");
+            gameObject.SetActive(false);
+            menu.SetActive(true);
+            PhotonNetwork.LeaveRoom();
         }
 
         public void PlayAgain () {
-            SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
+            gameObject.SetActive(false);
+            gameObject.SetActive(true);
         }
     
         [PunRPC]
@@ -577,69 +614,93 @@ namespace Multiplayer_Game
             isMyTurn = true;
             IsGameOver();
         }
-
-        [PunRPC]
-        public void PlayerWon(int winner)
-        {
-            Debug.Log(winner + " won");
-            _hasWon = true;
-        }
         
-        private void GameOver (bool hasTied) {
-            // If is already over
-            if (isGameOver) {
-                return;
-            }
+        // If player leaves in the middle of the game
+        public override void OnPlayerLeftRoom(Player otherPlayer)
+        {
+            // If the opponent left then current player won
+            GameOver(_playerIndex, false);
+        }
 
-            if (!hasTied) {
-                // Draw lines
-                _lineGen = Instantiate (line, _lineSpawnPos, Quaternion.identity) as GameObject;
-                _lineGen.transform.SetParent (cardBorder.transform, false);
-                _lineRend = _lineGen.GetComponent<LineRenderer> ();
-
-                // Confetti
-                GameObject confettiWindowObj = Instantiate (confettiWindow, new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
-                confettiWindowObj.GetComponent<RectTransform> ().sizeDelta = new Vector2 (Screen.width, Screen.height);
-                confettiWindowObj.transform.SetParent (_canvas.transform, false);
-                WindowConfetti windowScript = confettiWindowObj.GetComponent<WindowConfetti> ();
-
-                if (_playerIndex == 1) {
-                    endTxt.text = "Winner";
-
-                    _lineRend.material = xMat;
-                    windowScript.pfConfetti = xConfetti;
-                    _lineDotPr = redLineDotPr;
-                } else {
-                    endTxt.text = "Winner";
-
-                    _lineRend.material = oMat;
-                    windowScript.pfConfetti = oConfetti;
-                    _lineDotPr = blueLineDotPr;
+        private void GameOver (int winner, bool hasMatched) {
+            Debug.Log("Game Over: Player " + winner + " won");
+            // If there is a winner
+            if (winner != 3)
+            {
+                // If player has matched draw lines
+                if (hasMatched)
+                {
+                    _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
+                    _lineGen.transform.SetParent(cardBorder.transform, false);
+                    _lineRend = _lineGen.GetComponent<LineRenderer>();
                 }
 
+                
+                // Only show confetti to the winner
+                if (winner == _playerIndex)
+                {
+                    Debug.Log("player won");
+                    GameObject confettiWindowObj = Instantiate(confettiWindow, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+                    confettiWindowObj.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
+                    confettiWindowObj.transform.SetParent(_canvas.transform, false);
+                    WindowConfetti windowScript = confettiWindowObj.GetComponent<WindowConfetti>();
+                    
+                    // If Player 1 Wins
+                    if (winner == 1)
+                    {
+                        windowScript.pfConfetti = xConfetti;
+                    }
+                    else
+                    {
+                        // If Player 2 Wins
+                        windowScript.pfConfetti = oConfetti;
+                    }
+                    
+                    _hasWon = true;
+                }
+                else
+                {
+                    _hasWon = false;
+                }
+                
+                // If Player 1 Wins
+                if (winner == 1)
+                {
+                    _lineRend.material = xMat;
+                    _lineDotPr = redLineDotPr;
+                }
+                else
+                {
+                    // If Player 2 Wins
+                    _lineRend.material = oMat;
+                    _lineDotPr = blueLineDotPr;
+                }
+                
                 // 1st line dot
-                _lineDot = Instantiate (_lineDotPr, _lineDot1Pos, Quaternion.identity);
-                _lineDot.transform.SetParent (cardBorder.transform, false);
+                _lineDot = Instantiate(_lineDotPr, _lineDot1Pos, Quaternion.identity);
+                _lineDot.transform.SetParent(cardBorder.transform, false);
 
                 // 2nd line dot
-                _lineDot = Instantiate (_lineDotPr, _lineDot2Pos, Quaternion.identity);
-                _lineDot.transform.SetParent (cardBorder.transform, false);
+                _lineDot = Instantiate(_lineDotPr, _lineDot2Pos, Quaternion.identity);
+                _lineDot.transform.SetParent(cardBorder.transform, false);
 
                 // 3rd line dot
-                _lineDot = Instantiate (_lineDotPr, _lineDot3Pos, Quaternion.identity);
-                _lineDot.transform.SetParent (cardBorder.transform, false);
-                
-                // If player won call rpc to let em know someone won
-                base.photonView.RPC("PlayerWon", RpcTarget.All, _playerIndex);
-                
-            } else {
+                _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
+                _lineDot.transform.SetParent(cardBorder.transform, false);
+            }
+            else {
                 _hasDrawn = true;
-                endTxt.text = "It's a Draw!";
             }
 
-            // Disable back button
+            if (hasMatched)
+            {
+                _animateLine = true;
+            }
+            
+            // Leave Current room
+            PhotonNetwork.LeaveRoom();
+            _showedEndImg = false;
             isGameOver = true;
-            _animateLine = true;
         }
     }
 }

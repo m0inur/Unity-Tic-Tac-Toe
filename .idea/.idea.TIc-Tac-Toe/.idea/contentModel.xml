@@ -414,6 +414,7 @@
             <e p="InitParticles.cs" t="Include" />
             <e p="StarMovement.cs" t="Include" />
           </e>
+          <e p="PrivateMultiplayerController.cs" t="Include" />
           <e p="Scenes.cs" t="Include" />
         </e>
       </e>

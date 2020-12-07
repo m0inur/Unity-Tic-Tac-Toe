@@ -24,6 +24,10 @@ public class MenuController : MonoBehaviourPunCallbacks
 
     public Text connectionText;
 
+    private IEnumerator _currentCoroutine;
+    
+    private string _quickmatchRoomName;
+
     private TicTacToeCreatorAI tictactoeCreatorAIScript;
     private int _roomLength;
     private bool _isConnected = false;
@@ -33,6 +37,7 @@ public class MenuController : MonoBehaviourPunCallbacks
     {
         _disableConnectionTextWait = 3f;
         tictactoeCreatorAIScript = singlePlayer.GetComponent<TicTacToeCreatorAI>();
+        _quickmatchRoomName = "PunfishQuickmatch2131";
     }
 
     private void Update () {
@@ -80,6 +85,11 @@ public class MenuController : MonoBehaviourPunCallbacks
     
     public void Multiplayer()
     {
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+        }
+        
         // If Photon is connected
         if (_isConnected)
         {
@@ -94,7 +104,15 @@ public class MenuController : MonoBehaviourPunCallbacks
     }
     
     public void Private_Multiplayer () {
-        SceneManager.LoadScene ("CreateOrJoinRoom");
+        gameObject.SetActive(false);
+        privateMultiplayer.SetActive(true);
+    }
+
+    public void SinglePlayerButtons_LeaveButton()
+    {
+        singlePlayerButtons.SetActive(false);
+        tictactoeImage.gameObject.SetActive(true);
+        menuButtons.SetActive(true);
     }
 
     public void PlayAgain () {
@@ -104,16 +122,35 @@ public class MenuController : MonoBehaviourPunCallbacks
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         _roomLength = roomList.Count;
+        
+        foreach (var info in roomList)
+        {
+            if (info.Name != _quickmatchRoomName)
+            {
+                _roomLength--;
+            }
+        }
     }
     
     public override void OnConnectedToMaster ()
     {
-        StartCoroutine(ShowText("You are connected", true));
+        if (_currentCoroutine != null)
+        {
+            StopCoroutine(_currentCoroutine);
+        }
+        
         _isConnected = true;
     }
 
-    public override void OnDisconnected (DisconnectCause cause) {
-        StartCoroutine(ShowText("You are Disconnected, because: " + cause.ToString (), false));
+    public override void OnDisconnected (DisconnectCause cause)
+    {
+        if (_currentCoroutine != null)
+        {
+            StopCoroutine(_currentCoroutine);
+        }
+        
+        _currentCoroutine = ShowText("You are Disconnected, because: " + cause.ToString(), false);
+        StartCoroutine(_currentCoroutine);
     }
 
     private IEnumerator ShowText(string _text, bool isGood)
@@ -123,13 +160,16 @@ public class MenuController : MonoBehaviourPunCallbacks
 
         if (isGood)
         {
+            Debug.Log("Setting color to green");
             color = Color.green;
         }
         else
         {
+            Debug.Log("Setting color to red");
             color = Color.red;
         }
         
+        Debug.Log("Show");
         // Show
         for (float i = 0; i <= 5; i += Time.deltaTime)
         { 
@@ -139,6 +179,8 @@ public class MenuController : MonoBehaviourPunCallbacks
         }
             
         yield return new WaitForSeconds(_disableConnectionTextWait);
+        
+        Debug.Log("Hide");
         // Hide
         for (float i = 1; i >= 0; i -= Time.deltaTime)
         {

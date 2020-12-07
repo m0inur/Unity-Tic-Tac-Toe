@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using ExitGames.Client.Photon;
+using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,29 +9,21 @@ namespace My_Photon.Rooms
 {
     public class CreateRoom : MonoBehaviourPunCallbacks
     {
+        public GameObject waitingRoom;
+        public GameObject privateMultiplayer;
         [SerializeField]
         public Text roomName;
 
-        private void Update () {
-            // if back was pressed leave room
-            if (Input.GetKeyDown (KeyCode.Escape))
-            {
-                LeaveRoom();
-            }
-        }
-
-        // Go to menu
-        public void LeaveRoom()
-        {
-            SceneManager.LoadScene("Menu");
-        }
-        
         public void OnClick_CreateRoom () {
             if (!PhotonNetwork.IsConnected || roomName.text == "") {
                 return;
             }
-            Debug.Log ("Creating room = " + roomName.text);
-        
+
+            if (PhotonNetwork.InRoom)
+            {
+                PhotonNetwork.LeaveRoom();
+            }
+            
             RoomOptions options = new RoomOptions ();
             options.BroadcastPropsChangeToAll = true;
             options.PublishUserId = true;
@@ -41,14 +34,26 @@ namespace My_Photon.Rooms
         }
 
         // If a room has been successfully created
-        public override void OnCreatedRoom () {
-            Debug.Log ("Created room successfully");
-            PhotonNetwork.LoadLevel(SceneUtility.GetBuildIndexByScenePath("Assets/_Scenes/WaitingRoom.unity"));
+        public override void OnCreatedRoom ()
+        {
+            ChangeView();
         }
 
         // If a room is failed to create
         public override void OnCreateRoomFailed (short returnCode, string message) {
             Debug.Log ("Room creations failed: " + message);
         }
-    }
+
+        public override void OnJoinedRoom()
+        {
+            ChangeView();
+            Debug.Log("Joined a room");
+        }
+
+        private void ChangeView()
+        {
+            privateMultiplayer.SetActive(false);
+            waitingRoom.SetActive(true);
+        }
+    } 
 }

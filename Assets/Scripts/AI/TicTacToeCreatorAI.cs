@@ -139,9 +139,9 @@ namespace AI
             _player = 1;
             _ai = 2;
 
-            _drawSpeed = 12f;
+            _drawSpeed = 5f;
             _drawDelay = 0.1f;
-            _aiMoveDelay = 1f;
+            _aiMoveDelay = 0.8f;
             _buttonCounter = 1.5f;
             _linedotSize = 15;
             grid = 3;
@@ -291,10 +291,11 @@ namespace AI
             // Go back to menu if back was pressed
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                GoToMenu();
+                Menu();
             }
             
-            if (_animateLine) {
+            if (_animateLine)
+            {
                 if (_counter < _dist) {
                     _counter += _drawDelay / _drawSpeed;
                     var x = Mathf.Lerp (0, _dist, _counter);
@@ -305,6 +306,10 @@ namespace AI
                     var aLine = x * Vector3.Normalize (b - a) + a;
 
                     _lineRend.SetPosition (1, aLine);
+                }
+                else
+                {
+                    _animateLine = false;
                 }
             }
 
@@ -731,7 +736,7 @@ namespace AI
             }
         }
 
-        public void GoToMenu () {
+        public void Menu () {
             menu.SetActive(true);
             gameObject.SetActive(false);
         }
