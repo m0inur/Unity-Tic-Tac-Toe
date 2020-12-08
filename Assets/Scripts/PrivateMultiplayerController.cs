@@ -18,6 +18,7 @@ public class PrivateMultiplayerController : MonoBehaviour
     {          
         if (PhotonNetwork.InRoom)
         {
+            Debug.Log("Leaving photon room");
             PhotonNetwork.LeaveRoom();
         }
         

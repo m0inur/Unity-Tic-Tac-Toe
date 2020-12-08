@@ -22,12 +22,11 @@ namespace Multiplayer_Game
         {
             image = GetComponent<Image>();
             _playerIndex = PhotonNetwork.IsMasterClient ? 1 : 2;
-            _ticTacToeCreatorScript = GameObject.Find("Multiplayer Game Controller").GetComponent<TicTacToeCreatorMp>();
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (TicTacToeCreatorMp.Instance.isMyTurn)
+            if (TicTacToeCreatorMp.Instance.isMyTurn && !clicked)
             {
                 UseBox(_playerIndex);
                 TicTacToeCreatorMp.Instance.CallRpc(boxColNum, boxRowNum);
@@ -37,23 +36,23 @@ namespace Multiplayer_Game
         public void UseBox(int playerIndex)
         {
             // If box is not clicked or game is not yet over
-            if (!clicked && !_ticTacToeCreatorScript.isGameOver)
+            if (!clicked && !TicTacToeCreatorMp.Instance.isGameOver)
             {
                 // if (_ticTacToeCreatorScript.p1) {
                 if (playerIndex == 1)
                 {
                     image.sprite = xImg;
-                    _ticTacToeCreatorScript.Board[boxColNum, boxRowNum] = 1;
+                    TicTacToeCreatorMp.Instance.Board[boxColNum, boxRowNum] = 1;
                 }
                 else
                 {
                     image.sprite = oImg;
-                    _ticTacToeCreatorScript.Board[boxColNum, boxRowNum] = 2;
+                    TicTacToeCreatorMp.Instance.Board[boxColNum, boxRowNum] = 2;
                 }
 
                 clicked = true;
-                _ticTacToeCreatorScript.boardLen++;
-                _ticTacToeCreatorScript.IsGameOver();
+                TicTacToeCreatorMp.Instance.boardLen++;
+                TicTacToeCreatorMp.Instance.IsGameOver();
             }
         }
     }

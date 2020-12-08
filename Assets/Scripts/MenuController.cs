@@ -85,22 +85,8 @@ public class MenuController : MonoBehaviourPunCallbacks
     
     public void Multiplayer()
     {
-        if (PhotonNetwork.InRoom)
-        {
-            PhotonNetwork.LeaveRoom();
-        }
-        
-        // If Photon is connected
-        if (_isConnected)
-        {
-            gameObject.SetActive(false);
-            multiplayer.SetActive(true);
-            multiplayer.GetComponent<MultiplayerManager>().roomLength = _roomLength;
-        }
-        else
-        {
-            StartCoroutine(ShowText("You are not connected", false));
-        }
+        gameObject.SetActive(false);
+        multiplayer.SetActive(true);
     }
     
     public void Private_Multiplayer () {
@@ -160,16 +146,13 @@ public class MenuController : MonoBehaviourPunCallbacks
 
         if (isGood)
         {
-            Debug.Log("Setting color to green");
             color = Color.green;
         }
         else
         {
-            Debug.Log("Setting color to red");
             color = Color.red;
         }
         
-        Debug.Log("Show");
         // Show
         for (float i = 0; i <= 5; i += Time.deltaTime)
         { 
@@ -180,7 +163,6 @@ public class MenuController : MonoBehaviourPunCallbacks
             
         yield return new WaitForSeconds(_disableConnectionTextWait);
         
-        Debug.Log("Hide");
         // Hide
         for (float i = 1; i >= 0; i -= Time.deltaTime)
         {

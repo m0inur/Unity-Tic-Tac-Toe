@@ -1,8 +1,5 @@
-﻿using System;
-using Confetti;
+﻿using Confetti;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace LocalMultiplayer
@@ -47,6 +44,9 @@ namespace LocalMultiplayer
         private Image _lineDot;
         private Image _lineDotPr;
         private WindowConfetti _windowConfettiScript;
+
+        private Text _playerCard1EndTxt;
+        private Text _playerCard2EndTxt;
 
         private Button _menuButton;
         private Button _playAgainButton;
@@ -120,7 +120,7 @@ namespace LocalMultiplayer
             _boxOffset = 10;
             boardLen = 0;
 
-            _drawSpeed = 5;
+            _drawSpeed = 3f;
             _drawDelay = 0.1f;
             _boxGridHeight = 50;
             _showButtonsTimer = 1.5f;
@@ -175,6 +175,12 @@ namespace LocalMultiplayer
                 GameObject.Destroy(_downArrow.gameObject);
             }
 
+            if (_playerCard1EndTxt)
+            {
+                Destroy(_playerCard1EndTxt.gameObject);
+                Destroy(_playerCard2EndTxt.gameObject);
+            }
+
             endImage.gameObject.SetActive(false);
 
             if (!_border)
@@ -205,7 +211,7 @@ namespace LocalMultiplayer
             _boxOffset = 10;
             boardLen = 0;
 
-            _drawSpeed = 12;
+            _drawSpeed = 3;
             _drawDelay = 0.1f;
             _showButtonsTimer = 1.5f;
             _linedotSize = 15;
@@ -278,7 +284,7 @@ namespace LocalMultiplayer
                 Menu();
             }
 
-            if (_animateLine)
+            if (_animateLine && !_hasDrawn)
             {
                     if (_counter < _dist) {
                         _counter += _drawDelay / _drawSpeed;
@@ -319,38 +325,38 @@ namespace LocalMultiplayer
                         {
                             endTxt.text = "Player 1 Won";
 
-                            _cardPlayerWinnerTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                            _cardPlayerWinnerTxt.transform.SetParent(player1Card.transform, false);
-                            _cardPlayerWinnerTxt.name = "CardPlayerWinnerTxt";
-                            _cardPlayerWinnerTxt.text = "Winner";
+                            _playerCard1EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _playerCard1EndTxt.transform.SetParent(player1Card.transform, false);
+                            _playerCard1EndTxt.text = "Winner";
 
-                            _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                            _turnTxt.transform.SetParent(player2Card.transform, false);
-                            _turnTxt.text = "Loser";
+                            _playerCard2EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _playerCard2EndTxt.transform.SetParent(player2Card.transform, false);
+                            _playerCard2EndTxt.text = "Loser";
                         }
                         else
                         {
                             endTxt.text = "Player 2 Won";
 
-                            _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                            _turnTxt.transform.SetParent(player2Card.transform, false);
-                            _turnTxt.text = "Winner";
+                            _playerCard1EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _playerCard1EndTxt.transform.SetParent(player2Card.transform, false);
+                            _playerCard1EndTxt.text = "Winner";
 
-                            _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                            _turnTxt.transform.SetParent(player1Card.transform, false);
-                            _turnTxt.text = "Loser";
+                            _playerCard2EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _playerCard2EndTxt.transform.SetParent(player1Card.transform, false);
+                            _playerCard2EndTxt.text = "Loser";
                         }
 
                         endImage.GetComponent<Image>().sprite = winnerSprite;
                     }
                     else
                     {
-                        _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                        _turnTxt.transform.SetParent(player2Card.transform, false);
-                        _turnTxt.text = "Draw";
+                        _playerCard1EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        _playerCard1EndTxt.transform.SetParent(player2Card.transform, false);
+                        _playerCard1EndTxt.text = "Draw";
 
-                        _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-                        _turnTxt.transform.SetParent(player1Card.transform, false);
+                        _playerCard2EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                        _playerCard2EndTxt.transform.SetParent(player1Card.transform, false);
+                        _playerCard2EndTxt.text = "Draw";
 
                         endImage.GetComponent<Image>().sprite = handshakeSprite;
                         endTxt.text = "Draw";

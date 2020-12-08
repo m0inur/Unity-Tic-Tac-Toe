@@ -1559,9 +1559,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1489889971}
-        m_TargetAssemblyTypeName: LocalMultiplayer.TicTacToeCreatorLm, Assembly-CSharp
-        m_MethodName: Menu
+      - m_Target: {fileID: 1155040927}
+        m_TargetAssemblyTypeName: My_Photon.Rooms.MultiplayerManager, Assembly-CSharp
+        m_MethodName: Leave
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3082,11 +3082,13 @@ MonoBehaviour:
   redLineDotPr: {fileID: 3143241423614161275, guid: ff9b2a879145a264484245c406e1b62a, type: 3}
   turnTxtPr: {fileID: 2925965935007828296, guid: b34fe0c5482c5a44791f36f052b92364, type: 3}
   endText: {fileID: 359555590}
+  player2CardTurnTxt: 
   grid: 3
   boardLen: 0
   mode: 0
   isGameOver: 0
   isAIMoving: 0
+  isFakeMp: 0
 --- !u!1 &672755720
 GameObject:
   m_ObjectHideFlags: 0
@@ -4667,11 +4669,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b134318e6527498439ff0be09085cfb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSettings: {fileID: 11400000, guid: d7ddb0c0170060049bacfc096f35a8ab, type: 2}
+  searchText: {fileID: 1384432446}
   menu: {fileID: 2075610257}
   multiplayerGame: {fileID: 1943777020}
   singlePlayer: {fileID: 646511121}
-  roomLength: 0
 --- !u!114 &1155040928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5148,7 +5149,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   multiplayerGame: {fileID: 1943777020}
   menu: {fileID: 2075610257}
-  waitingRoom: {fileID: 0}
   player2Card: {fileID: 1433039327}
   player1CardText: {fileID: 681753610}
   player2CardText: {fileID: 75936982}
@@ -6435,7 +6435,7 @@ MonoBehaviour:
   redLineDotPr: {fileID: 3143241423614161275, guid: ff9b2a879145a264484245c406e1b62a, type: 3}
   turnTxtPr: {fileID: 2925965935007828296, guid: b34fe0c5482c5a44791f36f052b92364, type: 3}
   endTxt: {fileID: 1723880630}
-  grid: 3
+  grid: 5
   boardLen: 0
   isGameOver: 0
   p1: 0
@@ -7833,7 +7833,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -3.5}
+  m_AnchoredPosition: {x: 0, y: 68.49997}
   m_SizeDelta: {x: 0, y: 6.999939}
   m_Pivot: {x: 0.5, y: 0.49999997}
 --- !u!114 &1723880630
@@ -8650,6 +8650,8 @@ MonoBehaviour:
   redLineDotPr: {fileID: 3143241423614161275, guid: ff9b2a879145a264484245c406e1b62a, type: 3}
   turnTxtPr: {fileID: 2925965935007828296, guid: b34fe0c5482c5a44791f36f052b92364, type: 3}
   endTxt: {fileID: 108461970}
+  player1CardText: {fileID: 1671779370}
+  player2CardText: {fileID: 1697774454}
   grid: 3
   boardLen: 0
   isGameOver: 0

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections;
 using Confetti;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace AI
@@ -52,6 +51,8 @@ namespace AI
         private LineRenderer _lineRend;
 
         private WindowConfetti _windowConfettiScript;
+
+        public string player2CardTurnTxt;
         
         public int grid;
 
@@ -115,7 +116,9 @@ namespace AI
         private bool _animateLine;
         private bool _hasInitButton;
         private bool _hasLost;
-        
+        private bool _randomizeAiMoveDelay;
+        public bool isFakeMp;
+
         #endregion
 
         #region Setup Variable
@@ -136,13 +139,26 @@ namespace AI
             _downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
             _downArrow.transform.SetParent (player1Card.transform, false);
 
+            // If it has not been set
+            if (isFakeMp)
+            {
+                mode = 2;
+                player2CardTurnTxt = "Player 2's Turn";
+                _randomizeAiMoveDelay = true;
+            }
+            else
+            {
+                player2CardTurnTxt = "Bot's Turn";
+                _randomizeAiMoveDelay = false;
+            }
+            
             _player = 1;
             _ai = 2;
 
             _drawSpeed = 5f;
             _drawDelay = 0.1f;
-            _aiMoveDelay = 0.8f;
             _buttonCounter = 1.5f;
+            _aiMoveDelay = 0.6f;
             _linedotSize = 15;
             grid = 3;
 
@@ -163,7 +179,7 @@ namespace AI
             _hasInitButton = false;
             _animateLine = false;
             isGameOver = false;
-
+            
             _boxSize = 170;
             _boxOffset = 10;
 
@@ -207,7 +223,9 @@ namespace AI
             _downArrow = Instantiate(downArrowPr, downArrowPr.transform.position, Quaternion.identity);
             _downArrow.transform.SetParent(player1Card.transform, false);
 
-            _drawSpeed = 12f;
+            player2CardTurnTxt = "";
+                
+            _drawSpeed = 3f;
             _drawDelay = 0.1f;
             _aiMoveDelay = 1f;
             _buttonCounter = 1.5f;
@@ -245,6 +263,22 @@ namespace AI
             {
                 Destroy(_player1CardEndTxt.gameObject);
                 Destroy(_player2CardEndTxt.gameObject);
+            }
+        }
+
+        private void OnEnable()
+        {
+            // If it has not been set
+            if (isFakeMp)
+            {
+                mode = 3;
+                player2CardTurnTxt = "Player 2's Turn";
+                _randomizeAiMoveDelay = true;
+            }
+            else
+            {
+                player2CardTurnTxt = "Bot's Turn";
+                _randomizeAiMoveDelay = false;
             }
         }
 
@@ -318,7 +352,6 @@ namespace AI
                 if (_buttonCounter > 0) {
                     _buttonCounter -= Time.deltaTime;
                 } else {
-                    Debug.Log("Destroy Turn Txt");
                     Destroy(_border.gameObject);
                     Destroy(_turnTxt.gameObject);
                     Destroy(_downArrow.gameObject);
@@ -375,12 +408,12 @@ namespace AI
           // Winner Checker
         private int HasMatched()
         {
-            int n = grid;
-            int rowWinner = 0;
-            int colWinner = 0;
-            int diagWinner = 0;
-            int antiDiagWinner = 0;
-            int hasTied = 3;
+            var n = grid;
+            var rowWinner = 0;
+            var colWinner = 0;
+            var diagWinner = 0;
+            var antiDiagWinner = 0;
+            var hasTied = 3;
 
             for (int i = 0; i < n; i++)
             {
@@ -545,9 +578,14 @@ namespace AI
 
                 // Make ai move
         public IEnumerator MoveAi () {
+            if (_randomizeAiMoveDelay)
+            {
+                _aiMoveDelay = UnityEngine.Random.Range(0.8f, 2.5f);
+            }
+            
             _border.transform.SetParent (player2Card.transform, false);
             _turnTxt.transform.SetParent (player2Card.transform, false);
-            _turnTxt.text = "Bot's Turn";
+            _turnTxt.text = player2CardTurnTxt;
             _downArrow.transform.SetParent (player2Card.transform, false);
             isAIMoving = true;
 

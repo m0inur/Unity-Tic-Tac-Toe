@@ -13,7 +13,6 @@ namespace My_Photon.Rooms
     {
         public GameObject multiplayerGame;
         public GameObject menu;
-        public GameObject waitingRoom;
 
         public Image player2Card;
         

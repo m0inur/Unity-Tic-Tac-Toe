@@ -1,9 +1,7 @@
 ﻿using Confetti;
-using My_Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Multiplayer_Game
@@ -38,6 +36,8 @@ namespace Multiplayer_Game
 
         public Text turnTxtPr;
         public Text endTxt;
+        public Text player1CardText;
+        public Text player2CardText;
 
         private GameObject _windowConfetti;
         private GameObject _lineGen;
@@ -105,6 +105,8 @@ namespace Multiplayer_Game
         private bool _animateLine = false;
         public bool isMyTurn = false;
         private bool _hasWon;
+        private bool _hasDisabled;
+        private bool _hasPlayerLeft;
         #endregion
 
         #region Initially set variables board
@@ -123,14 +125,13 @@ namespace Multiplayer_Game
             _downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
             _downArrow.transform.SetParent (player1Card.transform, false);
 
-            _playerIndex = PhotonNetwork.IsMasterClient ? 1 : 2;
             // Integers
             _rowCount = 0;
             _colCount = 0;
             boardLen = 0;
             _boxOffset = 10;
 
-            _drawSpeed = 5;
+            _drawSpeed = 3f;
             _drawDelay = 0.1f;
             _boxGridHeight = 50;
             _showButtonsTimer = 1.5f;
@@ -140,7 +141,9 @@ namespace Multiplayer_Game
 
             p1 = true;
             _hasDrawn = false;
-        
+            _hasDisabled = false;
+            _hasPlayerLeft = false;
+            
             _origin = new Vector3 (0, 0, 0);
 
             // Canvas & UI
@@ -165,23 +168,36 @@ namespace Multiplayer_Game
                 _turnTxt.text = "Player 1's Turn";
                 GameObject.Find("Player 2 Card Text").GetComponent<Text>().text = "You";
             }
-        
+
             _boxSize = 170;
         
             // Initialize boxes
             InitBoxGrid ();
         }
         
-        private void OnDisable() 
+        private void OnDisable()
         {
+            _hasDisabled = true;
             Board = new int[grid, grid];
             // If someone has won
             if (_hasWon)
             {
-                GameObject.Destroy(_windowConfetti);
                 GameObject.Destroy(_cardPlayerWinnerTxt);
             }
+            
+            if (_windowConfetti)
+            {
+                Debug.Log("Destroying confetti");
+                GameObject.Destroy(_windowConfetti.gameObject);
+            }
 
+            _boxGridHeight = 50;
+            _cardBorderTopGap = _boxGridHeight;
+
+            _counter = 0;
+            _colCount = 0;
+            _rowCount = 0;
+            
             // If Board has been used then destroy all children and create new board
             if (boardLen > 0)
             {
@@ -197,6 +213,12 @@ namespace Multiplayer_Game
             {
                 // Disable arrow after being disabled
                 GameObject.Destroy(_downArrow.gameObject);
+            }
+
+            if (_winnerTxt)
+            {
+                Destroy(_winnerTxt.gameObject);
+                Destroy(_loserTxt.gameObject);
             }
 
             endImage.gameObject.SetActive(false);
@@ -221,18 +243,18 @@ namespace Multiplayer_Game
             _border.transform.SetParent(player1Card.transform, false);
             
             _turnTxt.transform.SetParent(player1Card.transform, false);
-            _turnTxt.text = "Your Turn";
+
+            cardBorder.SetActive(true);
 
             // Integers
             _boxOffset = 10;
             boardLen = 0;
 
-            _drawSpeed = 12;
+            _drawSpeed = 3f;
             _drawDelay = 0.1f;
             _showButtonsTimer = 1.5f;
             _linedotSize = 15;
-            _counter = 0;
-            
+
             p1 = true;
 
             _origin = new Vector3(0, 0, 0);
@@ -242,6 +264,28 @@ namespace Multiplayer_Game
             _hasDrawn = false;
             _showedEndImg = false;
             _animateLine = false;
+            _hasPlayerLeft = false;
+        }
+
+        public override void OnEnable()
+        {
+            if (_hasDisabled)
+            {
+                _playerIndex = PhotonNetwork.IsMasterClient ? 1 : 2;
+        
+                if (_playerIndex == 1)
+                {
+                    isMyTurn = true;
+                    _turnTxt.text = "Your Turn";
+                    player1CardText.text = "You";
+                }
+                else
+                {
+                    isMyTurn = false;
+                    _turnTxt.text = "Player 1's Turn";
+                    player2CardText.text = "You";
+                }
+            }
         }
 
         #endregion
@@ -314,7 +358,6 @@ namespace Multiplayer_Game
                     Destroy(_downArrow.gameObject);
                     
                     if (!_hasDrawn) {
-                        _lineGen.gameObject.SetActive (false);
                         // If player wins
                         if (_hasWon) {
                             endTxt.text = "You win";
@@ -375,7 +418,6 @@ namespace Multiplayer_Game
                         endImage.GetComponent<Image> ().sprite = handshakeSprite;
                         endTxt.text = "Draw";
                     }
-
                     endImage.gameObject.SetActive (true);
                     _showedEndImg = true;
                 }
@@ -449,6 +491,7 @@ namespace Multiplayer_Game
                     // 3rd line dot
                     _lineDot3Pos = new Vector3 (_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y, _lineSpawnPos.z);
 
+                    Debug.Log("Row Matched with = " + rowWinner);
                     return rowWinner;
                 }
 
@@ -470,6 +513,7 @@ namespace Multiplayer_Game
 
                     // 3rd line dot
                     _lineDot3Pos = new Vector3 (_lineSpawnPos.x, _lineSpawnPos.y + _lineDrawPos.y - _linedotSize / 2, _lineSpawnPos.z);
+                    Debug.Log("Col Matched with = " + colWinner);
 
                     return colWinner;
                 }
@@ -569,10 +613,12 @@ namespace Multiplayer_Game
                 {
                     if (result == 3)
                     {
+                        Debug.Log("Calling Game Over");
                         GameOver(result, false);
                     }
                     else
                     {
+                        Debug.Log("Calling Game Over");
                         GameOver(result, true);
                     }
                 }
@@ -588,7 +634,12 @@ namespace Multiplayer_Game
         public void GoToMenu () {
             gameObject.SetActive(false);
             menu.SetActive(true);
-            PhotonNetwork.LeaveRoom();
+            
+            // If the other and current player leaves then destroy the room
+            if (_hasPlayerLeft)
+            {
+                PhotonNetwork.LeaveRoom();
+            }
         }
 
         public void PlayAgain () {
@@ -599,7 +650,6 @@ namespace Multiplayer_Game
         [PunRPC]
         public void MarkBox(int playerIndex, int boxColNum, int boxRowNum)
         {
-            Debug.Log("Rpc Mark box called");
             if (playerIndex == _playerIndex)
             {
                 isMyTurn = false;
@@ -618,12 +668,23 @@ namespace Multiplayer_Game
         // If player leaves in the middle of the game
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
-            // If the opponent left then current player won
-            GameOver(_playerIndex, false);
+            // If Game Is'nt over
+            if (!isGameOver)
+            {
+                // If the opponent left then current player won
+                GameOver(_playerIndex, false);
+            }
+
+            _hasPlayerLeft = true;
         }
 
         private void GameOver (int winner, bool hasMatched) {
-            Debug.Log("Game Over: Player " + winner + " won");
+            // Since there cant be 2 or more game overs return;
+            if (isGameOver)
+            {
+                return;
+            }
+            
             // If there is a winner
             if (winner != 3)
             {
@@ -633,17 +694,41 @@ namespace Multiplayer_Game
                     _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
                     _lineGen.transform.SetParent(cardBorder.transform, false);
                     _lineRend = _lineGen.GetComponent<LineRenderer>();
+                        
+                    // If Player 1 Wins
+                    if (winner == 1)
+                    {
+                        _lineRend.material = xMat;
+                        _lineDotPr = redLineDotPr;
+                    }
+                    else
+                    {
+                        // If Player 2 Wins
+                        _lineRend.material = oMat;
+                        _lineDotPr = blueLineDotPr;
+                    }
+                
+                    // 1st line dot
+                    _lineDot = Instantiate(_lineDotPr, _lineDot1Pos, Quaternion.identity);
+                    _lineDot.transform.SetParent(cardBorder.transform, false);
+
+                    // 2nd line dot
+                    _lineDot = Instantiate(_lineDotPr, _lineDot2Pos, Quaternion.identity);
+                    _lineDot.transform.SetParent(cardBorder.transform, false);
+
+                    // 3rd line dot
+                    _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
+                    _lineDot.transform.SetParent(cardBorder.transform, false);
                 }
 
                 
                 // Only show confetti to the winner
                 if (winner == _playerIndex)
                 {
-                    Debug.Log("player won");
-                    GameObject confettiWindowObj = Instantiate(confettiWindow, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-                    confettiWindowObj.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
-                    confettiWindowObj.transform.SetParent(_canvas.transform, false);
-                    WindowConfetti windowScript = confettiWindowObj.GetComponent<WindowConfetti>();
+                    _windowConfetti = Instantiate(confettiWindow, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+                    _windowConfetti.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
+                    _windowConfetti.transform.SetParent(_canvas.transform, false);
+                    WindowConfetti windowScript = _windowConfetti.GetComponent<WindowConfetti>();
                     
                     // If Player 1 Wins
                     if (winner == 1)
@@ -662,31 +747,6 @@ namespace Multiplayer_Game
                 {
                     _hasWon = false;
                 }
-                
-                // If Player 1 Wins
-                if (winner == 1)
-                {
-                    _lineRend.material = xMat;
-                    _lineDotPr = redLineDotPr;
-                }
-                else
-                {
-                    // If Player 2 Wins
-                    _lineRend.material = oMat;
-                    _lineDotPr = blueLineDotPr;
-                }
-                
-                // 1st line dot
-                _lineDot = Instantiate(_lineDotPr, _lineDot1Pos, Quaternion.identity);
-                _lineDot.transform.SetParent(cardBorder.transform, false);
-
-                // 2nd line dot
-                _lineDot = Instantiate(_lineDotPr, _lineDot2Pos, Quaternion.identity);
-                _lineDot.transform.SetParent(cardBorder.transform, false);
-
-                // 3rd line dot
-                _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
-                _lineDot.transform.SetParent(cardBorder.transform, false);
             }
             else {
                 _hasDrawn = true;
@@ -697,8 +757,6 @@ namespace Multiplayer_Game
                 _animateLine = true;
             }
             
-            // Leave Current room
-            PhotonNetwork.LeaveRoom();
             _showedEndImg = false;
             isGameOver = true;
         }

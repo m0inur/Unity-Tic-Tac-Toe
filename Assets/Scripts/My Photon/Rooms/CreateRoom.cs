@@ -36,6 +36,7 @@ namespace My_Photon.Rooms
         // If a room has been successfully created
         public override void OnCreatedRoom ()
         {
+            Debug.Log("Created Room Successfully");
             ChangeView();
         }
 
