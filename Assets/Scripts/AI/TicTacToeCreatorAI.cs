@@ -10,6 +10,7 @@ namespace AI
     public class TicTacToeCreatorAI : MonoBehaviour {
         #region Variables
 
+        public static TicTacToeCreatorAI Instance;
         public GameObject confettiWindow;
         public GameObject menu;
         public GameObject line;
@@ -125,8 +126,11 @@ namespace AI
         // Create the board
         private void Start()
         {
+            Instance = this;
+            grid = 4;
             // Mode = Easy = 0, Medium = 1, Hard = 2
             Board = new int[grid, grid];
+            Instance = this;
 
             endImage.gameObject.SetActive (false);
 
@@ -160,7 +164,6 @@ namespace AI
             _buttonCounter = 1.5f;
             _aiMoveDelay = 0.6f;
             _linedotSize = 15;
-            grid = 3;
 
             _rowCount = 0;
             _colCount = 0;
@@ -180,8 +183,27 @@ namespace AI
             _animateLine = false;
             isGameOver = false;
             
-            _boxSize = 170;
             _boxOffset = 10;
+            mode = 3;
+            
+            if (grid == 5)
+            {
+                _boxOffset = 5;
+            }
+            else 
+            {
+                _boxOffset = 10;
+            }
+            
+            if (grid != 3)
+            {
+                // Calculate Size
+                _boxSize = 610 / grid - _boxOffset * (grid - 1);
+            }
+            else
+            {
+                _boxSize = 170;
+            }
 
             // Initialize board
             InitBoxGrid();

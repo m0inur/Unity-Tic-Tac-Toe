@@ -9,43 +9,35 @@ namespace AI
         public Image image;
         public Sprite xImg;
 
-        private TicTacToeCreatorAI _ticTacToeCreatorAIScript;
-
         public bool clicked = false;
         public int boxColNum;
         public int boxRowNum;
 
         private void Start () {
-            GameObject gameControllerObj = GameObject.Find ("Single Player Controller");
             image = GetComponent<Image> ();
-            if (gameControllerObj != null) {
-                _ticTacToeCreatorAIScript = gameControllerObj.GetComponent<TicTacToeCreatorAI> ();
-            } else {
-                Debug.Log ("Cannot find 'TicTacToeCreatorAI' object");
-            }
         }
 
         public void OnPointerClick (PointerEventData eventData) {
             // If box is not yet clicked and game is not over and ai isnt making a move
-            if (!clicked && !_ticTacToeCreatorAIScript.isGameOver && !_ticTacToeCreatorAIScript.isAIMoving) {
+            if (!clicked && !TicTacToeCreatorAI.Instance.isGameOver && !TicTacToeCreatorAI.Instance.isAIMoving) {
                 // Put image and value on box and board
                 image.sprite = xImg;
-                _ticTacToeCreatorAIScript.Board[boxColNum, boxRowNum] = 1;
+                TicTacToeCreatorAI.Instance.Board[boxColNum, boxRowNum] = 1;
 
-                _ticTacToeCreatorAIScript.boardLen++;
+                TicTacToeCreatorAI.Instance.boardLen++;
 
-                if (_ticTacToeCreatorAIScript.boardLen >= _ticTacToeCreatorAIScript.grid * 2 - 1) {
-                    _ticTacToeCreatorAIScript.HasEnded ();
+                if (TicTacToeCreatorAI.Instance.boardLen >= TicTacToeCreatorAI.Instance.grid * 2 - 1) {
+                    TicTacToeCreatorAI.Instance.HasEnded ();
                 }
                 
                 clicked = true;
-                _ticTacToeCreatorAIScript.HasEnded();
-                if (!_ticTacToeCreatorAIScript.isGameOver)
+                TicTacToeCreatorAI.Instance.HasEnded();
+                if (!TicTacToeCreatorAI.Instance.isGameOver)
                 {
-                    StartCoroutine (_ticTacToeCreatorAIScript.MoveAi ());
+                    StartCoroutine (TicTacToeCreatorAI.Instance.MoveAi ());
                 }
                 
-                _ticTacToeCreatorAIScript.boardLen++;
+                TicTacToeCreatorAI.Instance.boardLen++;
             }
         }
     }

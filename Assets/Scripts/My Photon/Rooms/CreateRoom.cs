@@ -50,7 +50,7 @@ namespace My_Photon.Rooms
             ChangeView();
             Debug.Log("Joined a room");
         }
-
+                
         private void ChangeView()
         {
             privateMultiplayer.SetActive(false);

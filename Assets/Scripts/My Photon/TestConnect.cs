@@ -31,7 +31,7 @@ namespace My_Photon
         }
 
         public override void OnDisconnected (DisconnectCause cause) {
-            Debug.Log ("Disconnected to Photon " + cause.ToString (), this);
+            Debug.Log("Disconnected to photon because: " + cause.ToString());
         }
     }
 }

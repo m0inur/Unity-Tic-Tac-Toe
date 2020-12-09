@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\AI\TicTacToeCreatorAI.cs" />
      <Compile Include="Assets\Scripts\My Photon\Utilities\EXTTransforms.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\ChatGui.cs" />
+     <Compile Include="Assets\Scripts\PrivateMultiplayerController.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\Common\TextToggleIsOnTransition.cs" />
      <Compile Include="Assets\Scripts\ArrowAnimation.cs" />
      <Compile Include="Assets\Scripts\MenuController.cs" />
@@ -89,7 +90,6 @@
      <Compile Include="Assets\Photon\PhotonLibs\WebSocket\WebSocket.cs" />
      <Compile Include="Assets\Scripts\Particle\StarMovement.cs" />
      <Compile Include="Assets\Scripts\Multiplayer_Game\TicTacToeCreatorMp.cs" />
-     <Compile Include="Assets\Scripts\PrivateMultiplayerController.cs" />
      <None Include="Assets\Photon\PhotonLibs\netstandard2.0\Photon3Unity3D.xml" />
      <None Include="Assets\Photon\PhotonUnityNetworking\changelog.txt" />
      <None Include="Assets\Photon\PhotonLibs\changes-library.txt" />

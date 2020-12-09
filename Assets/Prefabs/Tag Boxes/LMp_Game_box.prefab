@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 13.5, y: -702.5}
-  m_SizeDelta: {x: 170, y: 170}
+  m_SizeDelta: {x: 102, y: 102}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &7039697055326309241
 CanvasRenderer:
@@ -91,8 +91,6 @@ MonoBehaviour:
   image: {fileID: 0}
   xImg: {fileID: 21300000, guid: 5865b0780994b9546bcf99ffe19c3a6a, type: 3}
   oImg: {fileID: 21300000, guid: ef24ee813a557554d8eaa3ef81273a58, type: 3}
-  ticTacToeCreator: {fileID: 3088909668383710565, guid: 41a715b698a15b64b91df455d88c5ce9, type: 3}
-  ticTacToeCreatorScript: {fileID: 0}
   clicked: 0
   boxColNum: 0
   boxRowNum: 0

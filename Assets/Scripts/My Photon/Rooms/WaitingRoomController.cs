@@ -105,6 +105,11 @@ namespace My_Photon.Rooms
         private IEnumerator MakeDelay(float wait)
         {
             yield return new WaitForSeconds(wait);
+            
+            // Make current room not joinable and invisible
+            PhotonNetwork.CurrentRoom.IsVisible = false;
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+            
             gameObject.SetActive(false);
             multiplayerGame.SetActive(true);
         }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using AI;
+using LocalMultiplayer;
 using My_Photon.Rooms;
 using Photon.Pun;
 using Photon.Realtime;
@@ -14,30 +15,23 @@ public class MenuController : MonoBehaviourPunCallbacks
 {
     // Store scene Game Objects
     public Image tictactoeImage;
-    
+
     public GameObject menuButtons;
     public GameObject singlePlayerButtons;
-    public GameObject localMultiplayer;
+    public GameObject localMultiplayerButtons;
+
     public GameObject singlePlayer;
+    public GameObject localMultiplayer;
     public GameObject privateMultiplayer;
     public GameObject multiplayer;
 
-    public Text connectionText;
-
-    private IEnumerator _currentCoroutine;
-    
-    private string _quickmatchRoomName;
-
     private TicTacToeCreatorAI tictactoeCreatorAIScript;
-    private int _roomLength;
-    private bool _isConnected = false;
-    private float _disableConnectionTextWait;
-    
+    private TicTacToeCreatorLm ticTacToeCreatorLmScript;
+
     private void Start()
     {
-        _disableConnectionTextWait = 3f;
         tictactoeCreatorAIScript = singlePlayer.GetComponent<TicTacToeCreatorAI>();
-        _quickmatchRoomName = "PunfishQuickmatch2131";
+        ticTacToeCreatorLmScript = localMultiplayer.GetComponent<TicTacToeCreatorLm>();
     }
 
     private void Update () {
@@ -50,12 +44,31 @@ public class MenuController : MonoBehaviourPunCallbacks
     public void Menu () {
         SceneManager.LoadScene ("Menu");
     }
-
+    
     public void LocalMultiplayer () {
+        tictactoeImage.gameObject.SetActive(false);
+        menuButtons.SetActive(false);
+        localMultiplayerButtons.SetActive(true);
+    }
+    
+    public void LocalMultiplayer3 () {
         gameObject.SetActive(false);
+        ticTacToeCreatorLmScript.grid = 3;
         localMultiplayer.SetActive(true);
     }
-
+    
+    public void LocalMultiplayer4 () {
+        gameObject.SetActive(false);
+        ticTacToeCreatorLmScript.grid = 4;
+        localMultiplayer.SetActive(true);
+    }
+    
+    public void LocalMultiplayer5 () {
+        gameObject.SetActive(false);
+        ticTacToeCreatorLmScript.grid = 5;
+        localMultiplayer.SetActive(true);
+    }
+    
     public void SinglePlayer () {
         tictactoeImage.gameObject.SetActive(false);
         menuButtons.SetActive(false);
@@ -100,75 +113,15 @@ public class MenuController : MonoBehaviourPunCallbacks
         tictactoeImage.gameObject.SetActive(true);
         menuButtons.SetActive(true);
     }
+    
+    public void LocalMultiplayerButtons_LeaveButton()
+    {
+        localMultiplayerButtons.SetActive(false);
+        tictactoeImage.gameObject.SetActive(true);
+        menuButtons.SetActive(true);
+    }
 
     public void PlayAgain () {
         SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
-    }
-    
-    public override void OnRoomListUpdate(List<RoomInfo> roomList)
-    {
-        _roomLength = roomList.Count;
-        
-        foreach (var info in roomList)
-        {
-            if (info.Name != _quickmatchRoomName)
-            {
-                _roomLength--;
-            }
-        }
-    }
-    
-    public override void OnConnectedToMaster ()
-    {
-        if (_currentCoroutine != null)
-        {
-            StopCoroutine(_currentCoroutine);
-        }
-        
-        _isConnected = true;
-    }
-
-    public override void OnDisconnected (DisconnectCause cause)
-    {
-        if (_currentCoroutine != null)
-        {
-            StopCoroutine(_currentCoroutine);
-        }
-        
-        _currentCoroutine = ShowText("You are Disconnected, because: " + cause.ToString(), false);
-        StartCoroutine(_currentCoroutine);
-    }
-
-    private IEnumerator ShowText(string _text, bool isGood)
-    {
-        Color color;
-        connectionText.text = _text;
-
-        if (isGood)
-        {
-            color = Color.green;
-        }
-        else
-        {
-            color = Color.red;
-        }
-        
-        // Show
-        for (float i = 0; i <= 5; i += Time.deltaTime)
-        { 
-            // set color with i as alpha
-            connectionText.color = new Color(color.r, color.g, color.b, i);
-            yield return null;
-        }
-            
-        yield return new WaitForSeconds(_disableConnectionTextWait);
-        
-        // Hide
-        for (float i = 1; i >= 0; i -= Time.deltaTime)
-        {
-            // set color with i as alpha
-            connectionText.color = new Color(color.r, color.g, color.b, i);
-            yield return null;
-        }
     }
 }

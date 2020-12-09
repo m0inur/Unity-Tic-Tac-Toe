@@ -1,4 +1,6 @@
-﻿using Confetti;
+﻿using System;
+using Confetti;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,14 +9,16 @@ namespace LocalMultiplayer
     public class TicTacToeCreatorLm : MonoBehaviour
     {
         #region Variables
+
         public static TicTacToeCreatorLm Instance;
 
         public GameObject confettiWindowPr;
+        public GameObject cardBorderProps;
         public GameObject cardBorder;
         public GameObject line;
         public GameObject card;
         public GameObject menu;
-
+        
         public Material xMat;
         public Material oMat;
         public Transform xConfetti;
@@ -86,9 +90,12 @@ namespace LocalMultiplayer
         private float _boxOffset;
         private float _linedotSize;
         private float _cardBorderTopGap;
+        private float _cardBorderXGaps;
+        private float _cardBorderWidth;
 
         private int _rowCount;
         private int _colCount;
+        private int _lastGrid;
 
         private bool _hasDrawn;
         private bool _spawnButtons;
@@ -101,54 +108,21 @@ namespace LocalMultiplayer
 
         private void Start()
         {
-            Board = new int[grid, grid];
-
-            endImage.gameObject.SetActive(false);
-
-            _border = Instantiate(playerCardBorder, new Vector3(0, 0, 0), Quaternion.identity);
-            _border.transform.SetParent(player1Card.transform, false);
-
-            _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-            _turnTxt.transform.SetParent(player1Card.transform, false);
-
-            _downArrow = Instantiate(downArrowPr, downArrowPr.transform.position, Quaternion.identity);
-            _downArrow.transform.SetParent(player1Card.transform, false);
+            // Initialize once
             
-            // Integers
-            _rowCount = 0;
-            _colCount = 0;
-            _boxOffset = 10;
-            boardLen = 0;
-
-            _drawSpeed = 3f;
-            _drawDelay = 0.1f;
-            _boxGridHeight = 50;
-            _showButtonsTimer = 1.5f;
-            _linedotSize = 15;
-            _cardBorderTopGap = _boxGridHeight;
-
-            p1 = true;
-
-            _origin = new Vector3(0, 0, 0);
+            Instance = this;
 
             // Canvas & UI
             _canvas = FindObjectOfType<Canvas>();
             _canvasW = _canvas.GetComponent<RectTransform>().rect.width;
             _canvasH = _canvas.GetComponent<RectTransform>().rect.height;
-            
-            // Booleans
-            isGameOver = false;
-            _hasDrawn = false;
-            _spawnButtons = false;
-            _animateLine = false;
-            _hasWon = false;
-            
-            _boxSize = 170;
-            
-            // Initialize boxes
-            InitBoxGrid();
         }
         
+        private void OnEnable()
+        {
+            Setup();
+        }
+
         private void OnDisable()
         {
             // If someone has won
@@ -157,10 +131,42 @@ namespace LocalMultiplayer
                 GameObject.Destroy(_windowConfetti);
                 GameObject.Destroy(_cardPlayerWinnerTxt);
             }
+        }
 
-            // If Board has been used then destroy all children and create new board
-            if (boardLen > 0)
+        private void Setup()
+        {
+            // If it has not been set yet
+            if (_cardBorderXGaps == 0)
             {
+                _cardBorderXGaps = cardBorderProps.GetComponent<RectTransform>().anchoredPosition.x - 250;
+                _cardBorderWidth = cardBorderProps.GetComponent<RectTransform>().rect.width;
+            }
+            // Re-enable Card Border
+            cardBorder.SetActive(true);
+
+            if (grid == 5)
+            {
+                _boxOffset = 5;
+            }
+            else 
+            {
+                _boxOffset = 10;
+            }
+            
+            if (grid != 3)
+            {
+                // Calculate Size
+                _boxSize =  _cardBorderWidth / grid - _boxOffset * (grid - 1);
+            }
+            else
+            {
+                _boxSize = 170;
+            }
+
+            // If Board has been used Or if last and current grid doesn't match 
+            if (boardLen > 0 || _lastGrid != grid)
+            {
+                Debug.Log("Destroy and create cards");
                 foreach (Transform child in cardBorder.transform) {
                     GameObject.Destroy(child.gameObject);
                 }
@@ -169,12 +175,14 @@ namespace LocalMultiplayer
                 InitBoxGrid();
             }
             
+            // If Down arrow is not null
             if (_downArrow)
             {
                 // Disable arrow after being disabled
                 GameObject.Destroy(_downArrow.gameObject);
             }
 
+            // If End text's are not yet destroyed
             if (_playerCard1EndTxt)
             {
                 Destroy(_playerCard1EndTxt.gameObject);
@@ -183,28 +191,30 @@ namespace LocalMultiplayer
 
             endImage.gameObject.SetActive(false);
 
+            // If there isn't a border instantiate it
             if (!_border)
             {
                 _border = Instantiate(playerCardBorder, new Vector3(0, 0, 0), Quaternion.identity);
             }
 
-            _border.transform.SetParent(player1Card.transform, false);
 
+            // If there isn't a turn txt instantiate it
             if (!_turnTxt)
             {
                 _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
             }
-
-            _turnTxt.transform.SetParent(player1Card.transform, false);
-
+            
             _downArrow = Instantiate(downArrowPr, downArrowPr.transform.position, Quaternion.identity);
-            _downArrow.transform.SetParent(player1Card.transform, false);
-
-
-            Board = new int[grid, grid];
-
+            
+            // Set Parents
             _border.transform.SetParent(player1Card.transform, false);
             _turnTxt.transform.SetParent(player1Card.transform, false);
+            _downArrow.transform.SetParent(player1Card.transform, false);
+
+            Debug.Log("Resetting board, grid = " + grid);
+            // Reset Board
+            Board = new int[grid, grid];
+
             _turnTxt.text = "Your Turn";
 
             // Integers
@@ -216,8 +226,7 @@ namespace LocalMultiplayer
             _showButtonsTimer = 1.5f;
             _linedotSize = 15;
             _counter = 0;
-            
-            p1 = true;
+            _lastGrid = grid;
 
             _origin = new Vector3(0, 0, 0);
             
@@ -226,17 +235,11 @@ namespace LocalMultiplayer
             _hasDrawn = false;
             _spawnButtons = false;
             _animateLine = false;
-        }
-
-        private void OnEnable()
-        {
-            cardBorder.SetActive(true);
+            p1 = true;
         }
 
         #endregion
-
-        #region Init grid
-
+        
         private void InitBoxGrid()
         {
             // Give size of boxes
@@ -246,15 +249,25 @@ namespace LocalMultiplayer
             _rowCount = 0;
             _colCount = 0;
             _cardBorderTopGap = _boxGridHeight;
-
+            
             for (var i = 0; i < grid; i++)
             {
                 // Reset the gap on the x axis every new column
-                _gapX = _boxOffset * 2;
+                if (grid == 5)
+                {
+                    _gapX = _boxSize / 3 - _boxOffset;
+                } else if (grid == 4)
+                {
+                    _gapX = _boxOffset * (grid - 1);
+                }
+                else
+                {
+                    _gapX = _boxOffset * grid;
+                }
 
                 for (var j = 0; j < grid; j++)
                 {
-                    _box = Instantiate(card, new Vector3(_gapX + 10, _boxGridHeight, 0),
+                    _box = Instantiate(card, new Vector3(_gapX, _boxGridHeight, 0),
                         Quaternion.identity) as GameObject;
                     _box.transform.SetParent(cardBorder.transform, false);
                     var boxScript = _box.GetComponent<TagBoxLm>();
@@ -273,8 +286,6 @@ namespace LocalMultiplayer
             }
         }
 
-        #endregion
-        
         // Animate line
         private void Update()
         {
