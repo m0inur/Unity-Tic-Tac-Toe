@@ -399,6 +399,7 @@
             </e>
             <e p="Rooms" t="Include">
               <e p="CreateRoom.cs" t="Include" />
+              <e p="JoinRoom.cs" t="Include" />
               <e p="MultiplayerManager.cs" t="Include" />
               <e p="RoomListing.cs" t="Include" />
               <e p="RoomListingsMenu.cs" t="Include" />

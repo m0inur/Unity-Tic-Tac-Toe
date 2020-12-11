@@ -109,7 +109,6 @@ namespace LocalMultiplayer
         private void Start()
         {
             // Initialize once
-            
             Instance = this;
 
             // Canvas & UI

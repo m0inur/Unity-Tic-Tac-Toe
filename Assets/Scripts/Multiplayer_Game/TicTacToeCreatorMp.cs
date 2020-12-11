@@ -11,7 +11,8 @@ namespace Multiplayer_Game
         public static TicTacToeCreatorMp Instance;
         
         public GameObject menu;
-        public GameObject confettiWindow;
+        public GameObject confettiWindow; 
+        public GameObject cardBorderProps;
         public GameObject cardBorder;
         public GameObject line;
         public GameObject card;
@@ -94,12 +95,14 @@ namespace Multiplayer_Game
         private float _boxOffset;
         private float _linedotSize;
         private float _cardBorderTopGap;
-
+        private float _cardBorderXGaps;
+        private float _cardBorderWidth;
+        
         private int _rowCount;
         private int _colCount;
         private int _playerIndex = 0;
-
-        private int _n;
+        private int _lastGrid;
+        
         private bool _hasDrawn = false;
         private bool _showedEndImg = false;
         private bool _animateLine = false;
@@ -112,73 +115,18 @@ namespace Multiplayer_Game
         #region Initially set variables board
 
         private void Start () {
-            Board = new int[grid, grid];
-            endImage.gameObject.SetActive (false);
             Instance = this;
-        
-            _border = Instantiate (playerCardBorder, new Vector3 (0, 0, 0), Quaternion.identity);
-            _border.transform.SetParent (player1Card.transform, false);
-
-            _turnTxt = Instantiate (turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
-            _turnTxt.transform.SetParent (player1Card.transform, false);
-
-            _downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
-            _downArrow.transform.SetParent (player1Card.transform, false);
-
-            // Integers
-            _rowCount = 0;
-            _colCount = 0;
-            boardLen = 0;
-            _boxOffset = 10;
-
-            _drawSpeed = 3f;
-            _drawDelay = 0.1f;
-            _boxGridHeight = 50;
-            _showButtonsTimer = 1.5f;
-            _linedotSize = 15;
-            _cardBorderTopGap = _boxGridHeight;
-            _n = grid;
-
-            p1 = true;
-            _hasDrawn = false;
-            _hasDisabled = false;
-            _hasPlayerLeft = false;
-            
-            _origin = new Vector3 (0, 0, 0);
 
             // Canvas & UI
             _canvas = FindObjectOfType<Canvas> ();
             _canvasW = _canvas.GetComponent<RectTransform> ().rect.width;
             _canvasH = _canvas.GetComponent<RectTransform> ().rect.height;
-
             _cardBoarderRt = cardBorder.GetComponent<RectTransform> ();
-            // Booleans
-            isGameOver = false;
-
-            _playerIndex = PhotonNetwork.IsMasterClient ? 1 : 2;
-        
-            if (_playerIndex == 1)
-            {
-                isMyTurn = true;
-                _turnTxt.text = "Your Turn";
-                GameObject.Find("Player 1 Card Text").GetComponent<Text>().text = "You";
-            }
-            else
-            {
-                _turnTxt.text = "Player 1's Turn";
-                GameObject.Find("Player 2 Card Text").GetComponent<Text>().text = "You";
-            }
-
-            _boxSize = 170;
-        
-            // Initialize boxes
-            InitBoxGrid ();
         }
         
-        private void OnDisable()
+        private new void OnDisable()
         {
             _hasDisabled = true;
-            Board = new int[grid, grid];
             // If someone has won
             if (_hasWon)
             {
@@ -190,6 +138,25 @@ namespace Multiplayer_Game
                 Debug.Log("Destroying confetti");
                 GameObject.Destroy(_windowConfetti.gameObject);
             }
+        }
+
+        private new void OnEnable()
+        {
+            Setup();
+        }
+
+        private void Setup()
+        {
+            Debug.Log("Setup() was called");
+            _playerIndex = PhotonNetwork.IsMasterClient ? 1 : 2;
+            // If it has not been set yet
+            if (_cardBorderXGaps == 0)
+            {
+                _cardBorderXGaps = cardBorderProps.GetComponent<RectTransform>().anchoredPosition.x - 250;
+                _cardBorderWidth = cardBorderProps.GetComponent<RectTransform>().rect.width;
+            }
+            
+            Board = new int[grid, grid];
 
             _boxGridHeight = 50;
             _cardBorderTopGap = _boxGridHeight;
@@ -198,8 +165,29 @@ namespace Multiplayer_Game
             _colCount = 0;
             _rowCount = 0;
             
+            if (grid == 5)
+            {
+                _boxOffset = 5;
+            }
+            else 
+            {
+                _boxOffset = 10;
+            }
+            
+            if (grid != 3)
+            {
+                // Calculate Size
+                _boxSize =  _cardBorderWidth / grid - _boxOffset * (grid - 1);
+            }
+            else
+            {
+                _boxSize = 170;
+            }
+            
+            Debug.Log("Current grid = " + grid + ", Previous grid = " + _lastGrid);
+            
             // If Board has been used then destroy all children and create new board
-            if (boardLen > 0)
+            if (boardLen > 0 || grid != _lastGrid)
             {
                 foreach (Transform child in cardBorder.transform) {
                     GameObject.Destroy(child.gameObject);
@@ -245,15 +233,28 @@ namespace Multiplayer_Game
             _turnTxt.transform.SetParent(player1Card.transform, false);
 
             cardBorder.SetActive(true);
+            
+            if (_playerIndex == 1)
+            {
+                isMyTurn = true;
+                _turnTxt.text = "Your Turn";
+                player1CardText.text = "You";
+            }
+            else
+            {
+                isMyTurn = false;
+                _turnTxt.text = "Player 1's Turn";
+                player2CardText.text = "You";
+            }
 
             // Integers
-            _boxOffset = 10;
             boardLen = 0;
 
             _drawSpeed = 3f;
             _drawDelay = 0.1f;
             _showButtonsTimer = 1.5f;
             _linedotSize = 15;
+            _lastGrid = grid;
 
             p1 = true;
 
@@ -267,41 +268,30 @@ namespace Multiplayer_Game
             _hasPlayerLeft = false;
         }
 
-        public override void OnEnable()
-        {
-            if (_hasDisabled)
-            {
-                _playerIndex = PhotonNetwork.IsMasterClient ? 1 : 2;
-        
-                if (_playerIndex == 1)
-                {
-                    isMyTurn = true;
-                    _turnTxt.text = "Your Turn";
-                    player1CardText.text = "You";
-                }
-                else
-                {
-                    isMyTurn = false;
-                    _turnTxt.text = "Player 1's Turn";
-                    player2CardText.text = "You";
-                }
-            }
-        }
-
         #endregion
 
-        #region Init grid
-        private void InitBoxGrid () {
+        private void InitBoxGrid ()
+        {
+            Debug.Log("InitBoxGrid()");
             // Give size of boxes
             card.GetComponent<RectTransform> ().sizeDelta = new Vector2 (_boxSize, _boxSize);
 
             for (int i = 0; i < grid; i++) {
-                // Reset the gap on the x axis every time
-                _gapX = _boxOffset * 2;
-                // gapX = boxSize / 2 + boxOffset;
+                // Reset the gap on the x axis every new column
+                if (grid == 5)
+                {
+                    _gapX = _boxOffset * (grid + 1);
+                } else if (grid == 4)
+                {
+                    _gapX = _boxOffset * (grid - 1);
+                }
+                else
+                {
+                    _gapX = _boxOffset * grid;
+                }
 
                 for (int j = 0; j < grid; j++) {
-                    _box = Instantiate (card, new Vector3 (_gapX + 10, _boxGridHeight, 0), Quaternion.identity) as GameObject;
+                    _box = Instantiate (card, new Vector3 (_gapX, _boxGridHeight, 0), Quaternion.identity) as GameObject;
                     _box.transform.SetParent (cardBorder.transform, false);
                     _box.name = _colCount + "" + _rowCount;
                     _boxScript = _box.GetComponent<TagBoxMp>();
@@ -320,13 +310,11 @@ namespace Multiplayer_Game
             }
         }
 
-        #endregion
-
         // Animate line
         private void Update () {
             // Go back to menu if back was pressed
             if (Input.GetKeyDown (KeyCode.Escape)) {
-                GoToMenu ();
+                LeaveGame ();
             }
 
             if (_animateLine) {
@@ -631,7 +619,7 @@ namespace Multiplayer_Game
             ChangePlayer();
         }
 
-        public void GoToMenu () {
+        public void LeaveGame () {
             gameObject.SetActive(false);
             menu.SetActive(true);
             
@@ -641,12 +629,7 @@ namespace Multiplayer_Game
                 PhotonNetwork.LeaveRoom();
             }
         }
-
-        public void PlayAgain () {
-            gameObject.SetActive(false);
-            gameObject.SetActive(true);
-        }
-    
+        
         [PunRPC]
         public void MarkBox(int playerIndex, int boxColNum, int boxRowNum)
         {
@@ -664,7 +647,9 @@ namespace Multiplayer_Game
             isMyTurn = true;
             IsGameOver();
         }
-        
+
+        [PunRPC]
+
         // If player leaves in the middle of the game
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {

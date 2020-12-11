@@ -74,6 +74,7 @@
      <Compile Include="Assets\Scripts\Confetti\WindowConfetti.cs" />
      <Compile Include="Assets\Scripts\My Photon\TestConnect.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\AppSettingsExtensions.cs" />
+     <Compile Include="Assets\Scripts\My Photon\Rooms\JoinRoom.cs" />
      <Compile Include="Assets\Scripts\Scenes.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\Common\TextButtonTransition.cs" />
      <Compile Include="Assets\Photon\PhotonLibs\WebSocket\SocketWebTcp.cs" />
