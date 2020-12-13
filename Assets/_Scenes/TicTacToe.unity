@@ -8254,7 +8254,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1489889970
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8314,7 +8314,7 @@ MonoBehaviour:
   redLineDotPr: {fileID: 3143241423614161275, guid: ff9b2a879145a264484245c406e1b62a, type: 3}
   turnTxtPr: {fileID: 2925965935007828296, guid: b34fe0c5482c5a44791f36f052b92364, type: 3}
   endTxt: {fileID: 1723880630}
-  grid: 0
+  grid: 3
   boardLen: 0
   isGameOver: 0
   p1: 0
@@ -10945,7 +10945,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2075610258
 RectTransform:
   m_ObjectHideFlags: 0

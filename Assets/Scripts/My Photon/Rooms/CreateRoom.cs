@@ -54,7 +54,8 @@ namespace My_Photon.Rooms
             var options = new RoomOptions
             {
                 PublishUserId = true, 
-                MaxPlayers = 2
+                MaxPlayers = 2,
+                IsVisible = false
             };
 
             for (var i = 0; i < 4; i++)

@@ -61,7 +61,6 @@
      <Compile Include="Assets\Photon\PhotonRealtime\Demos\DemoLoadBalancing\ConnectAndJoinRandomLb.cs" />
      <Compile Include="Assets\Scripts\My Photon\Managers\SingletonScriptableObject.cs" />
      <Compile Include="Assets\Scripts\MpTextAnimation.cs" />
-     <Compile Include="Assets\Scripts\My Photon\Rooms\RoomListing.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\NamePickGui.cs" />
      <Compile Include="Assets\Scripts\My Photon\Rooms\WaitingRoomController.cs" />
      <Compile Include="Assets\Scripts\My Photon\Managers\MasterManager\MasterManager.cs" />
@@ -83,7 +82,6 @@
      <Compile Include="Assets\Scripts\Multiplayer_Game\TagBoxMp.cs" />
      <Compile Include="Assets\Scripts\Confetti\ImageAnimator.cs" />
      <Compile Include="Assets\Scripts\My Photon\Managers\GameSettings.cs" />
-     <Compile Include="Assets\Scripts\My Photon\Rooms\RoomListingsMenu.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\Common\OnStartDelete.cs" />
      <Compile Include="Assets\Scripts\Particle\InitParticles.cs" />
      <Compile Include="Assets\Scripts\My Photon\Rooms\MultiplayerManager.cs" />

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using AI;
+using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
@@ -46,9 +48,9 @@ namespace My_Photon.Rooms
         }
 
         private void Setup()
-        {
+        { 
+            _quickmatchRoomName = "Grid3";
             Debug.Log("Setup()");
-            _quickmatchRoomName = "PunfishQuickmatch2131";
             tictactoeCreatorAIScript = singlePlayer.GetComponent<TicTacToeCreatorAI>();
 
             // Reset Everything
@@ -63,12 +65,14 @@ namespace My_Photon.Rooms
             _hasFoundRoom = false;
 
             searchText.text = "Searching for Opponent";
-            
-            _options = new RoomOptions ();
-            _options.BroadcastPropsChangeToAll = true;
-            _options.PublishUserId = true;
-            _options.MaxPlayers = 5;
-            
+
+            _options = new RoomOptions
+            {
+                BroadcastPropsChangeToAll = true, 
+                PublishUserId = true, 
+                MaxPlayers = 2,
+            };
+
             if (PhotonNetwork.InRoom)
             {
                 PhotonNetwork.LeaveRoom();
@@ -206,31 +210,7 @@ namespace My_Photon.Rooms
 
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
         {
-            if (roomList.Count > 0)
-            {
-                _roomLength = roomList.Count;
-            }
-
-            foreach (var info in roomList)
-            {
-                if (info.Name != _quickmatchRoomName)
-                {
-                    _roomLength--;
-                }
-            }
-            
-            Debug.Log("Room length = " + roomList.Count);
-
-            // Try to join a room if there is one
-            if (_roomLength > 0)
-            {
-                _tryJoinRoom = true;
-                Debug.Log("Try to join a room");
-            }
-            else
-            {
-                _tryJoinRoom = false;
-            }
+            _roomLength = roomList.Count;
         }
 
         public override void OnCreatedRoom()

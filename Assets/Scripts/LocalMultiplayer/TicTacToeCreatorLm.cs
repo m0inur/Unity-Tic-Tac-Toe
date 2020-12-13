@@ -1,6 +1,4 @@
-﻿using System;
-using Confetti;
-using Unity.Mathematics;
+﻿using Confetti;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -134,6 +132,8 @@ namespace LocalMultiplayer
 
         private void Setup()
         {
+            Debug.Log("Setup()");
+            // grid = 5;
             // If it has not been set yet
             if (_cardBorderXGaps == 0)
             {
@@ -217,7 +217,6 @@ namespace LocalMultiplayer
             _turnTxt.text = "Your Turn";
 
             // Integers
-            _boxOffset = 10;
             boardLen = 0;
 
             _drawSpeed = 3;
@@ -226,7 +225,7 @@ namespace LocalMultiplayer
             _linedotSize = 15;
             _counter = 0;
             _lastGrid = grid;
-
+            
             _origin = new Vector3(0, 0, 0);
             
             // Booleans
@@ -235,6 +234,47 @@ namespace LocalMultiplayer
             _spawnButtons = false;
             _animateLine = false;
             p1 = true;
+            
+            // Reset the gap on the x axis every new column
+            if (grid == 5)
+            {
+                _gapX = _boxSize / 3 - _boxOffset;
+            } else if (grid == 4)
+            {
+                _gapX = _boxOffset * (grid - 1);
+            }
+            else
+            {
+                _gapX = _boxOffset * grid;
+            }
+
+            _lineDotPr = redLineDotPr;
+            
+            _boxGridHeight = 50;
+            _cardBorderTopGap = _boxGridHeight;
+            
+            // Debug.Log("BoxSize = " + _boxSize + ", boxOffset = " + _boxOffset);
+
+            
+            // // Draw lines
+            // _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
+            // _lineGen.transform.SetParent(cardBorder.transform, false);
+            // _lineRend = _lineGen.GetComponent<LineRenderer>();
+            // _lineRend.material = xMat;
+            //
+            // // 1st line dot
+            // _lineDot = Instantiate(_lineDotPr, _lineDot1Pos, Quaternion.identity);
+            // _lineDot.transform.SetParent(cardBorder.transform, false);
+            //
+            // // 2nd line dot
+            // _lineDot = Instantiate(_lineDotPr, _lineDot2Pos, Quaternion.identity);
+            // _lineDot.transform.SetParent(cardBorder.transform, false);
+            //
+            // // 3rd line dot
+            // _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
+            // _lineDot.transform.SetParent(cardBorder.transform, false);
+            //
+            // _animateLine = true;
         }
 
         #endregion
@@ -309,7 +349,7 @@ namespace LocalMultiplayer
                     }
                 else
                 {
-                    _animateLine = false;
+                    _hasDrawn = true;
                 }
             }
 
@@ -444,8 +484,8 @@ namespace LocalMultiplayer
 
                 if (rowWinner > -1)
                 {
-                    _lineSpawnPos = new Vector3((_boxOffset * 2) + 5 + (_boxSize - (_boxSize / 2)),
-                        _cardBorderTopGap + (_boxSize * (1 + i) + (_boxOffset * i)) - (_boxSize / 2), -1);
+                    _lineSpawnPos = new Vector3(_gapX - 5 + (_boxSize - (_boxSize / 2)),
+                        _cardBorderTopGap + (_boxSize * (1 + 2) + (_boxOffset * 2)) - (_boxSize / 2), -1);
                     _lineDrawPos = new Vector3((_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1) + 5, 0, 0);
 
                     _destination = _lineDrawPos;
@@ -467,8 +507,7 @@ namespace LocalMultiplayer
                 if (colWinner > -1)
                 {
                     // Draw lines
-                    _lineSpawnPos = new Vector3(10 + (_boxSize * (1 + i)) - (_boxSize / 2) + (_boxOffset * 2) * (1 + i),
-                        _cardBorderTopGap + _boxSize - (_boxSize / 2) - 5, -1);
+                    _lineSpawnPos = new Vector3(_gapX + (_boxSize * (1 + 2)) - (_boxSize / 2) + ((_boxOffset * 2) * 2), _cardBorderTopGap + _boxSize - (_boxSize / 2) - 5, -1);
                     _lineDrawPos = new Vector3(0, (_boxSize * (grid - 1)) + _boxOffset * (grid - 1) + 10, 0);
 
                     _destination = _lineDrawPos;
@@ -478,13 +517,12 @@ namespace LocalMultiplayer
                     _lineDot1Pos = new Vector3(_lineSpawnPos.x, _lineSpawnPos.y + _linedotSize / 2, _lineSpawnPos.z);
 
                     // 2nd line dot
-                    _lineDot2Pos = new Vector3(_lineSpawnPos.x,
-                        _lineSpawnPos.y + _boxSize + (_boxOffset * 2) - _linedotSize / 2, _lineSpawnPos.z);
+                    _lineDot2Pos = new Vector3(_lineSpawnPos.x, _lineSpawnPos.y + _boxSize + (_boxOffset * 2) - _linedotSize / 2, _lineSpawnPos.z);
 
                     // 3rd line dot
                     _lineDot3Pos = new Vector3(_lineSpawnPos.x, _lineSpawnPos.y + _lineDrawPos.y - _linedotSize / 2,
                         _lineSpawnPos.z);
-
+                    
                     return colWinner;
                 }
 
@@ -495,9 +533,29 @@ namespace LocalMultiplayer
             if (diagWinner > -1)
             {
                 float lineSize = (_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1);
-                _lineSpawnPos = new Vector3((_boxOffset * 2) + 10 + _boxSize / 2,
-                    _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
-                _lineDrawPos = new Vector3(lineSize, -lineSize + 15, 0);
+
+                if (grid != 5)
+                {
+                    _lineSpawnPos = new Vector3((_boxOffset * 2) + 10 + _boxSize / 2,
+                        _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                }
+                else
+                {
+                    _lineSpawnPos = new Vector3((_boxOffset * 2) + 20 + _boxSize / 2,
+                        _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2 - 2, -1);
+                }
+  
+                if (grid == 3)
+                {
+                    _lineDrawPos = new Vector3(lineSize, -lineSize + 15, 0);
+                } else if (grid == 4)
+                {
+                    _lineDrawPos = new Vector3(lineSize, -lineSize + 30, 0);
+                }
+                else
+                {
+                    _lineDrawPos = new Vector3(lineSize, -lineSize + 20, 0);
+                }
 
                 _destination = _lineDrawPos;
                 _dist = Vector3.Distance(_origin, _destination);
@@ -512,7 +570,7 @@ namespace LocalMultiplayer
                 // 3rd line dot
                 _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y + _lineDrawPos.y,
                     _lineSpawnPos.z);
-
+                
                 return diagWinner;
             }
 
