@@ -485,7 +485,7 @@ namespace LocalMultiplayer
                 if (rowWinner > -1)
                 {
                     _lineSpawnPos = new Vector3(_gapX - 5 + (_boxSize - (_boxSize / 2)),
-                        _cardBorderTopGap + (_boxSize * (1 + 2) + (_boxOffset * 2)) - (_boxSize / 2), -1);
+                        _cardBorderTopGap + (_boxSize * (1 + i) + (_boxOffset * i)) - (_boxSize / 2), -1);
                     _lineDrawPos = new Vector3((_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1) + 5, 0, 0);
 
                     _destination = _lineDrawPos;
@@ -507,7 +507,7 @@ namespace LocalMultiplayer
                 if (colWinner > -1)
                 {
                     // Draw lines
-                    _lineSpawnPos = new Vector3(_gapX + (_boxSize * (1 + 2)) - (_boxSize / 2) + ((_boxOffset * 2) * 2), _cardBorderTopGap + _boxSize - (_boxSize / 2) - 5, -1);
+                    _lineSpawnPos = new Vector3(_gapX + (_boxSize * (1 + i)) - (_boxSize / 2) + ((_boxOffset * 2) * i), _cardBorderTopGap + _boxSize - (_boxSize / 2) - 5, -1);
                     _lineDrawPos = new Vector3(0, (_boxSize * (grid - 1)) + _boxOffset * (grid - 1) + 10, 0);
 
                     _destination = _lineDrawPos;
@@ -576,12 +576,30 @@ namespace LocalMultiplayer
 
             if (antiDiagWinner > -1)
             {
-                float lineSize = (_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1);
-                _lineSpawnPos =
-                    new Vector3((_boxOffset * 2) + 10 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
-                        _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
-                _lineDrawPos = new Vector3(-lineSize, -lineSize + 15, 0);
+                var lineSize = _boxSize * (grid - 1) + (_boxOffset * 2) * (grid - 1);
 
+                if (grid == 3)
+                {
+                    _lineSpawnPos =
+                        new Vector3((_boxOffset * 2) + 10 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
+                            _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                    _lineDrawPos = new Vector3(-lineSize, -lineSize + 15, 0);
+                }
+                else if (grid == 4)
+                {
+                    _lineSpawnPos =
+                        new Vector3((_boxOffset * 2) + 20 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
+                            _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                    _lineDrawPos = new Vector3(-lineSize, -lineSize + 28, 0);
+                }
+                else
+                {
+                    _lineSpawnPos =
+                        new Vector3((_boxOffset * 2) + 25 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
+                            _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                    _lineDrawPos = new Vector3(-lineSize, -lineSize + 18, 0);
+                }
+            
                 _destination = _lineDrawPos;
                 _dist = Vector3.Distance(_origin, _destination);
 
