@@ -16,7 +16,7 @@ namespace LocalMultiplayer
         public GameObject line;
         public GameObject card;
         public GameObject menu;
-        
+
         public Material xMat;
         public Material oMat;
         public Transform xConfetti;
@@ -67,6 +67,8 @@ namespace LocalMultiplayer
         private Vector3 _lineDot1Pos;
         private Vector3 _lineDot2Pos;
         private Vector3 _lineDot3Pos;
+        private Vector3 _lineDot4Pos;
+        private Vector3 _lineDot5Pos;
 
         private Vector3 _lineSpawnPos;
         private Vector3 _lineDrawPos;
@@ -114,7 +116,7 @@ namespace LocalMultiplayer
             _canvasW = _canvas.GetComponent<RectTransform>().rect.width;
             _canvasH = _canvas.GetComponent<RectTransform>().rect.height;
         }
-        
+
         private void OnEnable()
         {
             Setup();
@@ -140,6 +142,7 @@ namespace LocalMultiplayer
                 _cardBorderXGaps = cardBorderProps.GetComponent<RectTransform>().anchoredPosition.x - 250;
                 _cardBorderWidth = cardBorderProps.GetComponent<RectTransform>().rect.width;
             }
+
             // Re-enable Card Border
             cardBorder.SetActive(true);
 
@@ -147,15 +150,15 @@ namespace LocalMultiplayer
             {
                 _boxOffset = 5;
             }
-            else 
+            else
             {
                 _boxOffset = 10;
             }
-            
+
             if (grid != 3)
             {
                 // Calculate Size
-                _boxSize =  _cardBorderWidth / grid - _boxOffset * (grid - 1);
+                _boxSize = _cardBorderWidth / grid - _boxOffset * (grid - 1);
             }
             else
             {
@@ -166,14 +169,15 @@ namespace LocalMultiplayer
             if (boardLen > 0 || _lastGrid != grid)
             {
                 Debug.Log("Destroy and create cards");
-                foreach (Transform child in cardBorder.transform) {
+                foreach (Transform child in cardBorder.transform)
+                {
                     GameObject.Destroy(child.gameObject);
                 }
-                
+
                 // Initialize boxes
                 InitBoxGrid();
             }
-            
+
             // If Down arrow is not null
             if (_downArrow)
             {
@@ -202,9 +206,9 @@ namespace LocalMultiplayer
             {
                 _turnTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
             }
-            
+
             _downArrow = Instantiate(downArrowPr, downArrowPr.transform.position, Quaternion.identity);
-            
+
             // Set Parents
             _border.transform.SetParent(player1Card.transform, false);
             _turnTxt.transform.SetParent(player1Card.transform, false);
@@ -225,21 +229,22 @@ namespace LocalMultiplayer
             _linedotSize = 15;
             _counter = 0;
             _lastGrid = grid;
-            
+
             _origin = new Vector3(0, 0, 0);
-            
+
             // Booleans
             isGameOver = false;
             _hasDrawn = false;
             _spawnButtons = false;
             _animateLine = false;
             p1 = true;
-            
+
             // Reset the gap on the x axis every new column
             if (grid == 5)
             {
                 _gapX = _boxSize / 3 - _boxOffset;
-            } else if (grid == 4)
+            }
+            else if (grid == 4)
             {
                 _gapX = _boxOffset * (grid - 1);
             }
@@ -249,13 +254,13 @@ namespace LocalMultiplayer
             }
 
             _lineDotPr = redLineDotPr;
-            
+
             _boxGridHeight = 50;
             _cardBorderTopGap = _boxGridHeight;
-            
-            // Debug.Log("BoxSize = " + _boxSize + ", boxOffset = " + _boxOffset);
 
-            
+            // Debug.Log("BoxSize = " + _boxSize + ", boxOffset = " + _boxOffset);
+            // _lineDotPr.GetComponent<Line>()
+
             // // Draw lines
             // _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
             // _lineGen.transform.SetParent(cardBorder.transform, false);
@@ -274,28 +279,44 @@ namespace LocalMultiplayer
             // _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
             // _lineDot.transform.SetParent(cardBorder.transform, false);
             //
+            // // 4th line dot
+            // if (grid != 3)
+            // {
+            //     // 3rd line dot
+            //     _lineDot = Instantiate(_lineDotPr, _lineDot4Pos, Quaternion.identity);
+            //     _lineDot.transform.SetParent(cardBorder.transform, false);
+            // }
+            //
+            // if (grid == 5)
+            // {
+            //     // 3rd line dot
+            //     _lineDot = Instantiate(_lineDotPr, _lineDot5Pos, Quaternion.identity);
+            //     _lineDot.transform.SetParent(cardBorder.transform, false);
+            // }
+            //
             // _animateLine = true;
         }
 
         #endregion
-        
+
         private void InitBoxGrid()
         {
             // Give size of boxes
             card.GetComponent<RectTransform>().sizeDelta = new Vector2(_boxSize, _boxSize);
-            
+
             _boxGridHeight = 50;
             _rowCount = 0;
             _colCount = 0;
             _cardBorderTopGap = _boxGridHeight;
-            
+
             for (var i = 0; i < grid; i++)
             {
                 // Reset the gap on the x axis every new column
                 if (grid == 5)
                 {
                     _gapX = _boxSize / 3 - _boxOffset;
-                } else if (grid == 4)
+                }
+                else if (grid == 4)
                 {
                     _gapX = _boxOffset * (grid - 1);
                 }
@@ -310,7 +331,7 @@ namespace LocalMultiplayer
                         Quaternion.identity) as GameObject;
                     _box.transform.SetParent(cardBorder.transform, false);
                     var boxScript = _box.GetComponent<TagBoxLm>();
-                    
+
                     boxScript.boxColNum = _colCount;
                     boxScript.boxRowNum = _rowCount;
 
@@ -336,17 +357,18 @@ namespace LocalMultiplayer
 
             if (_animateLine && !_hasDrawn)
             {
-                    if (_counter < _dist) {
-                        _counter += _drawDelay / _drawSpeed;
-                        var x = Mathf.Lerp (0, _dist, _counter);
+                if (_counter < _dist)
+                {
+                    _counter += _drawDelay / _drawSpeed;
+                    var x = Mathf.Lerp(0, _dist, _counter);
 
-                        var a = _origin;
-                        var b = _destination;
+                    var a = _origin;
+                    var b = _destination;
 
-                        var aLine = x * Vector3.Normalize (b - a) + a;
+                    var aLine = x * Vector3.Normalize(b - a) + a;
 
-                        _lineRend.SetPosition (1, aLine);
-                    }
+                    _lineRend.SetPosition(1, aLine);
+                }
                 else
                 {
                     _hasDrawn = true;
@@ -375,11 +397,13 @@ namespace LocalMultiplayer
                         {
                             endTxt.text = "Player 1 Won";
 
-                            _playerCard1EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _playerCard1EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position,
+                                Quaternion.identity);
                             _playerCard1EndTxt.transform.SetParent(player1Card.transform, false);
                             _playerCard1EndTxt.text = "Winner";
 
-                            _playerCard2EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _playerCard2EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position,
+                                Quaternion.identity);
                             _playerCard2EndTxt.transform.SetParent(player2Card.transform, false);
                             _playerCard2EndTxt.text = "Loser";
                         }
@@ -387,11 +411,13 @@ namespace LocalMultiplayer
                         {
                             endTxt.text = "Player 2 Won";
 
-                            _playerCard1EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _playerCard1EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position,
+                                Quaternion.identity);
                             _playerCard1EndTxt.transform.SetParent(player2Card.transform, false);
                             _playerCard1EndTxt.text = "Winner";
 
-                            _playerCard2EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position, Quaternion.identity);
+                            _playerCard2EndTxt = Instantiate(turnTxtPr, turnTxtPr.transform.position,
+                                Quaternion.identity);
                             _playerCard2EndTxt.transform.SetParent(player1Card.transform, false);
                             _playerCard2EndTxt.text = "Loser";
                         }
@@ -432,7 +458,7 @@ namespace LocalMultiplayer
             {
                 if (i < n - 1)
                 {
-                    // Detect Diagnal and Anti Diagnal
+                    // Detect Diagonal and Anti Diagonal
                     if (diagWinner > -1)
                     {
                         diagWinner = Board[i, (n - 1) - i];
@@ -498,8 +524,22 @@ namespace LocalMultiplayer
                     _lineDot2Pos = new Vector3(_lineSpawnPos.x + _boxSize + (_boxOffset * 2) + _linedotSize / 2,
                         _lineSpawnPos.y, _lineSpawnPos.z);
 
-                    // 3rd line dot
+                    // last line dot
                     _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y, _lineSpawnPos.z);
+
+                    if (grid != 3)
+                    {
+                        // Set the 3rd dot position values
+                        _lineDot4Pos = new Vector3(_lineSpawnPos.x + (_boxSize * 2) + ((_boxOffset * 2) * 2) + 7,
+                            _lineSpawnPos.y, _lineSpawnPos.z);
+                    }
+
+                    if (grid == 5)
+                    {
+                        // Set the 3rd dot position values
+                        _lineDot5Pos = new Vector3(_lineSpawnPos.x + (_boxSize * 3) + ((_boxOffset * 2) * 3) + 7,
+                            _lineSpawnPos.y, _lineSpawnPos.z);
+                    }
 
                     return rowWinner;
                 }
@@ -507,7 +547,9 @@ namespace LocalMultiplayer
                 if (colWinner > -1)
                 {
                     // Draw lines
-                    _lineSpawnPos = new Vector3(_gapX + (_boxSize * (1 + i)) - (_boxSize / 2) + ((_boxOffset * 2) * i), _cardBorderTopGap + _boxSize - (_boxSize / 2) - 5, -1);
+                    _lineSpawnPos = new Vector3(
+                        _gapX + (_boxSize * (1 + i)) - (_boxSize / 2) + ((_boxOffset * 2) * i) + 1,
+                        _cardBorderTopGap + _boxSize - (_boxSize / 2) - 5, -1);
                     _lineDrawPos = new Vector3(0, (_boxSize * (grid - 1)) + _boxOffset * (grid - 1) + 10, 0);
 
                     _destination = _lineDrawPos;
@@ -517,12 +559,27 @@ namespace LocalMultiplayer
                     _lineDot1Pos = new Vector3(_lineSpawnPos.x, _lineSpawnPos.y + _linedotSize / 2, _lineSpawnPos.z);
 
                     // 2nd line dot
-                    _lineDot2Pos = new Vector3(_lineSpawnPos.x, _lineSpawnPos.y + _boxSize + (_boxOffset * 2) - _linedotSize / 2, _lineSpawnPos.z);
+                    _lineDot2Pos = new Vector3(_lineSpawnPos.x,
+                        _lineSpawnPos.y + _boxSize + _boxOffset + 3.5f, _lineSpawnPos.z);
 
                     // 3rd line dot
                     _lineDot3Pos = new Vector3(_lineSpawnPos.x, _lineSpawnPos.y + _lineDrawPos.y - _linedotSize / 2,
                         _lineSpawnPos.z);
-                    
+
+                    if (grid != 3)
+                    {
+                        // Set the 3rd dot position values
+                        _lineDot4Pos = new Vector3(_lineSpawnPos.x,
+                            _lineSpawnPos.y + (_boxSize * 2) + (_boxOffset * 2) + 5, _lineSpawnPos.z);
+                    }
+
+                    if (grid == 5)
+                    {
+                        // Set the 3rd dot position values
+                        _lineDot5Pos = new Vector3(_lineSpawnPos.x,
+                            _lineSpawnPos.y + (_boxSize * 3) + (_boxOffset * 3) + 5, _lineSpawnPos.z);
+                    }
+
                     return colWinner;
                 }
 
@@ -544,11 +601,12 @@ namespace LocalMultiplayer
                     _lineSpawnPos = new Vector3((_boxOffset * 2) + 20 + _boxSize / 2,
                         _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2 - 2, -1);
                 }
-  
+
                 if (grid == 3)
                 {
                     _lineDrawPos = new Vector3(lineSize, -lineSize + 15, 0);
-                } else if (grid == 4)
+                }
+                else if (grid == 4)
                 {
                     _lineDrawPos = new Vector3(lineSize, -lineSize + 30, 0);
                 }
@@ -565,56 +623,101 @@ namespace LocalMultiplayer
 
                 // 2nd line dot
                 _lineDot2Pos = new Vector3(_lineSpawnPos.x + (_boxSize + _boxOffset * 2),
-                    _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 6, _lineSpawnPos.z);
+                    _lineSpawnPos.y - (_boxSize + _boxOffset), _lineSpawnPos.z);
 
                 // 3rd line dot
                 _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y + _lineDrawPos.y,
                     _lineSpawnPos.z);
-                
+
+                if (grid == 4)
+                {
+                    // Set the 3rd dot position values
+                    _lineDot4Pos = new Vector3(_lineSpawnPos.x + (_boxSize * 2) + _boxOffset * 2 * 2,
+                        _boxGridHeight + _boxSize * 2 - _boxSize / 2 + _boxOffset, _lineSpawnPos.z);
+                }
+
+                if (grid == 5)
+                {
+                    _lineDot4Pos = new Vector3(_lineSpawnPos.x + _boxSize * 2 + _boxOffset * 2 * 2,
+                        _boxGridHeight + _boxSize * 3 - _boxSize / 2 + _boxOffset * 2 - 2, _lineSpawnPos.z);
+
+                    _lineDot5Pos = new Vector3(_lineSpawnPos.x + (_boxSize * 3) + _boxOffset * 2 * 3,
+                        _boxGridHeight + _boxSize * 2 - _boxSize / 2 + _boxOffset - 2, _lineSpawnPos.z);
+                }
+
                 return diagWinner;
             }
 
             if (antiDiagWinner > -1)
-            {
+            { 
                 var lineSize = _boxSize * (grid - 1) + (_boxOffset * 2) * (grid - 1);
 
-                if (grid == 3)
-                {
-                    _lineSpawnPos =
-                        new Vector3((_boxOffset * 2) + 10 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
-                            _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
-                    _lineDrawPos = new Vector3(-lineSize, -lineSize + 15, 0);
-                }
-                else if (grid == 4)
-                {
-                    _lineSpawnPos =
-                        new Vector3((_boxOffset * 2) + 20 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
-                            _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
-                    _lineDrawPos = new Vector3(-lineSize, -lineSize + 28, 0);
-                }
-                else
-                {
-                    _lineSpawnPos =
-                        new Vector3((_boxOffset * 2) + 25 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
-                            _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
-                    _lineDrawPos = new Vector3(-lineSize, -lineSize + 18, 0);
-                }
-            
-                _destination = _lineDrawPos;
-                _dist = Vector3.Distance(_origin, _destination);
+            if (grid == 3)
+            {
+                _lineSpawnPos =
+                    new Vector3((_boxOffset * 2) + 10 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
+                        _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                _lineDrawPos = new Vector3(-lineSize, -lineSize + 15, 0);
+            }
+            else if (grid == 4)
+            {
+                _lineSpawnPos =
+                    new Vector3((_boxOffset * 2) + 20 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
+                        _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                _lineDrawPos = new Vector3(-lineSize, -lineSize + 28, 0);
+            }
+            else
+            {
+                _lineSpawnPos =
+                    new Vector3((_boxOffset * 2) + 25 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
+                        _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                _lineDrawPos = new Vector3(-lineSize, -lineSize + 18, 0);
+            }
 
-                // 1st line dot
-                _lineDot1Pos = _lineSpawnPos;
+            _destination = _lineDrawPos;
+            _dist = Vector3.Distance(_origin, _destination);
 
-                // 2nd line dot
+            // 1st line dot
+            _lineDot1Pos = _lineSpawnPos;
+
+            if (grid == 5)
+            {
+                _lineDot2Pos = new Vector3(_lineSpawnPos.x - (_boxSize + _boxOffset * 2),
+                    _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 5, _lineSpawnPos.z);
+            }
+            else if (grid == 3)
+            {
                 _lineDot2Pos = new Vector3(_lineSpawnPos.x - (_boxSize + _boxOffset * 2),
                     _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 8, _lineSpawnPos.z);
+            }
+            else
+            {
+                _lineDot2Pos = new Vector3(_lineSpawnPos.x - (_boxSize + _boxOffset * 2),
+                    _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 10, _lineSpawnPos.z);
+            }
 
-                // 3rd line dot
-                _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y + _lineDrawPos.y,
-                    _lineSpawnPos.z);
 
-                return antiDiagWinner;
+            // 3rd line dot
+            _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y + _lineDrawPos.y,
+                _lineSpawnPos.z);
+
+            if (grid == 4)
+            {
+                // Set the 3rd dot position values
+                _lineDot4Pos = new Vector3(_lineSpawnPos.x - (_boxSize * 2 + _boxOffset * 2 * 2),
+                    _lineSpawnPos.y - (_boxSize * 2 + _boxOffset * 3) + 10, _lineSpawnPos.z);
+            }
+
+            if (grid == 5)
+            {
+                _lineDot4Pos = new Vector3(_lineSpawnPos.x - (_boxSize * 2 + _boxOffset * 2 * 2),
+                    _lineSpawnPos.y - (_boxSize * 2 + _boxOffset * 3) + 5, _lineSpawnPos.z);
+
+                _lineDot5Pos = new Vector3(_lineSpawnPos.x - (_boxSize * 3 + _boxOffset * 2 * 3),
+                    _lineSpawnPos.y - (_boxSize * 3 + _boxOffset * 4) + 5, _lineSpawnPos.z);
+            }
+            
+            return antiDiagWinner;
             }
 
             if (hasTied > -1)
@@ -674,7 +777,7 @@ namespace LocalMultiplayer
             gameObject.SetActive(false);
             gameObject.SetActive(true);
         }
-        
+
         private void GameOver(bool hasTied)
         {
             // If is already over
@@ -686,7 +789,7 @@ namespace LocalMultiplayer
             if (!hasTied)
             {
                 _hasWon = true;
-                
+
                 // Draw lines
                 _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
                 _lineGen.transform.SetParent(cardBorder.transform, false);
@@ -696,7 +799,7 @@ namespace LocalMultiplayer
                 _windowConfetti = Instantiate(confettiWindowPr, new Vector3(0, 0, 0), Quaternion.identity);
                 _windowConfetti.transform.SetParent(_canvas.transform, false);
                 _windowConfettiScript = _windowConfetti.GetComponent<WindowConfetti>();
-                
+
                 if (!p1)
                 {
                     endTxt.text = "Winner";
@@ -725,6 +828,21 @@ namespace LocalMultiplayer
                 // 3rd line dot
                 _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
                 _lineDot.transform.SetParent(cardBorder.transform, false);
+
+                // 4th line dot
+                if (grid != 3)
+                {
+                    // 3rd line dot
+                    _lineDot = Instantiate(_lineDotPr, _lineDot4Pos, Quaternion.identity);
+                    _lineDot.transform.SetParent(cardBorder.transform, false);
+                }
+
+                if (grid == 5)
+                {
+                    // 3rd line dot
+                    _lineDot = Instantiate(_lineDotPr, _lineDot5Pos, Quaternion.identity);
+                    _lineDot.transform.SetParent(cardBorder.transform, false);
+                }
             }
             else
             {
