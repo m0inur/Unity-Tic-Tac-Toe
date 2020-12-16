@@ -135,7 +135,6 @@ namespace LocalMultiplayer
         private void Setup()
         {
             Debug.Log("Setup()");
-            // grid = 5;
             // If it has not been set yet
             if (_cardBorderXGaps == 0)
             {
@@ -238,63 +237,6 @@ namespace LocalMultiplayer
             _spawnButtons = false;
             _animateLine = false;
             p1 = true;
-
-            // Reset the gap on the x axis every new column
-            if (grid == 5)
-            {
-                _gapX = _boxSize / 3 - _boxOffset;
-            }
-            else if (grid == 4)
-            {
-                _gapX = _boxOffset * (grid - 1);
-            }
-            else
-            {
-                _gapX = _boxOffset * grid;
-            }
-
-            _lineDotPr = redLineDotPr;
-
-            _boxGridHeight = 50;
-            _cardBorderTopGap = _boxGridHeight;
-
-            // Debug.Log("BoxSize = " + _boxSize + ", boxOffset = " + _boxOffset);
-            // _lineDotPr.GetComponent<Line>()
-
-            // // Draw lines
-            // _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
-            // _lineGen.transform.SetParent(cardBorder.transform, false);
-            // _lineRend = _lineGen.GetComponent<LineRenderer>();
-            // _lineRend.material = xMat;
-            //
-            // // 1st line dot
-            // _lineDot = Instantiate(_lineDotPr, _lineDot1Pos, Quaternion.identity);
-            // _lineDot.transform.SetParent(cardBorder.transform, false);
-            //
-            // // 2nd line dot
-            // _lineDot = Instantiate(_lineDotPr, _lineDot2Pos, Quaternion.identity);
-            // _lineDot.transform.SetParent(cardBorder.transform, false);
-            //
-            // // 3rd line dot
-            // _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
-            // _lineDot.transform.SetParent(cardBorder.transform, false);
-            //
-            // // 4th line dot
-            // if (grid != 3)
-            // {
-            //     // 3rd line dot
-            //     _lineDot = Instantiate(_lineDotPr, _lineDot4Pos, Quaternion.identity);
-            //     _lineDot.transform.SetParent(cardBorder.transform, false);
-            // }
-            //
-            // if (grid == 5)
-            // {
-            //     // 3rd line dot
-            //     _lineDot = Instantiate(_lineDotPr, _lineDot5Pos, Quaternion.identity);
-            //     _lineDot.transform.SetParent(cardBorder.transform, false);
-            // }
-            //
-            // _animateLine = true;
         }
 
         #endregion

@@ -4,6 +4,7 @@ using Multiplayer_Game;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace My_Photon.Rooms
@@ -15,15 +16,24 @@ namespace My_Photon.Rooms
 
         public Image player2Card;
 
+        public Text underscoreText;
         public Text roomIdTxt;
         public Text player1CardText;
         public Text player2CardText;
 
-       public string roomID;
-       public int grid;
+        public string roomID;
+        private string currentTxt;
+        
+        public int grid;
+
+        public float showRoomIDTxtDelay;
 
         private int _playerIndex;
         private float _loadSceneWait;
+        private float _textFadeSpeed;
+        private float _textFadeWait;
+        private float _roomIDNumberGap;
+
         private bool _hasPlayerLeftRoom;
         private bool _hasCoroutineEnded;
         private bool _hasInitRoomIDText;
@@ -32,20 +42,21 @@ namespace My_Photon.Rooms
         private void Start()
         {
             _hasInitSetup = false;
+            showRoomIDTxtDelay = 0.2f;
+            _textFadeWait = 0.1f;
+            _textFadeSpeed = 0.30f;
+            _roomIDNumberGap = 25;
         }
 
         private void Setup()
         {
+            StartCoroutine(Fade());
+            StartCoroutine(TextTypeAnimation());
             Debug.Log("Setup()");
             _playerIndex = PhotonNetwork.IsMasterClient ? 1 : 2;
 
-            // roomIdTxt.text = "Room ID: " + roomID.ToString();
-            roomIdTxt.text = "Room ID: " + roomID;
-            Debug.Log("Room ID: " + roomID);
-
             _hasInitRoomIDText = false;
             
-            Debug.Log("Player index = " + _playerIndex);
             // If its the master client show only Player 1 Card
             if (_playerIndex == 1)
             {
@@ -53,7 +64,6 @@ namespace My_Photon.Rooms
             }
             else
             {
-                Debug.Log("Setting player2Card to active");
                 // else show both cards and change text
                 player2Card.gameObject.SetActive(true);
                 player1CardText.text = "Player 1";
@@ -108,15 +118,59 @@ namespace My_Photon.Rooms
             }
         }
 
-        public override void OnPlayerEnteredRoom (Player newPlayer) {
-            Debug.Log("Player entered room");
+        private IEnumerator TextTypeAnimation()
+        {
+            var underscoreTxtRect = underscoreText.GetComponent<RectTransform>();
+            var underscoreTxtAnchoredPos = underscoreTxtRect.anchoredPosition;
+            var underscoreTxtX = underscoreTxtAnchoredPos.x;
             
+            for (var i = 0; i <= roomID.Length; i++)
+            {
+                currentTxt = roomID.Substring(0, i);
+                roomIdTxt.text = currentTxt;
+                yield return new WaitForSeconds(showRoomIDTxtDelay);
+                if (i != roomID.Length - 2)
+                {
+                    Debug.Log("Giving gap I = " + i);
+                    underscoreTxtX += _roomIDNumberGap;
+                    underscoreText.GetComponent<RectTransform>().anchoredPosition = new Vector2(underscoreTxtX, underscoreTxtAnchoredPos.y);
+                }
+            }
+        }
+
+        private IEnumerator Fade()
+        {
+            var textColor = underscoreText.color;
+            for (var x = 0; x != roomID.Length - 2; x++)
+            {
+                for (float i = 0; i <= 1.0f; i += _textFadeSpeed)
+                {
+                    underscoreText.color = new Color(textColor.r, textColor.g, textColor.b, i);
+                    yield return new WaitForSeconds(_textFadeWait);
+                }
+
+                underscoreText.color = new Color(textColor.r, textColor.g, textColor.b, 1);
+
+                for (float i = 1; i >= 0f; i -= _textFadeSpeed)
+                {
+                    underscoreText.color = new Color(textColor.r, textColor.g, textColor.b, i);
+                    yield return new WaitForSeconds(_textFadeWait);
+                }
+
+                underscoreText.color = new Color(textColor.r, textColor.g, textColor.b, 0);
+            }
+        }
+
+        public override void OnPlayerEnteredRoom(Player newPlayer)
+        {
+            Debug.Log("Player entered room");
+
             // Show Player 2 Card when player joins
             player2Card.gameObject.SetActive(true);
             player2CardText.text = "Player 2";
             _hasPlayerLeftRoom = false;
             base.photonView.RPC("LoadScene", RpcTarget.All);
-            
+
             // Set grid value for second player
             if (PhotonNetwork.IsMasterClient)
             {

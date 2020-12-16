@@ -62,6 +62,7 @@
      <Compile Include="Assets\Scripts\My Photon\Managers\SingletonScriptableObject.cs" />
      <Compile Include="Assets\Scripts\MpTextAnimation.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\NamePickGui.cs" />
+     <Compile Include="Assets\MultiplayerController.cs" />
      <Compile Include="Assets\Scripts\My Photon\Rooms\WaitingRoomController.cs" />
      <Compile Include="Assets\Scripts\My Photon\Managers\MasterManager\MasterManager.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\Common\EventSystemSpawner.cs" />
@@ -89,7 +90,6 @@
      <Compile Include="Assets\Photon\PhotonLibs\WebSocket\WebSocket.cs" />
      <Compile Include="Assets\Scripts\Particle\StarMovement.cs" />
      <Compile Include="Assets\Scripts\Multiplayer_Game\TicTacToeCreatorMp.cs" />
-     <Compile Include="Assets\MultiplayerController.cs" />
      <None Include="Assets\Photon\PhotonLibs\netstandard2.0\Photon3Unity3D.xml" />
      <None Include="Assets\Photon\PhotonUnityNetworking\changelog.txt" />
      <None Include="Assets\Photon\PhotonLibs\changes-library.txt" />

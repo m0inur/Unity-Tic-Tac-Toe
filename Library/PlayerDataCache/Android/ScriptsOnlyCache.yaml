@@ -841,7 +841,7 @@ ScriptsOnlyBuild:
     className: MultiplayerController
   - hash:
       serializedVersion: 2
-      Hash: 577e8b4b2d385f459bfeea818c31a704
+      Hash: 59906a1d526b4f639c0eca91f2fda715
     assemblyName: Assembly-CSharp.dll
     namespaceName: My_Photon.Rooms
     className: WaitingRoomController
