@@ -56,13 +56,14 @@
      <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\ChatGui.cs" />
      <Compile Include="Assets\Scripts\PrivateMultiplayerController.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\Common\TextToggleIsOnTransition.cs" />
-     <Compile Include="Assets\Scripts\ArrowAnimation.cs" />
+     <Compile Include="Assets\Scripts\Animations\ArrowAnimation.cs" />
      <Compile Include="Assets\Scripts\MenuController.cs" />
      <Compile Include="Assets\Photon\PhotonRealtime\Demos\DemoLoadBalancing\ConnectAndJoinRandomLb.cs" />
      <Compile Include="Assets\Scripts\My Photon\Managers\SingletonScriptableObject.cs" />
      <Compile Include="Assets\Scripts\MpTextAnimation.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\DemoChat\NamePickGui.cs" />
-     <Compile Include="Assets\MultiplayerController.cs" />
+     <Compile Include="Assets\Scripts\Animations\PlayerCardAnimation.cs" />
+     <Compile Include="Assets\Scripts\MultiplayerController.cs" />
      <Compile Include="Assets\Scripts\My Photon\Rooms\WaitingRoomController.cs" />
      <Compile Include="Assets\Scripts\My Photon\Managers\MasterManager\MasterManager.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\Common\EventSystemSpawner.cs" />
@@ -90,6 +91,7 @@
      <Compile Include="Assets\Photon\PhotonLibs\WebSocket\WebSocket.cs" />
      <Compile Include="Assets\Scripts\Particle\StarMovement.cs" />
      <Compile Include="Assets\Scripts\Multiplayer_Game\TicTacToeCreatorMp.cs" />
+     <Compile Include="Assets\Scripts\ScenesManager.cs" />
      <None Include="Assets\Photon\PhotonLibs\netstandard2.0\Photon3Unity3D.xml" />
      <None Include="Assets\Photon\PhotonUnityNetworking\changelog.txt" />
      <None Include="Assets\Photon\PhotonLibs\changes-library.txt" />
@@ -362,6 +364,9 @@
  </Reference>
  <Reference Include="websocket-sharp">
  <HintPath>C:/Users/Nixon/OneDrive/Documents/Najib/unity/Tic-Tac-Toe/Assets/Photon/PhotonLibs/WebSocket/websocket-sharp.dll</HintPath>
+ </Reference>
+ <Reference Include="DOTween">
+ <HintPath>C:/Users/Nixon/OneDrive/Documents/Najib/unity/Tic-Tac-Toe/Assets/Plugins/Demigiant/DOTween/DOTween.dll</HintPath>
  </Reference>
  <Reference Include="mscorlib">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.1.15f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
@@ -710,6 +715,10 @@
  </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
+      <Project>{bbcff7de-2906-596a-225c-9b33461f46f9}</Project>
+      <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
     <ProjectReference Include="PhotonUnityNetworking.Utilities.PhotonPlayer.Editor.csproj">
       <Project>{44fc36c0-4563-68fb-1f26-19eb4ed7073e}</Project>
       <Name>PhotonUnityNetworking.Utilities.PhotonPlayer.Editor</Name>

@@ -3,6 +3,7 @@ ScriptsOnlyBuild:
     Assembly-CSharp.dll:
     - AI.TagBoxAI
     - AI.TicTacToeCreatorAI
+    - Animations.PlayerCardAnimation
     - ArrowAnimation
     - Confetti.WindowConfetti
     - GameSettings
@@ -23,6 +24,8 @@ ScriptsOnlyBuild:
     - Particle.StarMovement
     - PrivateMultiplayerController
     - SingletonRefrences
+    DOTween.dll:
+    - DG.Tweening.Core.DOTweenSettings
     PhotonUnityNetworking.Demos.dll:
     - Photon.Pun.Demo.Asteroids.Asteroid
     - Photon.Pun.Demo.Asteroids.Bullet
@@ -109,97 +112,101 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11806}
-    - Class: 114
-      Script: {instanceID: 11808}
-    - Class: 114
       Script: {instanceID: 11810}
     - Class: 114
       Script: {instanceID: 11812}
     - Class: 114
       Script: {instanceID: 11814}
     - Class: 114
-      Script: {instanceID: 11846}
+      Script: {instanceID: 11816}
     - Class: 114
-      Script: {instanceID: 11906}
+      Script: {instanceID: 11818}
     - Class: 114
-      Script: {instanceID: 11936}
+      Script: {instanceID: 11850}
     - Class: 114
-      Script: {instanceID: 12058}
+      Script: {instanceID: 11910}
     - Class: 114
-      Script: {instanceID: 12114}
+      Script: {instanceID: 11940}
     - Class: 114
-      Script: {instanceID: 12152}
+      Script: {instanceID: 12062}
     - Class: 114
-      Script: {instanceID: 12252}
+      Script: {instanceID: 12126}
     - Class: 114
-      Script: {instanceID: 12360}
+      Script: {instanceID: 12164}
     - Class: 114
-      Script: {instanceID: 13062}
+      Script: {instanceID: 12264}
     - Class: 114
-      Script: {instanceID: 13186}
+      Script: {instanceID: 12374}
     - Class: 114
-      Script: {instanceID: 13402}
+      Script: {instanceID: 13076}
     - Class: 114
-      Script: {instanceID: 13414}
+      Script: {instanceID: 13202}
     - Class: 114
-      Script: {instanceID: 13416}
+      Script: {instanceID: 13314}
     - Class: 114
-      Script: {instanceID: 13490}
+      Script: {instanceID: 13420}
     - Class: 114
-      Script: {instanceID: 13514}
+      Script: {instanceID: 13434}
     - Class: 114
-      Script: {instanceID: 13610}
+      Script: {instanceID: 13436}
     - Class: 114
-      Script: {instanceID: 13668}
+      Script: {instanceID: 13510}
     - Class: 114
-      Script: {instanceID: 13726}
+      Script: {instanceID: 13534}
     - Class: 114
-      Script: {instanceID: 13780}
+      Script: {instanceID: 13632}
     - Class: 114
-      Script: {instanceID: 13970}
+      Script: {instanceID: 13690}
     - Class: 114
-      Script: {instanceID: 14050}
+      Script: {instanceID: 13748}
     - Class: 114
-      Script: {instanceID: 14154}
+      Script: {instanceID: 13794}
     - Class: 114
-      Script: {instanceID: 14276}
+      Script: {instanceID: 13808}
     - Class: 114
-      Script: {instanceID: 14294}
+      Script: {instanceID: 14000}
     - Class: 114
-      Script: {instanceID: 14316}
+      Script: {instanceID: 14080}
     - Class: 114
-      Script: {instanceID: 14450}
+      Script: {instanceID: 14184}
     - Class: 114
-      Script: {instanceID: 14636}
+      Script: {instanceID: 14306}
     - Class: 114
-      Script: {instanceID: 14646}
+      Script: {instanceID: 14324}
     - Class: 114
-      Script: {instanceID: 14674}
+      Script: {instanceID: 14346}
     - Class: 114
-      Script: {instanceID: 14686}
+      Script: {instanceID: 14480}
     - Class: 114
-      Script: {instanceID: 14780}
+      Script: {instanceID: 14666}
     - Class: 114
-      Script: {instanceID: 14842}
+      Script: {instanceID: 14676}
     - Class: 114
-      Script: {instanceID: 14884}
+      Script: {instanceID: 14704}
     - Class: 114
-      Script: {instanceID: 15412}
+      Script: {instanceID: 14716}
     - Class: 114
-      Script: {instanceID: 15416}
+      Script: {instanceID: 14812}
     - Class: 114
-      Script: {instanceID: 15462}
+      Script: {instanceID: 14874}
     - Class: 114
-      Script: {instanceID: 15556}
+      Script: {instanceID: 14916}
     - Class: 114
-      Script: {instanceID: 15610}
+      Script: {instanceID: 15446}
     - Class: 114
-      Script: {instanceID: 15652}
+      Script: {instanceID: 15450}
     - Class: 114
-      Script: {instanceID: 15694}
+      Script: {instanceID: 15496}
     - Class: 114
-      Script: {instanceID: 15700}
+      Script: {instanceID: 15590}
+    - Class: 114
+      Script: {instanceID: 15644}
+    - Class: 114
+      Script: {instanceID: 15686}
+    - Class: 114
+      Script: {instanceID: 15728}
+    - Class: 114
+      Script: {instanceID: 15734}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 120
@@ -823,6 +830,12 @@ ScriptsOnlyBuild:
     className: CurrentRoomPlayerTtlProperty
   - hash:
       serializedVersion: 2
+      Hash: 54b00a889241bb9388e7507eb340fbc0
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: Animations
+    className: PlayerCardAnimation
+  - hash:
+      serializedVersion: 2
       Hash: f941c3a384168571b7d90f58ec4986bc
     assemblyName: PhotonUnityNetworking.Demos.dll
     namespaceName: Photon.Pun.Demo.Cockpit
@@ -841,7 +854,7 @@ ScriptsOnlyBuild:
     className: MultiplayerController
   - hash:
       serializedVersion: 2
-      Hash: 59906a1d526b4f639c0eca91f2fda715
+      Hash: d80aa625b2cb7a6ed539c0ec3162aab6
     assemblyName: Assembly-CSharp.dll
     namespaceName: My_Photon.Rooms
     className: WaitingRoomController
@@ -983,6 +996,18 @@ ScriptsOnlyBuild:
     assemblyName: PhotonUnityNetworking.Demos.dll
     namespaceName: Photon.Pun.Demo.Cockpit
     className: CurrentRoomPropertiesListedInLobbyProperty
+  - hash:
+      serializedVersion: 2
+      Hash: 704dcd31abc789439bc3f3cd10b58c2b
+    assemblyName: DOTween.dll
+    namespaceName: DG.Tweening.Core
+    className: DOTweenComponent
+  - hash:
+      serializedVersion: 2
+      Hash: 179648033371456981a3c08cb9f47477
+    assemblyName: DOTween.dll
+    namespaceName: DG.Tweening.Core
+    className: DOTweenSettings
   - hash:
       serializedVersion: 2
       Hash: 516759756784c459f72254e353279269
