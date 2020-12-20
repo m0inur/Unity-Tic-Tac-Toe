@@ -11970,7 +11970,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1943777021
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12032,7 +12032,7 @@ MonoBehaviour:
   endTxt: {fileID: 108461970}
   player1CardText: {fileID: 1621527125}
   player2CardText: {fileID: 1409497353}
-  grid: 3
+  grid: 4
   boardLen: 0
   isGameOver: 0
   p1: 0
@@ -12683,7 +12683,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2075610258
 RectTransform:
   m_ObjectHideFlags: 0

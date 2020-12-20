@@ -263,9 +263,10 @@ namespace Multiplayer_Game
             _linedotSize = 15;
             _lastGrid = grid;
 
-            p1 = true;
+            p1 = false;
+            isMyTurn = true;
 
-            _origin = new Vector3(0, 0, 0);
+            _origin = Vector3.zero;
 
             // Booleans
             isGameOver = false;
@@ -287,6 +288,43 @@ namespace Multiplayer_Game
             {
                 _gapX = _boxOffset * grid;
             }
+
+            // _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
+            // _lineGen.transform.SetParent(cardBorder.transform, false);
+            // _lineRend = _lineGen.GetComponent<LineRenderer>();
+            //
+            // _lineRend.material = xMat;
+            // _lineDotPr = redLineDotPr;
+            //
+            // // 1st line dot
+            // _lineDot = Instantiate(_lineDotPr, _lineDot1Pos, Quaternion.identity);
+            // _lineDot.transform.SetParent(cardBorder.transform, false);
+            //
+            // // 2nd line dot
+            // _lineDot = Instantiate(_lineDotPr, _lineDot2Pos, Quaternion.identity);
+            // _lineDot.transform.SetParent(cardBorder.transform, false);
+            //
+            // // 3rd line dot
+            // _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
+            // _lineDot.transform.SetParent(cardBorder.transform, false);
+            //
+            // // 4th line dot
+            // if (grid != 3)
+            // {
+            //     Debug.Log("Instantiate setting line dot 4 position");
+            //     // 3rd line dot
+            //     _lineDot = Instantiate(_lineDotPr, _lineDot4Pos, Quaternion.identity);
+            //     _lineDot.transform.SetParent(cardBorder.transform, false);
+            // }
+            //
+            // if (grid == 5)
+            // {
+            //     // 3rd line dot
+            //     _lineDot = Instantiate(_lineDotPr, _lineDot5Pos, Quaternion.identity);
+            //     _lineDot.transform.SetParent(cardBorder.transform, false);
+            // }
+            //
+            // _animateLine = true;
         }
 
         #endregion
@@ -345,6 +383,9 @@ namespace Multiplayer_Game
             {
                 _gapX = _boxOffset * grid;
             }
+            
+            _boxGridHeight = 50;
+            _cardBorderTopGap = _boxGridHeight;
         }
 
         // Animate line
@@ -601,7 +642,7 @@ namespace Multiplayer_Game
                         _lineDot5Pos = new Vector3(_lineSpawnPos.x,
                             _lineSpawnPos.y + (_boxSize * 3) + (_boxOffset * 3) + 5, _lineSpawnPos.z);
                     }
-
+                    
                     return colWinner;
                 }
 
@@ -653,6 +694,7 @@ namespace Multiplayer_Game
 
                 if (grid == 4)
                 {
+                    Debug.Log("Grid = " + grid + " setting line dot 4 position, _boxGridHeight = " + _boxGridHeight);
                     // Set the 3rd dot position values
                     _lineDot4Pos = new Vector3(_lineSpawnPos.x + (_boxSize * 2) + _boxOffset * 2 * 2,
                         _boxGridHeight + _boxSize * 2 - _boxSize / 2 + _boxOffset, _lineSpawnPos.z);
@@ -671,75 +713,75 @@ namespace Multiplayer_Game
             }
 
             if (antiDiagWinner > -1)
-            { 
+            {
                 var lineSize = _boxSize * (grid - 1) + (_boxOffset * 2) * (grid - 1);
 
-            if (grid == 3)
-            {
-                _lineSpawnPos =
-                    new Vector3((_boxOffset * 2) + 10 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
-                        _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
-                _lineDrawPos = new Vector3(-lineSize, -lineSize + 15, 0);
-            }
-            else if (grid == 4)
-            {
-                _lineSpawnPos =
-                    new Vector3((_boxOffset * 2) + 20 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
-                        _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
-                _lineDrawPos = new Vector3(-lineSize, -lineSize + 28, 0);
-            }
-            else
-            {
-                _lineSpawnPos =
-                    new Vector3((_boxOffset * 2) + 25 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
-                        _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
-                _lineDrawPos = new Vector3(-lineSize, -lineSize + 18, 0);
-            }
+                if (grid == 3)
+                {
+                    _lineSpawnPos =
+                        new Vector3((_boxOffset * 2) + 10 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
+                            _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                    _lineDrawPos = new Vector3(-lineSize, -lineSize + 15, 0);
+                }
+                else if (grid == 4)
+                {
+                    _lineSpawnPos =
+                        new Vector3((_boxOffset * 2) + 20 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
+                            _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                    _lineDrawPos = new Vector3(-lineSize, -lineSize + 28, 0);
+                }
+                else
+                {
+                    _lineSpawnPos =
+                        new Vector3((_boxOffset * 2) + 25 + (_boxSize * grid) + (_boxOffset * grid) - _boxSize / 2 + 10,
+                            _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
+                    _lineDrawPos = new Vector3(-lineSize, -lineSize + 18, 0);
+                }
 
-            _destination = _lineDrawPos;
-            _dist = Vector3.Distance(_origin, _destination);
+                _destination = _lineDrawPos;
+                _dist = Vector3.Distance(_origin, _destination);
 
-            // 1st line dot
-            _lineDot1Pos = _lineSpawnPos;
+                // 1st line dot
+                _lineDot1Pos = _lineSpawnPos;
 
-            if (grid == 5)
-            {
-                _lineDot2Pos = new Vector3(_lineSpawnPos.x - (_boxSize + _boxOffset * 2),
-                    _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 5, _lineSpawnPos.z);
-            }
-            else if (grid == 3)
-            {
-                _lineDot2Pos = new Vector3(_lineSpawnPos.x - (_boxSize + _boxOffset * 2),
-                    _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 8, _lineSpawnPos.z);
-            }
-            else
-            {
-                _lineDot2Pos = new Vector3(_lineSpawnPos.x - (_boxSize + _boxOffset * 2),
-                    _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 10, _lineSpawnPos.z);
-            }
+                if (grid == 5)
+                {
+                    _lineDot2Pos = new Vector3(_lineSpawnPos.x - (_boxSize + _boxOffset * 2),
+                        _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 5, _lineSpawnPos.z);
+                }
+                else if (grid == 3)
+                {
+                    _lineDot2Pos = new Vector3(_lineSpawnPos.x - (_boxSize + _boxOffset * 2),
+                        _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 8, _lineSpawnPos.z);
+                }
+                else
+                {
+                    _lineDot2Pos = new Vector3(_lineSpawnPos.x - (_boxSize + _boxOffset * 2),
+                        _lineSpawnPos.y - (_boxSize + _boxOffset * 2) + 10, _lineSpawnPos.z);
+                }
 
 
-            // 3rd line dot
-            _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y + _lineDrawPos.y,
-                _lineSpawnPos.z);
+                // 3rd line dot
+                _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y + _lineDrawPos.y,
+                    _lineSpawnPos.z);
 
-            if (grid == 4)
-            {
-                // Set the 3rd dot position values
-                _lineDot4Pos = new Vector3(_lineSpawnPos.x - (_boxSize * 2 + _boxOffset * 2 * 2),
-                    _lineSpawnPos.y - (_boxSize * 2 + _boxOffset * 3) + 10, _lineSpawnPos.z);
-            }
+                if (grid == 4)
+                {
+                    // Set the 3rd dot position values
+                    _lineDot4Pos = new Vector3(_lineSpawnPos.x - (_boxSize * 2 + _boxOffset * 2 * 2),
+                        _lineSpawnPos.y - (_boxSize * 2 + _boxOffset * 3) + 10, _lineSpawnPos.z);
+                }
 
-            if (grid == 5)
-            {
-                _lineDot4Pos = new Vector3(_lineSpawnPos.x - (_boxSize * 2 + _boxOffset * 2 * 2),
-                    _lineSpawnPos.y - (_boxSize * 2 + _boxOffset * 3) + 5, _lineSpawnPos.z);
+                if (grid == 5)
+                {
+                    _lineDot4Pos = new Vector3(_lineSpawnPos.x - (_boxSize * 2 + _boxOffset * 2 * 2),
+                        _lineSpawnPos.y - (_boxSize * 2 + _boxOffset * 3) + 5, _lineSpawnPos.z);
 
-                _lineDot5Pos = new Vector3(_lineSpawnPos.x - (_boxSize * 3 + _boxOffset * 2 * 3),
-                    _lineSpawnPos.y - (_boxSize * 3 + _boxOffset * 4) + 5, _lineSpawnPos.z);
-            }
+                    _lineDot5Pos = new Vector3(_lineSpawnPos.x - (_boxSize * 3 + _boxOffset * 2 * 3),
+                        _lineSpawnPos.y - (_boxSize * 3 + _boxOffset * 4) + 5, _lineSpawnPos.z);
+                }
             
-            return antiDiagWinner;
+                return antiDiagWinner;
             }
 
             if (hasTied > -1)
@@ -783,13 +825,15 @@ namespace Multiplayer_Game
                     _turnTxt.text = "Player 1's Turn";
                 }
             }
+            p1 = false;
         }
 
         // Check if someone won
         public void IsGameOver()
         {
             // X = 1, O = 2, Tie = 3
-            if (boardLen >= grid * 2 - 1)
+            // if (boardLen >= grid * 2 - 1)
+            if (boardLen >= grid)
             {
                 int result = HasMatched();
 
@@ -872,7 +916,7 @@ namespace Multiplayer_Game
                 {
                     Debug.Log("Initiating line at = " + _lineSpawnPos);
                     _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
-                    _lineGen.transform.SetParent(transform, false);
+                    _lineGen.transform.SetParent(cardBorder.transform, false);
                     _lineRend = _lineGen.GetComponent<LineRenderer>();
 
                     // If Player 1 Wins
