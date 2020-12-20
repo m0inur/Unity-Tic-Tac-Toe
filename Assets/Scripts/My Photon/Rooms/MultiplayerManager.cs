@@ -142,9 +142,7 @@ namespace My_Photon.Rooms
                     _tictactoeCreatorAIScript.isFakeMp = true;
                     Debug.Log("Joining fake multiplayer");
                     
-                    SceneManager.Instance.ChangeScene(transform, singlePlayer.transform);
-                    // gameObject.SetActive(false);
-                    // singlePlayer.SetActive(true);
+                    SceneManager.Instance.ChangeScene(multiplayerController.transform, singlePlayer.transform);
 
                     if (PhotonNetwork.InRoom)
                     {

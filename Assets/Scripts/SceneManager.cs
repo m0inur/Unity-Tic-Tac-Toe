@@ -32,6 +32,13 @@ public class SceneManager : MonoBehaviour
         // Add the scene
         addScene.position = queueScenePosition.position;
         addScene.gameObject.SetActive(true);
-        addScene.DOMove(addScenePosition.position, _sceneLoadDuration);
+        addScene.DOMove(addScenePosition.position, _sceneLoadDuration).OnComplete(() =>
+        {
+            // Make sure object reached its destination
+            if (addScene.position != addScenePosition.position)
+            {
+                addScene.position = addScenePosition.position;
+            }
+        });
     }
 }

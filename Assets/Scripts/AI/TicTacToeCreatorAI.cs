@@ -143,22 +143,6 @@ namespace AI
             _downArrow = Instantiate (downArrowPr, downArrowPr.transform.position, Quaternion.identity);
             _downArrow.transform.SetParent (player1Card.transform, false);
 
-            // If it has not been set
-            if (isFakeMp)
-            {
-                Debug.Log("Its fake multiplayer");
-                mode = 2;
-                player2CardTurnTxt = "Player 2's Turn";
-                player2CardText.text = "Player 2";
-                _randomizeAiMoveDelay = true;
-            }
-            else
-            {
-                player2CardTurnTxt = "Bot's Turn";
-                player2CardText.text = "Bot";
-                _randomizeAiMoveDelay = false;
-            }
-            
             _player = 1;
             _ai = 2;
 
@@ -175,8 +159,6 @@ namespace AI
             _cardBorderTopGap = _boxGridHeight;
 
             _origin = new Vector3 (0, 0, 0);
-
-            mode = 2;
 
             // Canvas
             _canvas = FindObjectOfType<Canvas> ();
@@ -279,13 +261,17 @@ namespace AI
             // If it has not been set
             if (isFakeMp)
             {
-                mode = 3;
+                Debug.Log("Its fake multiplayer");
+                mode = 2;
                 player2CardTurnTxt = "Player 2's Turn";
+                player2CardText.text = "Player 2";
                 _randomizeAiMoveDelay = true;
             }
             else
             {
+                Debug.Log("Its not fake multiplayer");
                 player2CardTurnTxt = "Bot's Turn";
+                player2CardText.text = "Bot";
                 _randomizeAiMoveDelay = false;
             }
         }
@@ -826,7 +812,7 @@ namespace AI
                     
                     // Start the confetti
                     _confettiWindow = Instantiate(confettiWindow, new Vector3(0, 0, 0), Quaternion.identity);
-                    _confettiWindow.transform.SetParent(_canvas.transform, false);
+                    _confettiWindow.transform.SetParent(transform, false);
                     
                     _windowConfettiScript = _confettiWindow.GetComponent<WindowConfetti>();
                     _windowConfettiScript.pfConfetti = xConfetti;

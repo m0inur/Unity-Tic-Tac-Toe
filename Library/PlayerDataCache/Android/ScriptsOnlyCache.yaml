@@ -851,7 +851,7 @@ ScriptsOnlyBuild:
     className: CurrentRoomIsOpenToggle
   - hash:
       serializedVersion: 2
-      Hash: 4d2033b679e6ab1ef25e294da9bfa734
+      Hash: 79962239b8ded9a5836c730dbebae734
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: MultiplayerController
