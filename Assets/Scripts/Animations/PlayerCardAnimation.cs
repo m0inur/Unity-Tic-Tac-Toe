@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using DG.Tweening;
+﻿using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -40,18 +39,27 @@ namespace Animations
 
         public void ShowPlayerCard(bool isCard1)
         {
+            if (isCard1)
+            {
+                player1Card.position = player1CardOriginPos.position;
+                player1Card.gameObject.SetActive(true);
+            }
+            else
+            {
+                player2Card.position = player2CardOriginPos.position;
+                player2Card.gameObject.SetActive(true);
+            }
+            
             // If is card 1 show card 1 else show card 2
             var card = isCard1 ? player1Card : player2Card;
             var cardTarget = isCard1 ? player1CardTargetPos : player2CardTargetPos;
 
             card.DOMove(cardTarget.position, _duration);
-            // card.DOGoto();
         }
 
         public void ChangePlayer1Card()
         {
             Debug.Log("ChangePlayer1Card()");
-            // player1Card.DORotate(Vector3.forward, _duration, RotateMode.Fast);
             player1Card.DOShakePosition(1f, 50, 100, 100, false, true);
             player1CardText.DOText("You", 0.5f);
         }

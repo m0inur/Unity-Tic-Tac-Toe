@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using AI;
+﻿using AI;
 using LocalMultiplayer;
-using My_Photon.Rooms;
 using Photon.Pun;
-using Photon.Realtime;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class MenuController : MonoBehaviourPunCallbacks
 {
     // Store scene Game Objects
-    public Image tictactoeImage;
-
-    public GameObject menuButtons;
+    public Transform mainMenu;
     public GameObject singlePlayerButtons;
     public GameObject localMultiplayerButtons;
 
@@ -25,103 +16,89 @@ public class MenuController : MonoBehaviourPunCallbacks
     public GameObject privateMultiplayer;
     public GameObject multiplayer;
 
-    private TicTacToeCreatorAI tictactoeCreatorAIScript;
-    private TicTacToeCreatorLm ticTacToeCreatorLmScript;
+    public Button lMGridButton1;
+    public Button lMGridButton2;
+    public Button lMGridButton3;
+    
+    public Button easyModeButton;
+    public Button mediumModeButton;
+    public Button hardModeButton;
+    
+    private TicTacToeCreatorAI _ticTacToeCreatorAIScript;
+    private TicTacToeCreatorLm _ticTacToeCreatorLmScript;
 
     private void Start()
     {
-        tictactoeCreatorAIScript = singlePlayer.GetComponent<TicTacToeCreatorAI>();
-        ticTacToeCreatorLmScript = localMultiplayer.GetComponent<TicTacToeCreatorLm>();
+        _ticTacToeCreatorAIScript = singlePlayer.GetComponent<TicTacToeCreatorAI>();
+        _ticTacToeCreatorLmScript = localMultiplayer.GetComponent<TicTacToeCreatorLm>();
+        
+        // Set button listeners
+        lMGridButton1.onClick.AddListener(delegate { LocalMultiplayer(3); });
+        lMGridButton2.onClick.AddListener(delegate { LocalMultiplayer(4); });
+        lMGridButton3.onClick.AddListener(delegate { LocalMultiplayer(5); });
+        
+        easyModeButton.onClick.AddListener(delegate { SinglePlayer(0); });
+        mediumModeButton.onClick.AddListener(delegate { SinglePlayer(1); });
+        hardModeButton.onClick.AddListener(delegate { SinglePlayer(2); });
     }
 
     private void Update () {
         // Quit the application if back was pressed
         if (Input.GetKeyDown (KeyCode.Escape)) {
-            Application.Quit ();
+            if (mainMenu.gameObject.activeInHierarchy)
+            {
+                Application.Quit ();
+            } else if (localMultiplayerButtons.gameObject.activeInHierarchy)
+            {
+                LocalMultiplayerButtons_LeaveButton();
+            }
+            else if(singlePlayerButtons.gameObject.activeInHierarchy)
+            {
+                SinglePlayerButtons_LeaveButton();
+            }
         }
     }
 
-    public void Menu () {
-        SceneManager.LoadScene ("Menu");
+    private void LocalMultiplayer (int gridVal) {
+        _ticTacToeCreatorLmScript.grid = gridVal;
+        SceneManager.Instance.ChangeScene(transform, localMultiplayer.transform);
     }
     
-    public void LocalMultiplayer () {
-        tictactoeImage.gameObject.SetActive(false);
-        menuButtons.SetActive(false);
-        localMultiplayerButtons.SetActive(true);
-    }
-    
-    public void LocalMultiplayer3 () {
-        gameObject.SetActive(false);
-        ticTacToeCreatorLmScript.grid = 3;
-        localMultiplayer.SetActive(true);
-    }
-    
-    public void LocalMultiplayer4 () {
-        gameObject.SetActive(false);
-        ticTacToeCreatorLmScript.grid = 4;
-        localMultiplayer.SetActive(true);
-    }
-    
-    public void LocalMultiplayer5 () {
-        gameObject.SetActive(false);
-        ticTacToeCreatorLmScript.grid = 5;
-        localMultiplayer.SetActive(true);
-    }
-    
-    public void SinglePlayer () {
-        tictactoeImage.gameObject.SetActive(false);
-        menuButtons.SetActive(false);
-        singlePlayerButtons.SetActive(true);
-    }
-
-    public void EasyBot()
+    private void SinglePlayer(int modeVal)
     {
-        gameObject.SetActive(false);
-        tictactoeCreatorAIScript.mode = 0;
-        singlePlayer.SetActive(true);
+        Debug.Log("Bot Mode = " + modeVal);
+        _ticTacToeCreatorLmScript.grid = 3;
+        _ticTacToeCreatorAIScript.mode = modeVal;
+        _ticTacToeCreatorAIScript.isFakeMp = false;
+        SceneManager.Instance.ChangeScene(transform, singlePlayer.transform);
     }
     
-    public void MediumBot()
-    {
-        gameObject.SetActive(false);
-        tictactoeCreatorAIScript.mode = 1;
-        singlePlayer.SetActive(true);
+    public void LocalMultiplayerButtons () {
+        // Show local multiplayer buttons
+        SceneManager.Instance.ChangeScene(mainMenu, localMultiplayerButtons.transform);
     }
     
-    public void HardBot()
-    {
-        gameObject.SetActive(false);
-        tictactoeCreatorAIScript.mode = 2;
-        singlePlayer.SetActive(true);
+    public void SinglePlayerButtons () {
+        // Show single player buttons
+        SceneManager.Instance.ChangeScene(mainMenu, singlePlayerButtons.transform);
     }
     
     public void Multiplayer()
     {
-        gameObject.SetActive(false);
-        multiplayer.SetActive(true);
+        SceneManager.Instance.ChangeScene(transform, multiplayer.transform);
     }
     
     public void Private_Multiplayer () {
-        gameObject.SetActive(false);
-        privateMultiplayer.SetActive(true);
+        SceneManager.Instance.ChangeScene(transform, privateMultiplayer.transform);
     }
 
     public void SinglePlayerButtons_LeaveButton()
     {
-        singlePlayerButtons.SetActive(false);
-        tictactoeImage.gameObject.SetActive(true);
-        menuButtons.SetActive(true);
+        SceneManager.Instance.ChangeScene(singlePlayerButtons.transform, mainMenu);
     }
     
     public void LocalMultiplayerButtons_LeaveButton()
     {
-        localMultiplayerButtons.SetActive(false);
-        tictactoeImage.gameObject.SetActive(true);
-        menuButtons.SetActive(true);
-    }
-
-    public void PlayAgain () {
-        SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
+        SceneManager.Instance.ChangeScene(localMultiplayerButtons.transform, mainMenu);
     }
 }

@@ -9,17 +9,31 @@ namespace My_Photon.Rooms
     {
         public GameObject privateMultiplayer;
         public GameObject waitingRoom;
+        public GameObject pMButtons;
         
         public Text roomID;
         public Text roomErrorTxt;
 
         private float _disableErrorTextWait;
+        
+        private void Update()
+        {
+            // if back was pressed leave room
+            if (Input.GetKeyDown (KeyCode.Escape))
+            {
+                LeaveRoom();
+            }
+        }
+
+        public void LeaveRoom()
+        {
+            SceneManager.Instance.ChangeScene(gameObject.transform, pMButtons.transform);
+        }
 
         public void OnClick_JoinRoom() {
             if (!PhotonNetwork.IsConnected) {
                 Debug.Log("You are not connected");
                 PhotonNetwork.Reconnect();
-                // return;
             } 
             
             if (PhotonNetwork.InRoom)

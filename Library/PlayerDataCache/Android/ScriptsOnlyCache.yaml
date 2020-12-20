@@ -23,6 +23,7 @@ ScriptsOnlyBuild:
     - Particle.InitParticles
     - Particle.StarMovement
     - PrivateMultiplayerController
+    - SceneManager
     - SingletonRefrences
     DOTween.dll:
     - DG.Tweening.Core.DOTweenSettings
@@ -166,31 +167,33 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 14000}
     - Class: 114
-      Script: {instanceID: 14080}
+      Script: {instanceID: 14078}
     - Class: 114
-      Script: {instanceID: 14184}
+      Script: {instanceID: 14182}
     - Class: 114
-      Script: {instanceID: 14306}
+      Script: {instanceID: 14304}
     - Class: 114
-      Script: {instanceID: 14324}
+      Script: {instanceID: 14322}
     - Class: 114
-      Script: {instanceID: 14346}
+      Script: {instanceID: 14344}
     - Class: 114
-      Script: {instanceID: 14480}
+      Script: {instanceID: 14478}
     - Class: 114
-      Script: {instanceID: 14666}
+      Script: {instanceID: 14664}
     - Class: 114
-      Script: {instanceID: 14676}
+      Script: {instanceID: 14674}
     - Class: 114
-      Script: {instanceID: 14704}
+      Script: {instanceID: 14702}
     - Class: 114
-      Script: {instanceID: 14716}
+      Script: {instanceID: 14714}
     - Class: 114
-      Script: {instanceID: 14812}
+      Script: {instanceID: 14810}
     - Class: 114
-      Script: {instanceID: 14874}
+      Script: {instanceID: 14872}
     - Class: 114
-      Script: {instanceID: 14916}
+      Script: {instanceID: 14914}
+    - Class: 114
+      Script: {instanceID: 15418}
     - Class: 114
       Script: {instanceID: 15446}
     - Class: 114
@@ -332,7 +335,7 @@ ScriptsOnlyBuild:
     className: TMP_Dropdown
   - hash:
       serializedVersion: 2
-      Hash: add1696f6f4d1c6b9a6523f10ab74053
+      Hash: d862b2561a85ac96f9738ec1167b0ab7
     assemblyName: Assembly-CSharp.dll
     namespaceName: AI
     className: TicTacToeCreatorAI
@@ -506,7 +509,7 @@ ScriptsOnlyBuild:
     className: BezierSpline
   - hash:
       serializedVersion: 2
-      Hash: e593d67d43edd9efe9c281b00ab47a2e
+      Hash: e3e6a8a853fed76d17e2ae23b7b64d16
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: MenuController
@@ -1010,7 +1013,7 @@ ScriptsOnlyBuild:
     className: DOTweenSettings
   - hash:
       serializedVersion: 2
-      Hash: 516759756784c459f72254e353279269
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Assembly-CSharp.dll
     namespaceName: My_Photon
     className: TestConnect
@@ -1070,7 +1073,7 @@ ScriptsOnlyBuild:
     className: TextContainer
   - hash:
       serializedVersion: 2
-      Hash: de8a89faf06e9bb13aed395715313838
+      Hash: 825666a127591bdef52d7d4dedae7a4a
     assemblyName: Assembly-CSharp.dll
     namespaceName: My_Photon.Rooms
     className: JoinRoom
@@ -1086,12 +1089,6 @@ ScriptsOnlyBuild:
     assemblyName: PhotonUnityNetworking.Demos.dll
     namespaceName: Photon.Pun.Demo.Cockpit
     className: RegionListCell
-  - hash:
-      serializedVersion: 2
-      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: Scenes
   - hash:
       serializedVersion: 2
       Hash: c656dcc13ae391b68d594cc8f9c590b0
@@ -1530,6 +1527,12 @@ ScriptsOnlyBuild:
     assemblyName: PhotonUnityNetworking.Demos.dll
     namespaceName: Photon.Pun.Demo.SlotRacer.Utils
     className: SplinePosition
+  - hash:
+      serializedVersion: 2
+      Hash: f213ac9a38c7328f2fb0afa126cd92bb
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: SceneManager
   - hash:
       serializedVersion: 2
       Hash: a2612813f45d0ced02c3e4bc9dbea8b4

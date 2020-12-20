@@ -287,76 +287,6 @@ namespace Multiplayer_Game
             {
                 _gapX = _boxOffset * grid;
             }
-
-            // Debug.Log("BoxSize = " + _boxSize + ", _boxOffset = " + _boxOffset + ", Card top = " +
-            //           _cardBorderTopGap + ", grid = " + grid);
-            // _lineSpawnPos = new Vector3(_gapX - 5 + (_boxSize - (_boxSize / 2)),
-            //     _cardBorderTopGap + (_boxSize * (1 + 0) + (_boxOffset * 0)) - (_boxSize / 2), -1);
-            // _lineDrawPos = new Vector3((_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1) + 5, 0, 0);
-            // _destination = _lineDrawPos;
-            // _dist = Vector3.Distance(_origin, _destination);
-            //
-            // // 1st line dot
-            // _lineDot1Pos = new Vector3(_lineSpawnPos.x + _linedotSize / 2, _lineSpawnPos.y, _lineSpawnPos.z);
-            //
-            // // 2nd line dot
-            // _lineDot2Pos = new Vector3(_lineSpawnPos.x + _boxSize + (_boxOffset * 2) + _linedotSize / 2,
-            //     _lineSpawnPos.y, _lineSpawnPos.z);
-            //
-            // // last line dot
-            // _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y, _lineSpawnPos.z);
-            //
-            // if (grid != 3)
-            // {
-            //     // Set the 3rd dot position values
-            //     _lineDot4Pos = new Vector3(_lineSpawnPos.x + (_boxSize * 2) + ((_boxOffset * 2) * 2) + 7,
-            //         _lineSpawnPos.y, _lineSpawnPos.z);
-            // }
-            //
-            // if (grid == 5)
-            // {
-            //     // Set the 3rd dot position values
-            //     _lineDot5Pos = new Vector3(_lineSpawnPos.x + (_boxSize * 3) + ((_boxOffset * 2) * 3) + 7,
-            //         _lineSpawnPos.y, _lineSpawnPos.z);
-            // }
-            //
-            // _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
-            // _lineGen.transform.SetParent(cardBorder.transform, false);
-            // _lineRend = _lineGen.GetComponent<LineRenderer>();
-            //
-            // _lineRend.material = xMat;
-            // _lineDotPr = redLineDotPr;
-            //
-            // // 1st line dot
-            // _lineDot = Instantiate(_lineDotPr, _lineDot1Pos, Quaternion.identity);
-            // _lineDot.transform.SetParent(cardBorder.transform, false);
-            //
-            // // 2nd line dot
-            // _lineDot = Instantiate(_lineDotPr, _lineDot2Pos, Quaternion.identity);
-            // _lineDot.transform.SetParent(cardBorder.transform, false);
-            //
-            // // 3rd line dot
-            // _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
-            // _lineDot.transform.SetParent(cardBorder.transform, false);
-            //
-            // // 4th line dot
-            // if (grid != 3)
-            // {
-            //     // 3rd line dot
-            //     _lineDot = Instantiate(_lineDotPr, _lineDot4Pos, Quaternion.identity);
-            //     _lineDot.transform.SetParent(cardBorder.transform, false);
-            // }
-            //
-            // if (grid == 5)
-            // {
-            //     // 3rd line dot
-            //     _lineDot = Instantiate(_lineDotPr, _lineDot5Pos, Quaternion.identity);
-            //     _lineDot.transform.SetParent(cardBorder.transform, false);
-            // }
-            //
-            // _animateLine = true;
-
-            // Debug.Log("Row Matched with = " + rowWinner);
         }
 
         #endregion
@@ -537,7 +467,7 @@ namespace Multiplayer_Game
         }
 
         // Winner Checker
-      private int HasMatched()
+        private int HasMatched()
         {
             var n = grid;
             var rowWinner = 0;
@@ -820,7 +750,7 @@ namespace Multiplayer_Game
             return -1;
         }
         // Change player and check winner
-        public void ChangePlayer()
+        private void ChangePlayer()
         {
             if (p1)
             {
@@ -887,14 +817,10 @@ namespace Multiplayer_Game
 
         public void LeaveGame()
         {
-            gameObject.SetActive(false);
-            menu.SetActive(true);
+            SceneManager.Instance.ChangeScene(transform, menu.transform);
 
             // If the other and current player leaves then destroy the room
-            if (_hasPlayerLeft)
-            {
-                PhotonNetwork.LeaveRoom();
-            }
+            PhotonNetwork.LeaveRoom();
         }
 
         [PunRPC]
@@ -946,7 +872,7 @@ namespace Multiplayer_Game
                 {
                     Debug.Log("Initiating line at = " + _lineSpawnPos);
                     _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
-                    _lineGen.transform.SetParent(cardBorder.transform, false);
+                    _lineGen.transform.SetParent(transform, false);
                     _lineRend = _lineGen.GetComponent<LineRenderer>();
 
                     // If Player 1 Wins

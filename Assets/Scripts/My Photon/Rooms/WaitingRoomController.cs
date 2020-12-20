@@ -35,6 +35,8 @@ namespace My_Photon.Rooms
         private bool _hasPlayerLeftRoom;
         private bool _hasCoroutineEnded;
         private bool _hasInitSetup;
+        private bool _hasInitPlayerCards;
+        private bool _hasUsedShakeAnim;
 
         private void Start()
         {
@@ -46,6 +48,9 @@ namespace My_Photon.Rooms
 
         private void Setup()
         {
+            PlayerCardAnimation.Instance.player1Card.gameObject.SetActive(false);
+            PlayerCardAnimation.Instance.player2Card.gameObject.SetActive(false);
+
             // roomID = "9876";
             StartCoroutine(Fade());
             StartCoroutine(TextTypeAnimation());
@@ -62,30 +67,35 @@ namespace My_Photon.Rooms
                 // else text
                 player1CardText.text = "Player 1";
                 player2CardText.text = "You";
-                
-                // Show Player 2 Card
-                PlayerCardAnimation.Instance.ShowPlayerCard(false);
             }
             
-            // Show Player 1 Card
-            PlayerCardAnimation.Instance.ShowPlayerCard(true);
-
             _loadSceneWait = 2f;
             _roomIDNumberGap = 25;
             
             _hasPlayerLeftRoom = false;
+            _hasInitPlayerCards = false;
+            _hasUsedShakeAnim = false;
         }
 
         private new void OnDisable()
         {
-            // Hide Both Player Cards
-            PlayerCardAnimation.Instance.HidePlayerCard(true);
-            PlayerCardAnimation.Instance.HidePlayerCard(false);
-
             _hasInitSetup = false;
         }
 
         private void Update () {
+            if (transform.position.x == 0 && !_hasInitPlayerCards)
+            {
+                if (_playerIndex == 2)
+                {
+                    // Show Player 2 Card
+                    PlayerCardAnimation.Instance.ShowPlayerCard(false);
+                }
+
+                // Show Player 1 Card
+                PlayerCardAnimation.Instance.ShowPlayerCard(true);
+                _hasInitPlayerCards = true;
+            }
+
             if (!_hasInitSetup)
             {
                 Setup();
@@ -102,13 +112,14 @@ namespace My_Photon.Rooms
         // Go to Create Or Join Room
         public void LeaveRoom()
         {
-            PlayerCardAnimation.Instance.ChangePlayer1Card();
-            // StartCoroutine(PlayerCardAnimation.Instance.FadeText());
-            // gameObject.SetActive(false);
-            // privateMultiplayer.SetActive(true);
-            //
-            // PhotonNetwork.LeaveRoom();
-            // _hasPlayerLeftRoom = true;
+            if (!PlayerCardAnimation.Instance.player2Card.gameObject.activeSelf)
+            {
+                PlayerCardAnimation.Instance.player2Card.gameObject.SetActive(false);
+            }
+            
+            SceneManager.Instance.ChangeScene(gameObject.transform, privateMultiplayer.transform);
+            PhotonNetwork.LeaveRoom();
+            _hasPlayerLeftRoom = true;
         }
 
         private IEnumerator TextTypeAnimation()
@@ -166,7 +177,8 @@ namespace My_Photon.Rooms
             
             // Show Player 2 Card
             PlayerCardAnimation.Instance.ShowPlayerCard(false);
-            // photonView.RPC("LoadScene", RpcTarget.All);
+            photonView.RPC("SetGridValue", RpcTarget.All, grid);
+            photonView.RPC("LoadScene", RpcTarget.All);
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -183,7 +195,13 @@ namespace My_Photon.Rooms
             if (PhotonNetwork.IsMasterClient && _playerIndex == 2)
             {
                 Debug.Log("Master client left");
-                PlayerCardAnimation.Instance.ChangePlayer1Card();
+                // If shake animation hasn't been used yet
+                if (!_hasUsedShakeAnim)
+                {
+                    PlayerCardAnimation.Instance.ChangePlayer1Card();
+                    _hasUsedShakeAnim = true;
+                }
+                
                 _playerIndex = 1;
             }
             else
@@ -214,16 +232,15 @@ namespace My_Photon.Rooms
             // If the other player hasn't left
             if (!_hasPlayerLeftRoom)
             {
-                Debug.Log("Player has not left, joining the game");
-                // Make current room not joinable and invisible
+                Debug.Log("Player has not left, joining the game grid = " + grid);
+                // Make current room not join-able and invisible
                 PhotonNetwork.CurrentRoom.IsVisible = false;
                 PhotonNetwork.CurrentRoom.IsOpen = false;
                 
                 var multiplayerGameScript = multiplayerGame.GetComponent<TicTacToeCreatorMp>();
                 multiplayerGameScript.grid = grid;
                 
-                gameObject.SetActive(false);
-                multiplayerGame.SetActive(true);
+                SceneManager.Instance.ChangeScene(transform, multiplayerGame.transform);
             }
         }
     }

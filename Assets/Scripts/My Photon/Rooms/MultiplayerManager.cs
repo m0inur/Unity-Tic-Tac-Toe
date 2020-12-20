@@ -20,7 +20,7 @@ namespace My_Photon.Rooms
         public GameObject multiplayerGame;
         public GameObject singlePlayer;
 
-        private TicTacToeCreatorAI tictactoeCreatorAIScript;
+        private TicTacToeCreatorAI _tictactoeCreatorAIScript;
 
         private string _roomName;
 
@@ -37,6 +37,8 @@ namespace My_Photon.Rooms
         private bool _hasCreatedRoom;
         private bool _hasFoundRoom;
         private bool _startJoinRoomCounter;
+        private bool _hasJoinedRoom;
+        
         private RoomOptions _randomRoomOption;
 
         private void Start()
@@ -44,18 +46,23 @@ namespace My_Photon.Rooms
             Setup();
         }
 
-        public void OnDisable()
+        private void OnDisable()
         {
+            if (_hasJoinedRoom)
+            {
+                // If a room has been joined disable the current scene
+                multiplayerController.SetActive(false);
+            }
             _hasCalledSetup = false;
         }
 
         private void Setup()
         {
-            tictactoeCreatorAIScript = singlePlayer.GetComponent<TicTacToeCreatorAI>();
+            _tictactoeCreatorAIScript = singlePlayer.GetComponent<TicTacToeCreatorAI>();
 
             // Reset Everything
-            _tryJoinRoomCounter = 2f;
-            _joinAiGameCounter = 2f;
+            _tryJoinRoomCounter = 3f;
+            _joinAiGameCounter = 10f;
 
             _hasConnectedToMaster = false;
             _startJoinRoomCounter = false;
@@ -63,7 +70,8 @@ namespace My_Photon.Rooms
             _startAiCounter = false;
             _hasCreatedRoom = false;
             _hasFoundRoom = false;
-
+            _hasJoinedRoom = false;
+            
             searchText.text = "Searching for Opponent";
             
             if (PhotonNetwork.InRoom)
@@ -81,7 +89,6 @@ namespace My_Photon.Rooms
                 PhotonNetwork.ConnectUsingSettings ();
             }
             
-
             _hasCalledSetup = true;
         }
 
@@ -105,12 +112,10 @@ namespace My_Photon.Rooms
             // Keep trying to join a room until the counter runs out and joined lobby to access rooms
             if (_tryJoinRoomCounter > 0 && _startJoinRoomCounter)
             {
-                Debug.Log("Searching for rooms");
                 _tryJoinRoomCounter -= Time.deltaTime;
                 
                 if (PhotonNetwork.IsConnectedAndReady)
                 {
-                    Debug.Log("Is Connected and ready");
                     // join a random filtered room
                     QuickMatch();
                 }
@@ -126,7 +131,7 @@ namespace My_Photon.Rooms
             }
 
             // If start ai counter is true and no player has joined
-            if (_startAiCounter && !_hasPlayerJoined && false)
+            if (_startAiCounter && !_hasPlayerJoined)
             {
                 // Countdown
                 _joinAiGameCounter -= Time.deltaTime;
@@ -134,15 +139,18 @@ namespace My_Photon.Rooms
                 // Join game after counter runs out
                 if (_joinAiGameCounter < 0)
                 {
-                    tictactoeCreatorAIScript.isFakeMp = true;
-
-                    gameObject.SetActive(false);
-                    singlePlayer.SetActive(true);
+                    _tictactoeCreatorAIScript.isFakeMp = true;
+                    Debug.Log("Joining fake multiplayer");
+                    
+                    SceneManager.Instance.ChangeScene(transform, singlePlayer.transform);
+                    // gameObject.SetActive(false);
+                    // singlePlayer.SetActive(true);
 
                     if (PhotonNetwork.InRoom)
                     {
                         PhotonNetwork.CurrentRoom.IsVisible = false;
                         PhotonNetwork.CurrentRoom.IsOpen = false;
+                        PhotonNetwork.LeaveRoom();
                     }
                     
                     _startAiCounter = false;
@@ -160,18 +168,18 @@ namespace My_Photon.Rooms
             {
                 _roomName += UnityEngine.Random.Range(0, 9);
             }
-
+            
             Debug.Log("Creating room: " + _roomName);
-
+            
             var options = new RoomOptions
             {
                 BroadcastPropsChangeToAll = true, PublishUserId = true, MaxPlayers = System.Convert.ToByte(grid)
             };
-
+            
             // Vary max players on different grids to join correct room with same grid option
             PhotonNetwork.JoinOrCreateRoom(_roomName, options, TypedLobby.Default);
             PhotonNetwork.ConnectUsingSettings();
-
+            
             searchText.text = "Waiting for Opponent";
             _hasCreatedRoom = true;
         }
@@ -179,7 +187,6 @@ namespace My_Photon.Rooms
         // Join Random Room
         private void QuickMatch()
         {
-            Debug.Log("QuickMatch()");
             // Joins random room with same grid option
             PhotonNetwork.JoinRandomRoom(null, System.Convert.ToByte(grid), MatchmakingMode.FillRoom, null, null);
         }
@@ -188,15 +195,10 @@ namespace My_Photon.Rooms
         public void JoinGame()
         {
             multiplayerGame.GetComponent<TicTacToeCreatorMp>().grid = grid;
-            multiplayerController.SetActive(false);
-            multiplayerGame.SetActive(true);
+            SceneManager.Instance.ChangeScene(multiplayerController.transform, multiplayerGame.transform);
+            _hasJoinedRoom = true;
         }
-
-        public override void OnRoomListUpdate(List<RoomInfo> roomList)
-        {
-            Debug.Log("ROom list updated, room length = " + roomList.Count);
-        }
-
+        
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
             // Remove the current room so no other player can join
@@ -212,9 +214,8 @@ namespace My_Photon.Rooms
         public override void OnCreatedRoom()
         {
             Debug.Log("Created Room Successfully");
-            // PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProps, null, WebFlags.Default);
         }
-
+        
         public override void OnJoinedRoom()
         {
             _hasFoundRoom = true;

@@ -8,7 +8,8 @@ public class MultiplayerController : MonoBehaviour
     public GameObject menu;
     public GameObject gridOptionButtons;
     public GameObject multiplayerManager;
-    
+    public GameObject multiplayerGame;
+
     public Button gridButton1;
     public Button gridButton2;
     public Button gridButton3;
@@ -46,14 +47,13 @@ public class MultiplayerController : MonoBehaviour
     // Go back to menu
     public void OnClick_GOBLeave()
     {
-        gameObject.SetActive(false);
-        menu.SetActive(true);
+        SceneManager.Instance.ChangeScene(transform, menu.transform);
     }
         
     public void OnClick_MPLeave()
     {
-        multiplayerManager.SetActive(false);
-        gridOptionButtons.SetActive(true);
+        SceneManager.Instance.ChangeScene(multiplayerManager.transform, gridOptionButtons.transform);
+        
     }
 
     private void OnClick_InitMultiplayer(int grid)
@@ -61,7 +61,6 @@ public class MultiplayerController : MonoBehaviour
         Debug.Log("Grid = " + grid);
         // Set grid value
         multiplayerManager.GetComponent<MultiplayerManager>().grid = grid;
-        gridOptionButtons.SetActive(false);
-        multiplayerManager.SetActive(true);
+        SceneManager.Instance.ChangeScene(gridOptionButtons.transform, multiplayerManager.transform);
     }
 }

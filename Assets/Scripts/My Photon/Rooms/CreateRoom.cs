@@ -2,7 +2,6 @@
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace My_Photon.Rooms
@@ -22,6 +21,8 @@ namespace My_Photon.Rooms
 
         private void Start()
         {
+            _roomId = "";
+            
             grid3Button.onClick.AddListener(OnClick_ButtonGrid3);
             grid4Button.onClick.AddListener(OnClick_ButtonGrid4);
             grid5Button.onClick.AddListener(OnClick_ButtonGrid5);
@@ -32,16 +33,27 @@ namespace My_Photon.Rooms
             // if back was pressed leave room
             if (Input.GetKeyDown (KeyCode.Escape))
             {
-                gameObject.SetActive(false);
-                pMButtons.SetActive(true);
+                LeaveRoom();
             }
+        }
+
+        public void LeaveRoom()
+        {
+            SceneManager.Instance.ChangeScene(gameObject.transform, pMButtons.transform);
+        }
+
+        private new void OnDisable()
+        {
+            _roomId = "";
+            
+            gameObject.SetActive(false);
+            pMButtons.SetActive(true);
         }
 
         public void OnClick_CreateRoom () {
             if (!PhotonNetwork.IsConnected) {
                 Debug.Log("You are not connected");
                 PhotonNetwork.Reconnect();
-                // return;
             } 
 
             if (PhotonNetwork.InRoom)
@@ -85,8 +97,10 @@ namespace My_Photon.Rooms
         // If a room has been successfully created
         public override void OnCreatedRoom ()
         {
-            Debug.Log("Created room, ID = " + _roomId);
-            ChangeView();
+            if (_roomId.Length == 4)
+            {
+                ChangeView();
+            }
         }
 
         // If a room is failed to create
@@ -96,12 +110,8 @@ namespace My_Photon.Rooms
 
         private void ChangeView()
         {
-            gameObject.SetActive(false);
-            pMButtons.SetActive(true);
-            
-            privateMultiplayer.SetActive(false);
-            waitingRoom.SetActive(true);
-            
+            SceneManager.Instance.ChangeScene(privateMultiplayer.transform, waitingRoom.transform);
+
             var waitingRoomControllerScript = waitingRoom.GetComponent<WaitingRoomController>();
             waitingRoomControllerScript.roomID = _roomId;
             waitingRoomControllerScript.grid = _grid;

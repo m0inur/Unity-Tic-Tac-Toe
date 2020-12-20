@@ -286,6 +286,19 @@ namespace LocalMultiplayer
                 _colCount++;
                 _rowCount = 0;
             }
+            
+            if (grid == 5)
+            {
+                _gapX = _boxSize / 3 - _boxOffset;
+            }
+            else if (grid == 4)
+            {
+                _gapX = _boxOffset * (grid - 1);
+            }
+            else
+            {
+                _gapX = _boxOffset * grid;
+            }
         }
 
         // Animate line
@@ -710,8 +723,7 @@ namespace LocalMultiplayer
 
         public void Menu()
         {
-            menu.SetActive(true);
-            gameObject.SetActive(false);
+            SceneManager.Instance.ChangeScene(transform, menu.transform);
         }
 
         public void Restart()
@@ -739,7 +751,7 @@ namespace LocalMultiplayer
 
                 // Start the confetti
                 _windowConfetti = Instantiate(confettiWindowPr, new Vector3(0, 0, 0), Quaternion.identity);
-                _windowConfetti.transform.SetParent(_canvas.transform, false);
+                _windowConfetti.transform.SetParent(transform, false);
                 _windowConfettiScript = _windowConfetti.GetComponent<WindowConfetti>();
 
                 if (!p1)

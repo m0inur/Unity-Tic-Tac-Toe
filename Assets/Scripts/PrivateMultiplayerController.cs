@@ -18,43 +18,24 @@ public class PrivateMultiplayerController : MonoBehaviour
         }
     }
 
-    // Go to menu
     public void LeaveRoom()
-    {          
-        if (PhotonNetwork.InRoom)
+    {
+        if (buttons.activeSelf)
         {
-            Debug.Log("Leaving photon room");
-            PhotonNetwork.LeaveRoom();
-        }
-
-        // If PM Buttons are active go to menu
-        if (buttons.gameObject.active)
-        {
-            gameObject.SetActive(false);
-            menu.SetActive(true);
-        } else if (gridOptionButtons.gameObject.active)
-        {
-            // If grid option buttons are active deactivate and activate PM Buttons
-            gridOptionButtons.SetActive(false);
-            buttons.SetActive(true);
-        } else if (joinRoomObj.gameObject.active)
-        {
-            // If join room is active deactivate and activate PM Buttons
-            joinRoomObj.gameObject.SetActive(false);
-            buttons.SetActive(true);
+            // Go to menu
+            SceneManager.Instance.ChangeScene(gameObject.transform, menu.transform);
         }
     }
 
+    
     public void OnClick_JoinRoom()
     {
         Debug.Log("OnClick_JoinRoom()");
-        buttons.SetActive(false);
-        joinRoomObj.SetActive(true);
+        SceneManager.Instance.ChangeScene(buttons.transform, joinRoomObj.transform);
     }
 
     public void OnClick_CreateRoom()
     {
-        buttons.SetActive(false);
-        gridOptionButtons.SetActive(true);
+        SceneManager.Instance.ChangeScene(buttons.transform, gridOptionButtons.transform);
     }
 }

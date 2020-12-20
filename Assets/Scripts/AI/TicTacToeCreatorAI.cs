@@ -37,7 +37,8 @@ namespace AI
         public Image playerCardBorder;
         public Image blueLineDotPr;
         public Image redLineDotPr;
-
+        
+        public Text player2CardText;
         public Text turnTxtPr;
         public Text endText;
         
@@ -127,7 +128,6 @@ namespace AI
         private void Start()
         {
             Instance = this;
-            grid = 4;
             // Mode = Easy = 0, Medium = 1, Hard = 2
             Board = new int[grid, grid];
             Instance = this;
@@ -146,13 +146,16 @@ namespace AI
             // If it has not been set
             if (isFakeMp)
             {
+                Debug.Log("Its fake multiplayer");
                 mode = 2;
                 player2CardTurnTxt = "Player 2's Turn";
+                player2CardText.text = "Player 2";
                 _randomizeAiMoveDelay = true;
             }
             else
             {
                 player2CardTurnTxt = "Bot's Turn";
+                player2CardText.text = "Bot";
                 _randomizeAiMoveDelay = false;
             }
             
@@ -173,6 +176,8 @@ namespace AI
 
             _origin = new Vector3 (0, 0, 0);
 
+            mode = 2;
+
             // Canvas
             _canvas = FindObjectOfType<Canvas> ();
             _canvasW = _canvas.GetComponent<RectTransform> ().rect.width;
@@ -184,26 +189,7 @@ namespace AI
             isGameOver = false;
             
             _boxOffset = 10;
-            mode = 3;
-            
-            if (grid == 5)
-            {
-                _boxOffset = 5;
-            }
-            else 
-            {
-                _boxOffset = 10;
-            }
-            
-            if (grid != 3)
-            {
-                // Calculate Size
-                _boxSize = 610 / grid - _boxOffset * (grid - 1);
-            }
-            else
-            {
-                _boxSize = 170;
-            }
+            _boxSize = 170;
 
             // Initialize board
             InitBoxGrid();
@@ -316,7 +302,7 @@ namespace AI
             for (var i = 0; i < grid; i++)
             {
                 // Reset the gap on the x axis every time
-                _gapX = _boxOffset * 2;
+                _gapX = 20;
 
                 for (var j = 0; j < grid; j++)
                 {
@@ -324,10 +310,10 @@ namespace AI
                         Quaternion.identity) as GameObject;
                     _box.transform.SetParent(cardBorder.transform, false);
                     _box.name = _colCount + "" + _rowCount;
-                    TagBoxAI _boxScript = _box.GetComponent<TagBoxAI>();
+                    var boxScript = _box.GetComponent<TagBoxAI>();
                     
-                    _boxScript.boxColNum = _colCount;
-                    _boxScript.boxRowNum = _rowCount;
+                    boxScript.boxColNum = _colCount;
+                    boxScript.boxRowNum = _rowCount;
 
                     // Update gap on X axis after evey box
                     _gapX += _boxSize + _boxOffset * 2;
@@ -338,6 +324,10 @@ namespace AI
                 _colCount++;
                 _rowCount = 0;
             }
+            
+            _boxGridHeight = 50;
+            _cardBorderTopGap = _boxGridHeight;
+            _gapX = 20;
         }
 
         #endregion
@@ -427,7 +417,7 @@ namespace AI
             }
         }
         
-          // Winner Checker
+        // Winner Checker
         private int HasMatched()
         {
             var n = grid;
@@ -493,7 +483,7 @@ namespace AI
 
                 if (rowWinner > -1)
                 {
-                    _lineSpawnPos = new Vector3((_boxOffset * 2) + 5 + (_boxSize - (_boxSize / 2)),
+                    _lineSpawnPos = new Vector3(_gapX + _boxSize / 2 + 3,
                         _cardBorderTopGap + (_boxSize * (1 + i) + (_boxOffset * i)) - (_boxSize / 2), -1);
                     _lineDrawPos = new Vector3((_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1) + 5, 0, 0);
 
@@ -507,7 +497,7 @@ namespace AI
                     _lineDot2Pos = new Vector3(_lineSpawnPos.x + _boxSize + (_boxOffset * 2) + _linedotSize / 2,
                         _lineSpawnPos.y, _lineSpawnPos.z);
 
-                    // 3rd line dot
+                    // last line dot
                     _lineDot3Pos = new Vector3(_lineSpawnPos.x + _lineDrawPos.x, _lineSpawnPos.y, _lineSpawnPos.z);
 
                     return rowWinner;
@@ -515,8 +505,7 @@ namespace AI
 
                 if (colWinner > -1)
                 {
-                    // Draw lines
-                    _lineSpawnPos = new Vector3(10 + (_boxSize * (1 + i)) - (_boxSize / 2) + (_boxOffset * 2) * (1 + i),
+                    _lineSpawnPos = new Vector3(  _gapX + _boxOffset + _boxSize * (1 + i) - _boxSize / 2 + (_boxOffset * 2) * i,
                         _cardBorderTopGap + _boxSize - (_boxSize / 2) - 5, -1);
                     _lineDrawPos = new Vector3(0, (_boxSize * (grid - 1)) + _boxOffset * (grid - 1) + 10, 0);
 
@@ -543,8 +532,9 @@ namespace AI
 
             if (diagWinner > -1)
             {
-                float lineSize = (_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1);
-                _lineSpawnPos = new Vector3((_boxOffset * 2) + 10 + _boxSize / 2,
+                // Draw lines
+                var lineSize = (_boxSize * (grid - 1)) + (_boxOffset * 2) * (grid - 1);
+                _lineSpawnPos = new Vector3(_gapX + _boxSize / 2 + _boxOffset,
                     _cardBorderTopGap + (_boxSize * grid + _boxOffset * (grid - 1)) - _boxSize / 2, -1);
                 _lineDrawPos = new Vector3(lineSize, -lineSize + 15, 0);
 
@@ -598,7 +588,7 @@ namespace AI
             return -1;
         }
 
-                // Make ai move
+        // Make ai move
         public IEnumerator MoveAi () {
             if (_randomizeAiMoveDelay)
             {
@@ -797,8 +787,7 @@ namespace AI
         }
 
         public void Menu () {
-            menu.SetActive(true);
-            gameObject.SetActive(false);
+            SceneManager.Instance.ChangeScene(transform, menu.transform);
         }
 
         // Restart Game
@@ -818,7 +807,6 @@ namespace AI
             _winner = winner;
             if (winner != -1) 
             {
-
                 // Draw lines
                 _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
                 _lineGen.transform.SetParent(cardBorder.transform, false);
