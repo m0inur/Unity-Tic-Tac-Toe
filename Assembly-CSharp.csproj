@@ -84,6 +84,7 @@
      <Compile Include="Assets\Scripts\Confetti\ImageAnimator.cs" />
      <Compile Include="Assets\Scripts\My Photon\Managers\GameSettings.cs" />
      <Compile Include="Assets\Photon\PhotonChat\Demos\Common\OnStartDelete.cs" />
+     <Compile Include="Assets\Scripts\GameInfoText.cs" />
      <Compile Include="Assets\Scripts\SceneManager.cs" />
      <Compile Include="Assets\Scripts\Particle\InitParticles.cs" />
      <Compile Include="Assets\Scripts\My Photon\Rooms\MultiplayerManager.cs" />

@@ -263,8 +263,7 @@ namespace Multiplayer_Game
             _linedotSize = 15;
             _lastGrid = grid;
 
-            p1 = false;
-            isMyTurn = true;
+            p1 = true;
 
             _origin = Vector3.zero;
 
@@ -288,43 +287,6 @@ namespace Multiplayer_Game
             {
                 _gapX = _boxOffset * grid;
             }
-
-            // _lineGen = Instantiate(line, _lineSpawnPos, Quaternion.identity) as GameObject;
-            // _lineGen.transform.SetParent(cardBorder.transform, false);
-            // _lineRend = _lineGen.GetComponent<LineRenderer>();
-            //
-            // _lineRend.material = xMat;
-            // _lineDotPr = redLineDotPr;
-            //
-            // // 1st line dot
-            // _lineDot = Instantiate(_lineDotPr, _lineDot1Pos, Quaternion.identity);
-            // _lineDot.transform.SetParent(cardBorder.transform, false);
-            //
-            // // 2nd line dot
-            // _lineDot = Instantiate(_lineDotPr, _lineDot2Pos, Quaternion.identity);
-            // _lineDot.transform.SetParent(cardBorder.transform, false);
-            //
-            // // 3rd line dot
-            // _lineDot = Instantiate(_lineDotPr, _lineDot3Pos, Quaternion.identity);
-            // _lineDot.transform.SetParent(cardBorder.transform, false);
-            //
-            // // 4th line dot
-            // if (grid != 3)
-            // {
-            //     Debug.Log("Instantiate setting line dot 4 position");
-            //     // 3rd line dot
-            //     _lineDot = Instantiate(_lineDotPr, _lineDot4Pos, Quaternion.identity);
-            //     _lineDot.transform.SetParent(cardBorder.transform, false);
-            // }
-            //
-            // if (grid == 5)
-            // {
-            //     // 3rd line dot
-            //     _lineDot = Instantiate(_lineDotPr, _lineDot5Pos, Quaternion.identity);
-            //     _lineDot.transform.SetParent(cardBorder.transform, false);
-            // }
-            //
-            // _animateLine = true;
         }
 
         #endregion
@@ -825,15 +787,13 @@ namespace Multiplayer_Game
                     _turnTxt.text = "Player 1's Turn";
                 }
             }
-            p1 = false;
         }
 
         // Check if someone won
         public void IsGameOver()
         {
             // X = 1, O = 2, Tie = 3
-            // if (boardLen >= grid * 2 - 1)
-            if (boardLen >= grid)
+            if (boardLen >= grid * 2 - 1)
             {
                 int result = HasMatched();
 
@@ -967,7 +927,7 @@ namespace Multiplayer_Game
                     _windowConfetti =
                         Instantiate(confettiWindow, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
                     _windowConfetti.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
-                    _windowConfetti.transform.SetParent(_canvas.transform, false);
+                    _windowConfetti.transform.SetParent(transform, false);
                     WindowConfetti windowScript = _windowConfetti.GetComponent<WindowConfetti>();
 
                     // If Player 1 Wins

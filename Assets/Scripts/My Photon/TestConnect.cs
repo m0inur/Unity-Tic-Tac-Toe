@@ -1,7 +1,6 @@
 ﻿using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace My_Photon
 {
@@ -28,13 +27,20 @@ namespace My_Photon
             Debug.Log ("Connected to Photon and joined lobby", this);
         }
 
+        public override void OnConnected()
+        {
+            GameInfoText.Instance.text.text = "You have connected";
+            GameInfoText.Instance.FadeText(true);
+        }
+
         public override void OnDisconnected (DisconnectCause cause) {
-            // If player did not disconnect by quitting app then reconnect
-            if (cause.ToString() != "DisconnectedByClientLogic")
+            if (cause.ToString() != "None")
             {
-                
+                Debug.Log("Disconnected to photon because: " + cause.ToString());
+                GameInfoText.Instance.text.text = "You have disconnected";
+                GameInfoText.Instance.FadeText(true, false);
+                PhotonNetwork.Reconnect();
             }
-            Debug.Log("Disconnected to photon because: " + cause.ToString());
         }
     }
 }

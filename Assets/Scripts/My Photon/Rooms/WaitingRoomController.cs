@@ -69,7 +69,7 @@ namespace My_Photon.Rooms
                 player2CardText.text = "You";
             }
             
-            _loadSceneWait = 2f;
+            _loadSceneWait = 3f;
             _roomIDNumberGap = 25;
             
             _hasPlayerLeftRoom = false;
@@ -118,6 +118,9 @@ namespace My_Photon.Rooms
             }
             
             SceneManager.Instance.ChangeScene(gameObject.transform, privateMultiplayer.transform);
+            Debug.Log("Killing all tweens of player 1 card");
+            PlayerCardAnimation.Instance.player1Card.DOKill();
+            
             PhotonNetwork.LeaveRoom();
             _hasPlayerLeftRoom = true;
         }
@@ -171,6 +174,9 @@ namespace My_Photon.Rooms
 
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
+            // Show vsText
+            PlayerCardAnimation.Instance.FadeVSText(true);
+            
             Debug.Log("Player entered room");
             player2CardText.text = "Player 2";
             _hasPlayerLeftRoom = false;
@@ -187,10 +193,12 @@ namespace My_Photon.Rooms
             // Set Player left room to true and disable 2nd player card
             _hasPlayerLeftRoom = true;
             
+            // Hide vsText
+            PlayerCardAnimation.Instance.FadeVSText(false);
+            
             // Hide Player 2 Card
             PlayerCardAnimation.Instance.HidePlayerCard(false);
             
-            Debug.Log("Am I master = " + PhotonNetwork.IsMasterClient + " and am i 2nd player = " + _playerIndex);
             // If Im the new master and the 2nd player then change me into X player card
             if (PhotonNetwork.IsMasterClient && _playerIndex == 2)
             {
@@ -201,6 +209,10 @@ namespace My_Photon.Rooms
                     PlayerCardAnimation.Instance.ChangePlayer1Card();
                     _hasUsedShakeAnim = true;
                 }
+                else
+                {
+                    player1CardText.DOText("You", 0.5f);
+                }
                 
                 _playerIndex = 1;
             }
@@ -209,6 +221,8 @@ namespace My_Photon.Rooms
                 player1CardText.text = "You";
             }
             
+            GameInfoText.Instance.text.text = "Other player left the room";
+            GameInfoText.Instance.FadeText(true, false);
             player2CardText.text = "Player 2";
         }
 

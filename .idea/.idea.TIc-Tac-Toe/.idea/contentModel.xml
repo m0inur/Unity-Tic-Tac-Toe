@@ -399,6 +399,7 @@
             <e p="ImageAnimator.cs" t="Include" />
             <e p="WindowConfetti.cs" t="Include" />
           </e>
+          <e p="GameInfoText.cs" t="Include" />
           <e p="LocalMultiplayer" t="Include">
             <e p="TagBoxLM.cs" t="Include" />
             <e p="TicTacToeCreatorLM.cs" t="Include" />

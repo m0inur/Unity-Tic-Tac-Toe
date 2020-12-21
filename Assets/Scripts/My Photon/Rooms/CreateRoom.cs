@@ -53,6 +53,9 @@ namespace My_Photon.Rooms
         public void OnClick_CreateRoom () {
             if (!PhotonNetwork.IsConnected) {
                 Debug.Log("You are not connected");
+                GameInfoText.Instance.text.text = "You are not connected";
+                GameInfoText.Instance.FadeText(true, false);
+                
                 PhotonNetwork.Reconnect();
             } 
 
@@ -105,7 +108,8 @@ namespace My_Photon.Rooms
 
         // If a room is failed to create
         public override void OnCreateRoomFailed (short returnCode, string message) {
-            Debug.Log ("Room creations failed: " + message);
+            GameInfoText.Instance.text.text = "Room creation failed";
+            GameInfoText.Instance.FadeText(true, false);
         }
 
         private void ChangeView()

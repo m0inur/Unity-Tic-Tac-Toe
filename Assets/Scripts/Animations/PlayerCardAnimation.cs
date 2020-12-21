@@ -24,8 +24,7 @@ namespace Animations
 
         // Duration of animation
         private float _duration;
-        private float _textFadeWait;
-        private float _textFadeSpeed;
+        private float _textFadeDuration;
 
         // Set values
         private void Start()
@@ -33,8 +32,7 @@ namespace Animations
             Instance = this;
             
             _duration = 1;
-            _textFadeWait = 0.1f;
-            _textFadeSpeed = 0.25f;
+            _textFadeDuration = 0.5f;
         }
 
         public void ShowPlayerCard(bool isCard1)
@@ -59,8 +57,7 @@ namespace Animations
 
         public void ChangePlayer1Card()
         {
-            Debug.Log("ChangePlayer1Card()");
-            player1Card.DOShakePosition(1f, 50, 100, 100, false, true);
+            player1Card.DOShakePosition(1f, 50, 100, 100);
             player1CardText.DOText("You", 0.5f);
         }
 
@@ -70,14 +67,13 @@ namespace Animations
             var card = isCard1 ? player1Card : player2Card;
             var cardOrigin = isCard1 ? player1CardOriginPos : player2CardOriginPos;
 
+            card.DOPause();
             card.DOMove(cardOrigin.position, _duration);
         }
 
-        public void ShowVSText()
+        public void FadeVSText(bool show)
         {
-            // vsText.gameObject.SetActive(true);
-            // vsText.DOFade(1f, 1.5f);
-            // vsText.DO
+            vsText.DOFade(show ? 1f : 0f, _textFadeDuration);
         }
     }
 }

@@ -73,7 +73,8 @@ namespace My_Photon.Rooms
             _hasJoinedRoom = false;
             
             searchText.text = "Searching for Opponent";
-            
+            _roomName = "";
+
             if (PhotonNetwork.InRoom)
             {
                 PhotonNetwork.LeaveRoom();

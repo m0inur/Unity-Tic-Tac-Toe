@@ -12,7 +12,6 @@ namespace My_Photon.Rooms
         public GameObject pMButtons;
         
         public Text roomID;
-        public Text roomErrorTxt;
 
         private float _disableErrorTextWait;
         
@@ -32,7 +31,10 @@ namespace My_Photon.Rooms
 
         public void OnClick_JoinRoom() {
             if (!PhotonNetwork.IsConnected) {
-                Debug.Log("You are not connected");
+                Debug.Log("");
+                GameInfoText.Instance.text.text = "You are not connected";
+                GameInfoText.Instance.FadeText(true, false);
+                
                 PhotonNetwork.Reconnect();
             } 
             
@@ -56,15 +58,8 @@ namespace My_Photon.Rooms
         
         public override void OnJoinRoomFailed(short returnCode, string message)
         {
-            roomErrorTxt.gameObject.SetActive(true);
-            StartCoroutine(DisableErrorText());
-        }
-
-        private IEnumerator DisableErrorText()
-        {
-            _disableErrorTextWait = 5f;
-            yield return new WaitForSeconds(_disableErrorTextWait);
-            roomErrorTxt.gameObject.SetActive(false);
+            GameInfoText.Instance.text.text = "Room doesn't exist";
+            GameInfoText.Instance.FadeText(true, false);
         }
     }
 }
