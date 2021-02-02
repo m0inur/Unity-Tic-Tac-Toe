@@ -29,16 +29,14 @@ namespace My_Photon
 
         public override void OnConnected()
         {
-            GameInfoText.Instance.text.text = "You have connected";
-            GameInfoText.Instance.FadeText(true);
+            Debug.Log("You have connected");   
+            // GameInfoText.Instance.FadeText(true, "You have connected");
         }
 
         public override void OnDisconnected (DisconnectCause cause) {
             if (cause.ToString() != "None")
             {
-                Debug.Log("Disconnected to photon because: " + cause.ToString());
-                GameInfoText.Instance.text.text = "You have disconnected";
-                GameInfoText.Instance.FadeText(true, false);
+                GameInfoText.Instance.FadeText(true, "You have disconnected", false);
                 PhotonNetwork.Reconnect();
             }
         }

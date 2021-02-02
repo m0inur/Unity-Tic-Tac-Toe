@@ -53,8 +53,7 @@ namespace My_Photon.Rooms
         public void OnClick_CreateRoom () {
             if (!PhotonNetwork.IsConnected) {
                 Debug.Log("You are not connected");
-                GameInfoText.Instance.text.text = "You are not connected";
-                GameInfoText.Instance.FadeText(true, false);
+                GameInfoText.Instance.FadeText(true, "You are not connected",false);
                 
                 PhotonNetwork.Reconnect();
             } 
@@ -77,6 +76,8 @@ namespace My_Photon.Rooms
             {
                 _roomId += UnityEngine.Random.Range(0, 9);
             }
+
+            Debug.Log("Creating room id = " + _roomId);
         
             PhotonNetwork.JoinOrCreateRoom (_roomId, options, TypedLobby.Default);
             PhotonNetwork.ConnectUsingSettings ();
@@ -108,8 +109,7 @@ namespace My_Photon.Rooms
 
         // If a room is failed to create
         public override void OnCreateRoomFailed (short returnCode, string message) {
-            GameInfoText.Instance.text.text = "Room creation failed";
-            GameInfoText.Instance.FadeText(true, false);
+            GameInfoText.Instance.FadeText(true, "Room creation failed",false);
         }
 
         private void ChangeView()

@@ -41,6 +41,8 @@ namespace My_Photon.Rooms
         private void Start()
         {
             _hasInitSetup = false;
+            _hasUsedShakeAnim = false;
+
             showRoomIDTxtDelay = 0.2f;
             _textFadeWait = 0.1f;
             _textFadeSpeed = 0.30f;
@@ -74,7 +76,6 @@ namespace My_Photon.Rooms
             
             _hasPlayerLeftRoom = false;
             _hasInitPlayerCards = false;
-            _hasUsedShakeAnim = false;
         }
 
         private new void OnDisable()
@@ -221,8 +222,7 @@ namespace My_Photon.Rooms
                 player1CardText.text = "You";
             }
             
-            GameInfoText.Instance.text.text = "Other player left the room";
-            GameInfoText.Instance.FadeText(true, false);
+            GameInfoText.Instance.FadeText(true, "Other player left the room",false);
             player2CardText.text = "Player 2";
         }
 

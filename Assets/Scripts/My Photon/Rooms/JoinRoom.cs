@@ -31,9 +31,7 @@ namespace My_Photon.Rooms
 
         public void OnClick_JoinRoom() {
             if (!PhotonNetwork.IsConnected) {
-                Debug.Log("");
-                GameInfoText.Instance.text.text = "You are not connected";
-                GameInfoText.Instance.FadeText(true, false);
+                GameInfoText.Instance.FadeText(true, "You are not connected",false);
                 
                 PhotonNetwork.Reconnect();
             } 
@@ -58,8 +56,7 @@ namespace My_Photon.Rooms
         
         public override void OnJoinRoomFailed(short returnCode, string message)
         {
-            GameInfoText.Instance.text.text = "Room doesn't exist";
-            GameInfoText.Instance.FadeText(true, false);
+            GameInfoText.Instance.FadeText(true, "Room doesn't exist",false);
         }
     }
 }
